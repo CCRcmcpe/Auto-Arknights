@@ -1,6 +1,6 @@
 [submodule "REVUnit.ImageLocator"]
 	path = REVUnit.ImageLocator
-	url = https://e.coding.net/rev-unit/ImageLocator.git
+	url = https://github.com/CCRcmcpe/REVUnit.ImageLocator.git
 [submodule "Crlib"]
 	path = Crlib
-	url = https://e.coding.net/rev-unit/Crlib.git
+	url = https://github.com/CCRcmcpe/Crlib.git
