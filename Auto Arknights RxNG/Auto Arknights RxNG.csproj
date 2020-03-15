@@ -14,9 +14,6 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Crlib">
-      <HintPath>Dlls\Crlib.dll</HintPath>
-    </Reference>
     <Reference Include="MaterialDesignColors">
       <HintPath>Dlls\MaterialDesignColors.dll</HintPath>
     </Reference>
