@@ -1,0 +1,56 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.161
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auto Arknights RxNG", "Auto Arknights RxNG\Auto Arknights RxNG.csproj", "{E82B8D20-0E6A-4AF5-9F6A-97B92D823D29}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arknights Automation Library", "Arknights Automation Library\Arknights Automation Library.csproj", "{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6968A583-55D4-446F-9F73-EB91ACE1FB74}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auto Arknights Console", "Auto Arknights Console\Auto Arknights Console.csproj", "{0C76DBB2-8CCF-4860-8C28-C542E74666BE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "REVUnit.ImageLocator", "REVUnit.ImageLocator\REVUnit.ImageLocator\REVUnit.ImageLocator.csproj", "{20BF00F4-DDBE-4592-A6C0-EEAF080326FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crlib", "Crlib\Crlib\Crlib.csproj", "{D0C9D2B9-210A-4E2B-9F5A-148C234FE0BB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E82B8D20-0E6A-4AF5-9F6A-97B92D823D29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E82B8D20-0E6A-4AF5-9F6A-97B92D823D29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E82B8D20-0E6A-4AF5-9F6A-97B92D823D29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E82B8D20-0E6A-4AF5-9F6A-97B92D823D29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C76DBB2-8CCF-4860-8C28-C542E74666BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C76DBB2-8CCF-4860-8C28-C542E74666BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C76DBB2-8CCF-4860-8C28-C542E74666BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C76DBB2-8CCF-4860-8C28-C542E74666BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20BF00F4-DDBE-4592-A6C0-EEAF080326FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20BF00F4-DDBE-4592-A6C0-EEAF080326FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20BF00F4-DDBE-4592-A6C0-EEAF080326FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20BF00F4-DDBE-4592-A6C0-EEAF080326FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0C9D2B9-210A-4E2B-9F5A-148C234FE0BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0C9D2B9-210A-4E2B-9F5A-148C234FE0BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0C9D2B9-210A-4E2B-9F5A-148C234FE0BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0C9D2B9-210A-4E2B-9F5A-148C234FE0BB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {58448B8B-EA41-496B-B26E-AD09835AD4DD}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+	EndGlobalSection
+EndGlobal

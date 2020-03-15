@@ -1,0 +1,40 @@
+﻿<rx:ReactiveWindow x:TypeArguments="viewModels:SettingsViewModel" x:Class="REVUnit.AutoArknights.Views.SettingsWindow"
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:local="clr-namespace:REVUnit.AutoArknights"
+                   xmlns:rx="http://reactiveui.net"
+                   xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+                   xmlns:viewModels="clr-namespace:REVUnit.AutoArknights.ViewModels"
+                   Background="{DynamicResource MaterialDesignPaper}"
+                   FontFamily="{DynamicResource MaterialDesignFont}"
+                   TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+                   mc:Ignorable="d"
+                   Title="设置" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <md:Card HorizontalAlignment="Left" Margin="10,10,0,0">
+            <TextBlock Padding="2" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Run>提示: 这个设置编辑器是动态且实时的，而且是</Run>
+                <Run Foreground="Red">高度实验性的</Run>
+                <Run>，有可能会有一大堆Bug</Run>
+            </TextBlock>
+        </md:Card>
+        <md:Card Margin="10,4,10,10"
+                 HorizontalContentAlignment="Stretch" Grid.Row="1">
+            <DataGrid Name="GridSettings" d:DataContext="{d:DesignInstance viewModels:PropertyViewModel}"
+                      AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn IsReadOnly="True" Header="ID" Binding="{Binding Name, Mode=OneTime}" />
+                    <DataGridTextColumn IsReadOnly="False" Header="Value" Width="300"
+                                        Binding="{Binding Value, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}"
+                                        EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </md:Card>
+    </Grid>
+</rx:ReactiveWindow>
