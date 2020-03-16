@@ -6,10 +6,6 @@ GUI目前还是处于半残阶段。
 ### 对于`Auto Arknights CLI`
 #### Windows
 运行其项目根目录下的`build.bat`。
-#### Linux
-在项目根目录下运行：  
-`dotnet publish -c Release -r [自己的Runtime]`  
-[自己的Runtime]: 请查阅 https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
 ## 功能
 + [x] 重复单关卡任意次
 + [ ] 重复单关卡直到理智耗尽
