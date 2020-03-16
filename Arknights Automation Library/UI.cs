@@ -11,7 +11,7 @@ using REVUnit.Crlib.Extension;
 using REVUnit.ImageLocator;
 using Point = System.Drawing.Point;
 
-namespace REVUnit.AutoArknights.Core
+namespace REVUnit.AutoArknights.GUI.Core
 {
     public class UI : IDisposable
     {

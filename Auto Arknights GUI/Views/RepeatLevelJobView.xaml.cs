@@ -1,4 +1,4 @@
-﻿namespace REVUnit.AutoArknights.Views
+﻿namespace REVUnit.AutoArknights.GUI.Views
 {
     /// <summary>
     ///     RepeatLevelJobView.xaml 的交互逻辑

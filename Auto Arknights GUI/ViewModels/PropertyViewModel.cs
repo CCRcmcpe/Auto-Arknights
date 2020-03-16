@@ -2,7 +2,7 @@
 using System.Configuration;
 using ReactiveUI;
 
-namespace REVUnit.AutoArknights.ViewModels
+namespace REVUnit.AutoArknights.GUI.ViewModels
 {
     public class PropertyViewModel : ReactiveObject
     {

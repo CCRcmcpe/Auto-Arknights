@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using REVUnit.AutoArknights.Core;
-using REVUnit.AutoArknights.Properties;
+using REVUnit.AutoArknights.GUI.Core;
+using REVUnit.AutoArknights.GUI.Properties;
 
-namespace REVUnit.AutoArknights.ViewModels
+namespace REVUnit.AutoArknights.GUI.ViewModels
 {
     public class AutomationViewModel : ReactiveObject
     {

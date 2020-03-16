@@ -1,4 +1,4 @@
-﻿namespace Auto_Arknights_Console
+﻿namespace REVUnit.AutoArknights.CLI
 {
     public static class Cnst
     {

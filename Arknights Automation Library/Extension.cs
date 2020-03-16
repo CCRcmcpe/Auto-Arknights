@@ -1,7 +1,7 @@
 ﻿using System;
 using OpenCvSharp;
 
-namespace REVUnit.AutoArknights.Core
+namespace REVUnit.AutoArknights.GUI.Core
 {
     public static class Extension
     {

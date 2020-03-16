@@ -1,6 +1,6 @@
-﻿using REVUnit.AutoArknights.Core;
+﻿using REVUnit.AutoArknights.GUI.Core;
 
-namespace REVUnit.AutoArknights.ViewModels
+namespace REVUnit.AutoArknights.GUI.ViewModels
 {
     public class RepeatLevelJobViewModel
     {

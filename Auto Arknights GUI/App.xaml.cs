@@ -2,7 +2,7 @@
 using ReactiveUI;
 using Splat;
 
-namespace REVUnit.AutoArknights
+namespace REVUnit.AutoArknights.GUI
 {
     /// <summary>
     ///     App.xaml 的交互逻辑

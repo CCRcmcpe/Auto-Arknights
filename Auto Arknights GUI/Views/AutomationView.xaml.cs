@@ -1,8 +1,8 @@
 ﻿using System.Reactive.Disposables;
 using ReactiveUI;
-using REVUnit.AutoArknights.ViewModels;
+using REVUnit.AutoArknights.GUI.ViewModels;
 
-namespace REVUnit.AutoArknights.Views
+namespace REVUnit.AutoArknights.GUI.Views
 {
     /// <summary>
     ///     AutomationView.xaml 的交互逻辑

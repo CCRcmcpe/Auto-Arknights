@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace REVUnit.AutoArknights.Core
+namespace REVUnit.AutoArknights.GUI.Core
 {
     public class LevelPath
     {

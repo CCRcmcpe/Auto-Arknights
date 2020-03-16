@@ -2,7 +2,7 @@
 using System.IO;
 using OpenCvSharp;
 
-namespace REVUnit.AutoArknights.Core
+namespace REVUnit.AutoArknights.GUI.Core
 {
     public static class Assets
     {

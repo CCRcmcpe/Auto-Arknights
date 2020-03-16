@@ -9,7 +9,7 @@ using Flurl;
 using Flurl.Http;
 using OpenCvSharp;
 
-namespace REVUnit.AutoArknights.Core
+namespace REVUnit.AutoArknights.GUI.Core
 {
     public static class BaiduOcr
     {

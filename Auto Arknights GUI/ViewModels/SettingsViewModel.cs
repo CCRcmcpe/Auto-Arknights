@@ -2,9 +2,9 @@
 using System.Configuration;
 using System.Linq;
 using ReactiveUI;
-using REVUnit.AutoArknights.Properties;
+using REVUnit.AutoArknights.GUI.Properties;
 
-namespace REVUnit.AutoArknights.ViewModels
+namespace REVUnit.AutoArknights.GUI.ViewModels
 {
     public class SettingsViewModel : ReactiveObject
     {

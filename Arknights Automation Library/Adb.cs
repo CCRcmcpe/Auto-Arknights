@@ -6,7 +6,7 @@ using System.Text;
 using OpenCvSharp;
 using Point = System.Drawing.Point;
 
-namespace REVUnit.AutoArknights.Core
+namespace REVUnit.AutoArknights.GUI.Core
 {
     public class Adb : IDisposable
     {

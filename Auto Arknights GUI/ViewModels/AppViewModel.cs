@@ -3,9 +3,9 @@ using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Linq;
 using ReactiveUI;
-using REVUnit.AutoArknights.Views;
+using REVUnit.AutoArknights.GUI.Views;
 
-namespace REVUnit.AutoArknights.ViewModels
+namespace REVUnit.AutoArknights.GUI.ViewModels
 {
     public sealed class AppViewModel : ReactiveObject, IDisposable
     {
