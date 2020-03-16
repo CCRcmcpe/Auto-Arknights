@@ -25,9 +25,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\.editorconfig">
-      <Link>.editorconfig</Link>
-    </None>
     <Resource Include="Resources\Roboto\Roboto-Black.ttf" />
     <Resource Include="Resources\Roboto\Roboto-BlackItalic.ttf" />
     <Resource Include="Resources\Roboto\Roboto-Bold.ttf" />
@@ -49,7 +46,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="FodyWeavers.xml" />
-    <Resource Include="License-LGPL.txt" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ControlzEx" Version="4.2.2" />
@@ -59,7 +55,6 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.13" />
     <PackageReference Include="Pharmacist.Common" Version="1.5.3" />
     <PackageReference Include="ReactiveUI" Version="11.1.23" />
     <PackageReference Include="ReactiveUI.Events.WPF" Version="11.1.23" />
