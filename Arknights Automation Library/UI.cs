@@ -17,7 +17,7 @@ namespace REVUnit.AutoArknights.GUI.Core
     {
         private readonly Adb _adb;
         private readonly FMLocator _loc = new FMLocator();
-        private readonly OCRTesseract _tesseract = OCRTesseract.Create("Assets\\Tesseract", "eng", oem:3);
+        private readonly OCRTesseract _tesseract = OCRTesseract.Create("Assets\\Tesseract", "eng");
 
         public UI(string adbPath)
         {
@@ -78,7 +78,7 @@ namespace REVUnit.AutoArknights.GUI.Core
                 dynamic[] wordsResult = BaiduOcr.Ocr(sub).Result.words_result.ToArray();
                 dynamic[] words = wordsResult.Select(it => it.words).ToArray();
                 //_tesseract.Run(sub, out string str, out _, out _, out _);
-                return Regex.Match((string)words[0], regex);
+                return Regex.Match((string) words[0], regex);
             }, match =>
             {
                 T result = default;

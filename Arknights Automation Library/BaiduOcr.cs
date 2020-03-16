@@ -38,7 +38,7 @@ namespace REVUnit.AutoArknights.GUI.Core
                 _accessToken = result.access_token;
             }
         }
-        
+
         public static async Task<dynamic> Ocr(Mat image)
         {
             await EnsureTokenInit();
