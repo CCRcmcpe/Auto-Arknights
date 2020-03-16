@@ -2,7 +2,7 @@
 用于自动化明日方舟部分流程的程序，使用OpenCV进行图像识别、定位（识别按钮位置等），使用百度OCR API进行文字识别（获取理智和其他信息），使用ADB与明日方舟客户端交互。
 ## 构建
 注意：目前尚处于开发阶段，`clone`下来不能构建实属正常。
-### 对于`Auto Arknights Console`
+### 对于`Auto Arknights CLI`
 #### Windows
 运行其项目根目录下的`build.bat`。
 #### Linux
