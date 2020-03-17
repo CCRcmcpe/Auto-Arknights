@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Configuration;
 using REVUnit.AutoArknights.Core;
-using REVUnit.AutoArknights.GUI.Core;
 using REVUnit.Crlib.Input;
 
 namespace REVUnit.AutoArknights.CLI

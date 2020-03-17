@@ -1,7 +1,7 @@
 ﻿using System;
 using REVUnit.Crlib.Extension;
 
-namespace REVUnit.AutoArknights.GUI.Core
+namespace REVUnit.AutoArknights.Core
 {
     public class RepeatLevelJob : Job
     {

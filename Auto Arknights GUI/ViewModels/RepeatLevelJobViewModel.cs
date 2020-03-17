@@ -1,4 +1,4 @@
-﻿using REVUnit.AutoArknights.GUI.Core;
+﻿using REVUnit.AutoArknights.Core;
 
 namespace REVUnit.AutoArknights.GUI.ViewModels
 {

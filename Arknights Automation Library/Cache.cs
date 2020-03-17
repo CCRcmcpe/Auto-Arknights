@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace REVUnit.AutoArknights.GUI.Core
+namespace REVUnit.AutoArknights.Core
 {
     public class Cache<TIdentfier, TItem>
     {

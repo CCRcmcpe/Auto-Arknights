@@ -9,7 +9,6 @@
                                 xmlns:mh="http://metro.mahapps.com/winfx/xaml/controls"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:viewModels="clr-namespace:REVUnit.AutoArknights.GUI.ViewModels"
-                                xmlns:core="clr-namespace:REVUnit.AutoArknights.GUI.Core;assembly=REVUnit.AutoArknights.Core"
                                 mc:Ignorable="d"
                                 d:DesignHeight="100" d:DesignWidth="192"
                                 d:DataContext="{d:DesignInstance viewModels:RepeatLevelJobViewModel}">

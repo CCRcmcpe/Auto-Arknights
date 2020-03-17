@@ -1,4 +1,4 @@
-﻿namespace REVUnit.AutoArknights.GUI.Core
+﻿namespace REVUnit.AutoArknights.Core
 {
     public abstract class Job
     {

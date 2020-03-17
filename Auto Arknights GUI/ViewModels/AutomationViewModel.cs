@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using REVUnit.AutoArknights.GUI.Core;
+using REVUnit.AutoArknights.Core;
 using REVUnit.AutoArknights.GUI.Properties;
 
 namespace REVUnit.AutoArknights.GUI.ViewModels

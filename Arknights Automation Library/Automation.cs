@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace REVUnit.AutoArknights.GUI.Core
+namespace REVUnit.AutoArknights.Core
 {
     public class Automation : IDisposable
     {

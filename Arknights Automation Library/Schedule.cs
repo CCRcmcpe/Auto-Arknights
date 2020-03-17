@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace REVUnit.AutoArknights.GUI.Core
+namespace REVUnit.AutoArknights.Core
 {
     public class Schedule
     {
