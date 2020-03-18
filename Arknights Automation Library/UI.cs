@@ -16,7 +16,7 @@ namespace REVUnit.AutoArknights.Core
     public class UI : IDisposable
     {
         private readonly Adb _adb;
-        private readonly FMLocator _loc = new FMLocator();
+        private readonly FMLocator _loc = new FMLocator(new Feature2DInfo(Feature2Ds.Sift));
         private readonly OCRTesseract _tesseract = OCRTesseract.Create("Assets\\Tesseract", "eng");
 
         public UI(string adbPath)
