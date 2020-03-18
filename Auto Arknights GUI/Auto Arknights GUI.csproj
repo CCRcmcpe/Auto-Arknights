@@ -6,6 +6,12 @@
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
+  <PropertyGroup>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>False</SelfContained>
+    <PublishSingleFile>False</PublishSingleFile>
+    <PublishReadyToRun>True</PublishReadyToRun>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="MaterialDesignColors">
       <HintPath>Dlls\MaterialDesignColors.dll</HintPath>
