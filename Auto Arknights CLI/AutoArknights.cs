@@ -17,9 +17,15 @@ namespace REVUnit.AutoArknights.CLI
                 Console.ReadKey(true);
                 return;
             }
-            
+
             IConfiguration config = new ConfigurationBuilder().AddJsonFile(".\\Config.json").Build();
             _automation = new Automation(config["Adb:Path"], config["Adb:Remote"]);
+        }
+
+        public void Dispose()
+        {
+            Console.WriteLine("Disposing!");
+            _automation.Dispose();
         }
 
         public void Run()
@@ -27,12 +33,6 @@ namespace REVUnit.AutoArknights.CLI
             var cin = new Cin();
             _automation.Schedule.Add(new RepeatLevelJob(RepeatLevelJob.Mode.SpecifiedTimes, cin.Get<int>("输入刷关次数")));
             _automation.Schedule.ExecuteAll();
-        }
-
-        public void Dispose()
-        {
-            Console.WriteLine("Disposing!");
-            _automation.Dispose();
         }
     }
 }
