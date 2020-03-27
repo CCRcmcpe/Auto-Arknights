@@ -1,4 +1,5 @@
 # Auto Arknights
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FCCRcmcpe%2FAuto-Arknights.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FCCRcmcpe%2FAuto-Arknights?ref=badge_shield)  
 `咕咕咕`  
 用于自动化明日方舟部分流程的程序，使用OpenCV进行图像识别、定位（识别按钮位置等），使用百度OCR API进行文字识别（获取理智和其他信息），使用ADB与明日方舟客户端交互。
 ## 运行
