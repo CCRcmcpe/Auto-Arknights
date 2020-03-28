@@ -1,7 +1,7 @@
 # Auto Arknights
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FCCRcmcpe%2FAuto-Arknights.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FCCRcmcpe%2FAuto-Arknights?ref=badge_shield)  
-`咕咕咕`  
-用于自动化明日方舟部分流程的程序，使用OpenCV进行图像识别、定位（识别按钮位置等），使用百度OCR API进行文字识别（获取理智和其他信息），使用ADB与明日方舟客户端交互。
+用于自动化明日方舟部分流程的程序，基于OpenCV。  
+感谢某不知名马姓人士提供的OCR服务
 ## 运行
 ### 必须运行要求
 * [.NET 5.0 Preview 1](https://dotnet.microsoft.com/download/dotnet-core/thank-you/runtime-desktop-5.0.0-preview.1-windows-x64-installer)或以上的.NET版本。
@@ -18,4 +18,8 @@
 + [ ] 重复单关卡直到理智耗尽
 + [ ] 重复单关卡，在理智耗尽时等待恢复理智，恢复完毕后继续
 ## 关于
-开发者并没有很多经验，如果有问题欢迎提出`issue`。
+开发者并没有很多经验，如果有问题欢迎提出`issue`。  
+#### 本程序使用..
+* `Feature Matching`进行精准图像识别、定位
+* `OCR`进行文字识别
+* `ADB`与明日方舟客户端交互。  
