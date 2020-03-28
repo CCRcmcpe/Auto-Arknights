@@ -1,7 +1,7 @@
 # Auto Arknights
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FCCRcmcpe%2FAuto-Arknights.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FCCRcmcpe%2FAuto-Arknights?ref=badge_shield)  
 用于自动化明日方舟部分流程的程序，基于OpenCV。  
-感谢某不知名马姓人士提供的OCR服务
+~~感谢某不知名马姓人士提供的OCR服务~~
 ## 运行
 ### 必须运行要求
 * [.NET 5.0 Preview 1](https://dotnet.microsoft.com/download/dotnet-core/thank-you/runtime-desktop-5.0.0-preview.1-windows-x64-installer)或以上的.NET版本。
@@ -22,4 +22,4 @@
 #### 本程序使用..
 * `Feature Matching`进行精准图像识别、定位
 * `OCR`进行文字识别
-* `ADB`与明日方舟客户端交互。  
+* `ADB`与明日方舟客户端交互
