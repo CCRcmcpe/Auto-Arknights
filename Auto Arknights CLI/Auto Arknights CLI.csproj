@@ -9,9 +9,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <SelfContained>False</SelfContained>
-    <PublishSingleFile>False</PublishSingleFile>
-    <PublishReadyToRun>True</PublishReadyToRun>
+    <SelfContained>false</SelfContained>
+    <PublishSingleFile>false</PublishSingleFile>
+    <PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Arknights Automation Library\Arknights Automation Library.csproj" />
