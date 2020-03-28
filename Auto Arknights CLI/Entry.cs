@@ -6,7 +6,7 @@
         {
             using var app = new AutoArknights();
             app.Run();
-            // 经过实验，并不能释放非托管资源。
+            // 经过实验，并不能在非正常关闭时释放非托管资源。
             // TODO See https://github.com/CCRcmcpe/Auto-Arknights/issues/1
             // var src = new CancellationTokenSource();
             // var task = new Task(() =>

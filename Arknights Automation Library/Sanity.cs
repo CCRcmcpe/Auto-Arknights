@@ -10,5 +10,10 @@
             Value = value;
             Max = max;
         }
+
+        public override string ToString()
+        {
+            return $"{Value}/{Max}";
+        }
     }
 }

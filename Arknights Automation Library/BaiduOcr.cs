@@ -75,7 +75,7 @@ namespace REVUnit.AutoArknights.Core
 
             private static byte[] GetCollectionBytes(IEnumerable<KeyValuePair<string, string>> c, Encoding encoding)
             {
-                string str = string.Join("&",
+                var str = string.Join("&",
                     c.Select(i => string.Concat(HttpUtility.UrlEncode(i.Key), '=', HttpUtility.UrlEncode(i.Value)))
                         .ToArray());
                 return encoding.GetBytes(str);

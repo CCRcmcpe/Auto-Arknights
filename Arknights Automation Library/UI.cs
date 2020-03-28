@@ -5,7 +5,6 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using OpenCvSharp;
-using OpenCvSharp.Text;
 using REVUnit.Crlib;
 using REVUnit.Crlib.Extension;
 using REVUnit.ImageLocator;
@@ -16,8 +15,9 @@ namespace REVUnit.AutoArknights.Core
     public class UI : IDisposable
     {
         private readonly Adb _adb;
+
         private readonly FMLocator _loc = new FMLocator(new Feature2DInfo(Feature2Ds.Sift));
-        private readonly OCRTesseract _tesseract = OCRTesseract.Create("Assets\\Tesseract", "eng");
+        //private readonly OCRTesseract _tesseract = OCRTesseract.Create("Assets\\Tesseract", "eng");
 
         public UI(string adbPath)
         {
@@ -30,35 +30,10 @@ namespace REVUnit.AutoArknights.Core
             NewRemote(adbRemote);
         }
 
-        // public async Task<Point> Loc(string text)
-        // {
-        //     var result = await BaiduOcr.FindWithLoc(Adb.GetScreenShot());
-        //     if (result.words_result_num == 0)
-        //     {
-        //         return new Point(-1, -1);
-        //     }
-        //     List<dynamic> wordsResult = result.words_result;
-        //     var matched =
-        //         wordsResult.Where(wordResult =>
-        //             wordResult.words == text);
-        //     foreach (var x in wordsResult)
-        //     {
-        //         Console.WriteLine(x.words);
-        //     }
-        //     if (!matched.Any())
-        //     {
-        //         return (default, false); //没有找到对应的
-        //     }
-        //     var location = matched.First().location;
-        //     return (
-        //         new Point((int) location.left + (int) location.width / 2,
-        //             (int) location.top + (int) location.height / 2), true);
-        //     //返回文字的中心点
-        // }
         public void Dispose()
         {
             _loc.Dispose();
-            _tesseract.Dispose();
+            //_tesseract.Dispose();
             _adb.Dispose();
         }
 
@@ -73,12 +48,8 @@ namespace REVUnit.AutoArknights.Core
             {
                 using Mat scrn = Scrn();
                 using Mat sub = src(scrn);
-                Cv2.ImShow("subimg", sub);
-                Cv2.WaitKey();
-                dynamic[] wordsResult = BaiduOcr.Ocr(sub).Result.words_result.ToArray();
-                dynamic[] words = wordsResult.Select(it => it.words).ToArray();
-                //_tesseract.Run(sub, out string str, out _, out _, out _);
-                return Regex.Match((string) words[0], regex);
+                string result = TxOcr.Ocr(sub);
+                return Regex.Match(result, regex);
             }, match =>
             {
                 T result = default;

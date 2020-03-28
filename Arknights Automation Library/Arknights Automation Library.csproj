@@ -1,30 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFramework>netcoreapp5.0</TargetFramework>
-        <RootNamespace>REVUnit.AutoArknights.Core</RootNamespace>
-        <AssemblyName>REVUnit.AutoArknights.Core</AssemblyName>
-    </PropertyGroup>
-    <ItemGroup>
-        <PackageReference Include="Flurl" Version="3.0.0-pre3" />
-        <PackageReference Include="Flurl.Http" Version="3.0.0-pre3" />
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-        <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
-        <PackageReference Include="System.Reactive" Version="4.3.2" />
-    </ItemGroup>
-    <ItemGroup>
-        <None Update="adb\**">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="Assets\**">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <Compile Remove="Automation Script\**" />
-    </ItemGroup>
-    <ItemGroup>
-        <Folder Include="Assets\Cache" />
-    </ItemGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\Crlib\Crlib\Crlib.csproj" />
-        <ProjectReference Include="..\REVUnit.ImageLocator\REVUnit.ImageLocator\REVUnit.ImageLocator.csproj" />
-    </ItemGroup>
+  <PropertyGroup>
+    <TargetFramework>netcoreapp5.0</TargetFramework>
+    <RootNamespace>REVUnit.AutoArknights.Core</RootNamespace>
+    <AssemblyName>REVUnit.AutoArknights.Core</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Flurl" Version="3.0.0-pre3" />
+    <PackageReference Include="Flurl.Http" Version="3.0.0-pre3" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Refit" Version="5.1.27" />
+    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+    <PackageReference Include="System.Reactive" Version="4.3.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="adb\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Compile Remove="Automation Script\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Assets\Cache" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Crlib\Crlib\Crlib.csproj" />
+    <ProjectReference Include="..\REVUnit.ImageLocator\REVUnit.ImageLocator\REVUnit.ImageLocator.csproj" />
+  </ItemGroup>
 </Project>

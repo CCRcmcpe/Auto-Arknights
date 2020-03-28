@@ -24,14 +24,29 @@ namespace REVUnit.AutoArknights.CLI
 
         public void Dispose()
         {
-            Console.WriteLine("Disposing!");
+            Console.WriteLine("Disposing...");
             _automation.Dispose();
         }
+
+#if DEBUG
+        public void Test()
+        {
+            while (true)
+            {
+                Console.Write("Current sanity: ");
+                Console.WriteLine(_automation.UI.GetCurrentSanity().ToString());
+            }
+        }
+#endif
 
         public void Run()
         {
             var cin = new Cin();
-            _automation.Schedule.Add(new RepeatLevelJob(RepeatLevelJob.Mode.SpecifiedTimes, cin.Get<int>("输入刷关次数")));
+            RepeatLevelJob.Mode mode = cin.Get<RepeatLevelJob.Mode>("输入模式");
+            int repeatTime = -1;
+            if (mode == RepeatLevelJob.Mode.SpecifiedTimes) repeatTime = cin.Get<int>("输入刷关次数");
+
+            _automation.Schedule.Add(new RepeatLevelJob(mode, repeatTime));
             _automation.Schedule.ExecuteAll();
         }
     }

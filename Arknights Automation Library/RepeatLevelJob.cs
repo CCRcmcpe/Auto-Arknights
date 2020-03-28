@@ -1,5 +1,5 @@
 ﻿using System;
-using REVUnit.Crlib.Extension;
+using System.Threading;
 
 namespace REVUnit.AutoArknights.Core
 {
@@ -27,9 +27,18 @@ namespace REVUnit.AutoArknights.Core
             Func<int, bool> advanceCondiction = RepeatMode switch
             {
                 Mode.SpecifiedTimes => t => t < RepeatTime,
-                Mode.UntilNoSanity => _ => i.GetCurrentSanity().Value < i.GetRequiredSanity(),
-                Mode.WaitWhileNoSanity => _ => X.While(() => i.GetCurrentSanity().Value < i.GetRequiredSanity(),
-                    it => it, TimeSpan.FromSeconds(15)),
+                Mode.UntilNoSanity => _ => i.GetCurrentSanity().Value > i.GetRequiredSanity(),
+                Mode.WaitWhileNoSanity => _ =>
+                {
+                    while (true)
+                    {
+                        int x = i.GetCurrentSanity().Value - i.GetRequiredSanity();
+                        if (x < 0)
+                            Thread.Sleep(TimeSpan.FromMinutes(6 * -x));
+                        else
+                            return true;
+                    }
+                },
                 _ => throw new ArgumentOutOfRangeException()
             };
             while (advanceCondiction(currentTime))

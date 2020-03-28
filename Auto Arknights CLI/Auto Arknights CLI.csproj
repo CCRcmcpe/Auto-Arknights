@@ -1,30 +1,30 @@
-<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-    <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFramework>netcoreapp5.0</TargetFramework>
-        <RootNamespace>REVUnit.AutoArknights.CLI</RootNamespace>
-        <UseWindowsForms>true</UseWindowsForms>
-        <UseWPF>true</UseWPF>
-        <AssemblyName>Auto Arknights CLI</AssemblyName>
-    </PropertyGroup>
-    <PropertyGroup>
-        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-        <SelfContained>False</SelfContained>
-        <PublishSingleFile>False</PublishSingleFile>
-        <PublishReadyToRun>True</PublishReadyToRun>
-    </PropertyGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\Arknights Automation Library\Arknights Automation Library.csproj" />
-        <ProjectReference Include="..\Crlib\Crlib\Crlib.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-        <None Update="Config.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-    </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.2" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.2" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.2" />
-    </ItemGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp5.0</TargetFramework>
+    <RootNamespace>REVUnit.AutoArknights.CLI</RootNamespace>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>Auto Arknights CLI</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>False</SelfContained>
+    <PublishSingleFile>False</PublishSingleFile>
+    <PublishReadyToRun>True</PublishReadyToRun>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Arknights Automation Library\Arknights Automation Library.csproj" />
+    <ProjectReference Include="..\Crlib\Crlib\Crlib.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.3" />
+  </ItemGroup>
 </Project>

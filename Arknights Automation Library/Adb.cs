@@ -32,24 +32,25 @@ namespace REVUnit.AutoArknights.Core
 
         public bool Connect()
         {
-            string result = Exec($"connect {Target}");
+            string result = Exec($"connect {Target}", false);
             return !result.Contains("cannot connect");
         }
 
         public void Click(Point point)
         {
-            Exec($"shell input tap {point.X} {point.Y}");
+            Exec($"shell input tap {point.X} {point.Y}", false);
         }
 
-        public string Exec(string parameter)
+        public string Exec(string parameter, bool muteOut = true)
         {
-            using MemoryStream stream = ExecBin(parameter);
+            using MemoryStream stream = ExecBin(parameter, muteOut);
             return Encoding.UTF8.GetString(stream.ToArray());
         }
 
-        private MemoryStream ExecBin(string parameter)
+        private MemoryStream ExecBin(string parameter, bool muteOut = true)
         {
-            Console.WriteLine(parameter);
+            if (!muteOut) Console.WriteLine(parameter);
+
             using var process = new Process
             {
                 StartInfo = new ProcessStartInfo(Executable, parameter)
