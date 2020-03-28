@@ -5,6 +5,7 @@
         <RootNamespace>REVUnit.AutoArknights.GUI</RootNamespace>
         <UseWindowsForms>true</UseWindowsForms>
         <UseWPF>true</UseWPF>
+        <Platforms>x64</Platforms>
     </PropertyGroup>
     <PropertyGroup>
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>

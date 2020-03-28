@@ -3,6 +3,7 @@
     <TargetFramework>netcoreapp5.0</TargetFramework>
     <RootNamespace>REVUnit.AutoArknights.Core</RootNamespace>
     <AssemblyName>REVUnit.AutoArknights.Core</AssemblyName>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Flurl" Version="3.0.0-pre3" />
