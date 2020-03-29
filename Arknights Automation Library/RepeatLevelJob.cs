@@ -35,8 +35,7 @@ namespace REVUnit.AutoArknights.Core
                         int x = i.GetCurrentSanity().Value - i.GetRequiredSanity();
                         if (x < 0)
                             Thread.Sleep(TimeSpan.FromMinutes(6 * -x));
-                        else
-                            return true;
+                        return true;
                     }
                 },
                 _ => throw new ArgumentOutOfRangeException()

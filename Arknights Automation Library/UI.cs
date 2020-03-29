@@ -17,7 +17,6 @@ namespace REVUnit.AutoArknights.Core
         private readonly Adb _adb;
 
         private readonly FMLocator _loc = new FMLocator(new Feature2DInfo(Feature2Ds.Sift));
-        //private readonly OCRTesseract _tesseract = OCRTesseract.Create("Assets\\Tesseract", "eng");
 
         public UI(string adbPath)
         {
@@ -33,7 +32,6 @@ namespace REVUnit.AutoArknights.Core
         public void Dispose()
         {
             _loc.Dispose();
-            //_tesseract.Dispose();
             _adb.Dispose();
         }
 
