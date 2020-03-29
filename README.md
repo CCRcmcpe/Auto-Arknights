@@ -18,8 +18,8 @@
 功能|状态|注释
 -|-|-
 任意次|已实现|Mode.SpecifiedTimes
-直到理智耗尽|已实现，未测试|Mode.UntilNoSanity
-当理智耗尽时等待恢复|已实现，未测试|Mode.WaitWhileNoSanity
+直到理智耗尽|已实现|Mode.UntilNoSanity
+当理智耗尽时等待恢复|已实现|Mode.WaitWhileNoSanity
 当理智耗尽时自动嗑药|计划中
 当理智耗尽时自动碎石|计划中
 当理智耗尽时自动嗑药或碎石|计划中
