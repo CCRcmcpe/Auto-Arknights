@@ -7,11 +7,7 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>Auto Arknights CLI</AssemblyName>
     <Platforms>x64</Platforms>
-  </PropertyGroup>
-  <PropertyGroup>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <SelfContained>false</SelfContained>
-    <PublishSingleFile>false</PublishSingleFile>
     <PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
   <ItemGroup>
