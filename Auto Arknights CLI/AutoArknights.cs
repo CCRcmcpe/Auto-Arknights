@@ -24,7 +24,6 @@ namespace REVUnit.AutoArknights.CLI
 
         public void Dispose()
         {
-            Console.WriteLine("Disposing...");
             _automation.Dispose();
         }
 

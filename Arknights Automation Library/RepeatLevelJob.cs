@@ -30,13 +30,10 @@ namespace REVUnit.AutoArknights.Core
                 Mode.UntilNoSanity => _ => i.GetCurrentSanity().Value > i.GetRequiredSanity(),
                 Mode.WaitWhileNoSanity => _ =>
                 {
-                    while (true)
-                    {
-                        int x = i.GetCurrentSanity().Value - i.GetRequiredSanity();
-                        if (x < 0)
-                            Thread.Sleep(TimeSpan.FromMinutes(6 * -x));
-                        return true;
-                    }
+                    int x = i.GetCurrentSanity().Value - i.GetRequiredSanity();
+                    if (x < 0)
+                        Thread.Sleep(TimeSpan.FromMinutes(0.5));
+                    return true;
                 },
                 _ => throw new ArgumentOutOfRangeException()
             };
