@@ -51,7 +51,7 @@ namespace REVUnit.AutoArknights.Core
             i.Clk("作战 开始");
             i.Clk("作战 确认");
             i.WaitAp("作战 完成");
-            i.Slp(1.8);
+            i.Slp(2);
             i.Clk(5, 5);
         }
     }

@@ -1,11 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp5.0</TargetFramework>
-    <RootNamespace>REVUnit.AutoArknights.CLI</RootNamespace>
+    <TargetFramework>net5.0</TargetFramework>
+    <UseWpf>true</UseWpf>
     <UseWindowsForms>true</UseWindowsForms>
-    <UseWPF>true</UseWPF>
-    <AssemblyName>Auto Arknights CLI</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>REVUnit.AutoArknights.CLI</RootNamespace>
     <Platforms>x64</Platforms>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>false</SelfContained>
