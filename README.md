@@ -4,7 +4,7 @@
 ~~感谢某不知名马姓人士提供的OCR服务~~
 ## 运行
 ### 必须运行要求
-* [.NET 5.0 Preview 1](https://dotnet.microsoft.com/download/dotnet-core/thank-you/runtime-desktop-5.0.0-preview.1-windows-x64-installer)或以上的.NET版本。
+* .NET 5.0 Preview 1或以上的.NET版本。([官方下载](https://dotnet.microsoft.com/download/dotnet-core/5.0))
 * CPU支持`AVX2`指令集且支持`x64`架构。
 * 系统为`Windows`，版本为7及以上，目标架构为`x64`。
 ### [下载](https://github.com/CCRcmcpe/Auto-Arknights/releases/latest) //如果你没看必须运行要求建议再看一次。
