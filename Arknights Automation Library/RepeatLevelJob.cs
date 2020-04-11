@@ -21,29 +21,81 @@ namespace REVUnit.AutoArknights.Core
         public Mode RepeatMode { get; set; }
         public int RepeatTime { get; set; }
 
-        public override ExecuteResult Execute(UI i)
+        public override ExecuteResult Execute(UI ui)
         {
-            var currentTime = 0;
-            Func<int, bool> advanceCondiction = RepeatMode switch
+            Console.WriteLine(">>>任务开始");
+            switch (RepeatMode)
             {
-                Mode.SpecifiedTimes => t => t < RepeatTime,
-                Mode.UntilNoSanity => _ => i.GetCurrentSanity().Value > i.GetRequiredSanity(),
-                Mode.WaitWhileNoSanity => _ =>
-                {
-                    int x = i.GetCurrentSanity().Value - i.GetRequiredSanity();
-                    if (x < 0)
-                        Thread.Sleep(TimeSpan.FromMinutes(0.5));
-                    return true;
-                },
-                _ => throw new ArgumentOutOfRangeException()
-            };
-            while (advanceCondiction(currentTime))
-            {
-                StandardProcess(i);
-                currentTime++;
+                case Mode.SpecifiedTimes:
+                    SpecifiedTimes(ui, RepeatTime);
+                    break;
+                case Mode.UntilNoSanity:
+                    UntilNoSanity(ui);
+                    break;
+                case Mode.WaitWhileNoSanity:
+                    WaitWhileNoSanity(ui);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
+            Console.WriteLine(">>>任务完成");
             return ExecuteResult.Success();
+        }
+
+        private static void WaitWhileNoSanity(UI ui)
+        {
+            while (true)
+            {
+                var currentTime = 0;
+                Sanity sanity = ui.GetCurrentSanity();
+                int requiredSanity = ui.GetRequiredSanity();
+                bool flag = sanity.Value >= requiredSanity;
+                Console.WriteLine($">>当前理智[{sanity}]，需要理智[{requiredSanity}]，{(flag ? "继续" : "暂停")}");
+                if (flag)
+                {
+                    StandardProcess(ui);
+                    currentTime++;
+                    Console.WriteLine($">>关卡完成，目前已刷关{currentTime}次");
+                }
+                else
+                {
+                    Console.WriteLine(">>正在等待理智恢复...");
+                    while (ui.GetCurrentSanity().Value - ui.GetRequiredSanity() < 0)
+                        Thread.Sleep(TimeSpan.FromSeconds(15));
+                }
+            }
+        }
+
+        private static void UntilNoSanity(UI ui)
+        {
+            while (true)
+            {
+                var currentTime = 0;
+                Sanity sanity = ui.GetCurrentSanity();
+                int requiredSanity = ui.GetRequiredSanity();
+                bool flag = sanity.Value >= requiredSanity;
+                Console.WriteLine($">>当前理智[{sanity}]，需要理智[{requiredSanity}]，{(flag ? "继续" : "停止")}");
+                if (flag)
+                {
+                    StandardProcess(ui);
+                    currentTime++;
+                    Console.WriteLine($">>关卡完成，目前已刷关{currentTime}次");
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+
+        private static void SpecifiedTimes(UI ui, int time)
+        {
+            for (var currentTime = 1; currentTime != time; currentTime++)
+            {
+                Console.WriteLine($">>正在执行第{currentTime}次刷关");
+                StandardProcess(ui);
+            }
         }
 
         private static void StandardProcess(UI i)

@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Configuration;
 using REVUnit.AutoArknights.Core;
+using REVUnit.Crlib.Extension;
 using REVUnit.Crlib.Input;
 
 namespace REVUnit.AutoArknights.CLI
@@ -47,6 +48,9 @@ namespace REVUnit.AutoArknights.CLI
 
             _automation.Schedule.Add(new RepeatLevelJob(mode, repeatTime));
             _automation.Schedule.ExecuteAll();
+
+            Console.Beep();
+            XConsole.AnyKey("所有任务完成");
         }
     }
 }

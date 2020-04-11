@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
@@ -15,6 +14,7 @@ namespace REVUnit.AutoArknights.Core
     public class UI : IDisposable
     {
         private readonly Adb _adb;
+        private readonly Assets _assets = new Assets();
 
         private readonly FMLocator _loc = new FMLocator(new Feature2DInfo(Feature2Ds.Sift));
 
@@ -33,6 +33,7 @@ namespace REVUnit.AutoArknights.Core
         {
             _loc.Dispose();
             _adb.Dispose();
+            _assets.Dispose();
         }
 
         public void NewRemote(string adbRemote)
@@ -114,7 +115,7 @@ namespace REVUnit.AutoArknights.Core
 
         public LocateResult Loc(string expr)
         {
-            using Mat model = Asset(expr);
+            Mat model = Asset(expr);
             return Loc(model);
         }
 
@@ -144,15 +145,9 @@ namespace REVUnit.AutoArknights.Core
             _adb.Click(Randomize(point));
         }
 
-        private static Mat Asset(string expr)
+        private Mat Asset(string expr)
         {
-            string fileName = Path.Combine("Assets",
-                                  string.Join('\\', expr.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries))) +
-                              ".png";
-            if (!File.Exists(fileName)) throw new IOException("Invalid asset expression");
-            var mat = new Mat(fileName);
-            if (mat.Empty()) throw new IOException($"Invalid asset file {fileName}");
-            return mat;
+            return _assets.Get(expr);
         }
 
         private static Point Randomize(Point point)

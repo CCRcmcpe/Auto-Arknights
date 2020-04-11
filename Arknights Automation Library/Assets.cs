@@ -4,32 +4,37 @@ using OpenCvSharp;
 
 namespace REVUnit.AutoArknights.Core
 {
-    public static class Assets
+    public class Assets : IDisposable
     {
-        private static readonly Cache<string, Mat> Cache = new Cache<string, Mat>();
+        private readonly Cache<string, Mat> _cache = new Cache<string, Mat>();
 
-        static Assets()
+        public void Dispose()
         {
-            if (!Directory.Exists("Assets")) Directory.CreateDirectory("Assets");
-            Initialized = true;
+            foreach (Mat mat in _cache.CachedItems) mat.Dispose();
         }
 
-        public static bool Initialized { get; }
-
-        public static Mat Get(string expression)
+        public Mat Get(string expr)
         {
-            expression = expression.Trim();
-            return Cache.Get(expression, () =>
+            expr = expr.Trim();
+            if (!_cache.Get(expr, out Mat mat))
             {
-                var mat = new Mat(GetFileName(expression));
-                if (mat.Empty()) throw new Exception($"Asset not found : {expression}");
-                return mat;
-            });
+                string fileName = GetFileName(expr);
+                if (!File.Exists(fileName)) throw new IOException($"Asset not found: {expr}");
+                mat = Util.Imread(fileName);
+                if (mat.Empty()) throw new IOException($"Invalid asset: {expr}");
+
+                _cache.Register(expr, mat);
+            }
+
+            return mat;
         }
 
-        private static string GetFileName(string expression)
+        private string GetFileName(string expr)
         {
-            return Path.GetFullPath(Path.Combine("Assets", expression.Replace(' ', '\\')) + ".png");
+            return Path.GetFullPath(Path.Combine("Assets",
+                                        string.Join('\\',
+                                            expr.Split(' ', StringSplitOptions.RemoveEmptyEntries))) +
+                                    ".png");
         }
     }
 }
