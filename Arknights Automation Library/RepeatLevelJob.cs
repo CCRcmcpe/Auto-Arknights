@@ -45,16 +45,16 @@ namespace REVUnit.AutoArknights.Core
 
         private static void WaitWhileNoSanity(UI ui)
         {
+            var currentTime = 0;
             while (true)
             {
-                var currentTime = 0;
                 Sanity sanity = ui.GetCurrentSanity();
                 int requiredSanity = ui.GetRequiredSanity();
                 bool flag = sanity.Value >= requiredSanity;
                 Console.WriteLine($">>当前理智[{sanity}]，需要理智[{requiredSanity}]，{(flag ? "继续" : "暂停")}");
                 if (flag)
                 {
-                    StandardProcess(ui);
+                    RunOnce(ui);
                     currentTime++;
                     Console.WriteLine($">>关卡完成，目前已刷关{currentTime}次");
                 }
@@ -69,16 +69,16 @@ namespace REVUnit.AutoArknights.Core
 
         private static void UntilNoSanity(UI ui)
         {
+            var currentTime = 0;
             while (true)
             {
-                var currentTime = 0;
                 Sanity sanity = ui.GetCurrentSanity();
                 int requiredSanity = ui.GetRequiredSanity();
                 bool flag = sanity.Value >= requiredSanity;
                 Console.WriteLine($">>当前理智[{sanity}]，需要理智[{requiredSanity}]，{(flag ? "继续" : "停止")}");
                 if (flag)
                 {
-                    StandardProcess(ui);
+                    RunOnce(ui);
                     currentTime++;
                     Console.WriteLine($">>关卡完成，目前已刷关{currentTime}次");
                 }
@@ -94,11 +94,11 @@ namespace REVUnit.AutoArknights.Core
             for (var currentTime = 1; currentTime != time; currentTime++)
             {
                 Console.WriteLine($">>正在执行第{currentTime}次刷关");
-                StandardProcess(ui);
+                RunOnce(ui);
             }
         }
 
-        private static void StandardProcess(UI i)
+        private static void RunOnce(UI i)
         {
             i.Clk("作战 开始");
             i.Clk("作战 确认");

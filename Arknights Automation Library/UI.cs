@@ -72,7 +72,7 @@ namespace REVUnit.AutoArknights.Core
 
         public Sanity GetCurrentSanity()
         {
-            return Ocr(GetCurrentSanityPart, @"(\d+)\/(\d+)", (string[] arr, out Sanity result) =>
+            return Ocr(GetCurrentSanityPart, @"(\d+)\s*\/\s*(\d+)", (string[] arr, out Sanity result) =>
             {
                 int[] ints = arr.SelectCanParse<string, int>(int.TryParse).ToArray();
                 bool valid = ints.Length == 2;
