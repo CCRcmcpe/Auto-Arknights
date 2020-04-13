@@ -91,7 +91,7 @@ namespace REVUnit.AutoArknights.Core
 
         private static void SpecifiedTimes(UI ui, int time)
         {
-            for (var currentTime = 1; currentTime != time; currentTime++)
+            for (var currentTime = 1; currentTime <= time; currentTime++)
             {
                 Console.WriteLine($">>正在执行第{currentTime}次刷关");
                 RunOnce(ui);
