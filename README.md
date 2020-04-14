@@ -9,9 +9,9 @@
 * 系统为`Windows`，版本为7及以上，目标架构为`x64`。
 ### [下载](https://github.com/CCRcmcpe/Auto-Arknights/releases/latest) //如果你没看必须运行要求建议再看一次。
 ## 构建
-注意：`dev`分支不能构建实属正常。
 ### 对于`Auto Arknights CLI`
-运行其项目根目录下的`build-winx64.bat`。
+1. 定位到项目根目录。  
+2. 运行`build-winx64.bat`，构建成果在<code>bin\Release\\<i>[.NET版本]</i>\win-x64\publish</code>。
 ## 功能
 尚处于开发阶段，GUI目前半残。
 ### 重复单关卡
