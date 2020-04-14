@@ -4,12 +4,6 @@
               GeneratedClassNamespace="REVUnit.AutoArknights.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="ApiKey" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="SecretKey" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
     <Setting Name="AdbPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">.\adb\adb.exe</Value>
     </Setting>

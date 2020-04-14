@@ -14,8 +14,6 @@ namespace REVUnit.AutoArknights.GUI.ViewModels
     {
         public AutomationViewModel()
         {
-            BaiduOcr.ApiKey = Settings.Default.ApiKey;
-            BaiduOcr.SecretKey = Settings.Default.SecretKey;
             Model = new Automation(Settings.Default.AdbPath, Settings.Default.Remote);
             // IObservable<bool> connected = Observable.Repeat(Unit.Default).Select(async _ =>
             // {
