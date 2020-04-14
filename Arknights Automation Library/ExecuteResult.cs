@@ -5,9 +5,9 @@
         public string Message { get; set; }
         public bool Succeed { get; set; }
 
-        public static ExecuteResult Success()
+        public static ExecuteResult Success(string message = "")
         {
-            return new ExecuteResult {Succeed = true};
+            return new ExecuteResult {Succeed = true, Message = message};
         }
 
         public static ExecuteResult MaxRetryReached(int position)

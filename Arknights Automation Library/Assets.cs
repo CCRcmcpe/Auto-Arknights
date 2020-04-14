@@ -20,7 +20,7 @@ namespace REVUnit.AutoArknights.Core
             {
                 string fileName = GetFileName(expr);
                 if (!File.Exists(fileName)) throw new IOException($"Asset not found: {expr}");
-                mat = Util.Imread(fileName);
+                mat = Utils.Imread(fileName);
                 if (mat.Empty()) throw new IOException($"Invalid asset: {expr}");
 
                 _cache.Register(expr, mat);
@@ -31,10 +31,8 @@ namespace REVUnit.AutoArknights.Core
 
         private string GetFileName(string expr)
         {
-            return Path.GetFullPath(Path.Combine("Assets",
-                                        string.Join('\\',
-                                            expr.Split(' ', StringSplitOptions.RemoveEmptyEntries))) +
-                                    ".png");
+            return Path.Combine("Assets", string.Join('\\', expr.Split(' ', StringSplitOptions.RemoveEmptyEntries))) +
+                   ".png";
         }
     }
 }
