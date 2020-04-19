@@ -46,10 +46,10 @@ namespace REVUnit.AutoArknights.Core
         private static void WaitWhileNoSanity(UI ui)
         {
             var currentTime = 0;
+            int requiredSanity = ui.GetRequiredSanity();
             while (true)
             {
                 Sanity sanity = ui.GetCurrentSanity();
-                int requiredSanity = ui.GetRequiredSanity();
                 bool flag = sanity.Value >= requiredSanity;
                 Console.WriteLine($">>当前理智[{sanity}]，需要理智[{requiredSanity}]，{(flag ? "继续" : "暂停")}");
                 if (flag)
@@ -70,10 +70,10 @@ namespace REVUnit.AutoArknights.Core
         private static void UntilNoSanity(UI ui)
         {
             var currentTime = 0;
+            int requiredSanity = ui.GetRequiredSanity();
             while (true)
             {
                 Sanity sanity = ui.GetCurrentSanity();
-                int requiredSanity = ui.GetRequiredSanity();
                 bool flag = sanity.Value >= requiredSanity;
                 Console.WriteLine($">>当前理智[{sanity}]，需要理智[{requiredSanity}]，{(flag ? "继续" : "停止")}");
                 if (flag)
