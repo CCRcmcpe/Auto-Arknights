@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using OpenCvSharp;
@@ -13,9 +12,9 @@ namespace REVUnit.AutoArknights.Core
 {
     public class UI : IDisposable
     {
+        private static readonly Random Random = new Random();
         private readonly Adb _adb;
         private readonly Assets _assets = new Assets();
-
         private readonly FMLocator _loc = new FMLocator(new Feature2DInfo(Feature2Ds.Sift));
 
         public UI(string adbPath)
@@ -152,8 +151,8 @@ namespace REVUnit.AutoArknights.Core
 
         private static Point Randomize(Point point)
         {
-            return new Point(Math.Abs(RandomNumberGenerator.GetInt32(-3, 3) + point.X),
-                Math.Abs(RandomNumberGenerator.GetInt32(-3, 3) + point.Y));
+            return new Point(Math.Abs(Random.Next(-3, 3) + point.X),
+                Math.Abs(Random.Next(-3, 3) + point.Y));
         }
     }
 }
