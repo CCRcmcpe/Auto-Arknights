@@ -23,6 +23,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Crlib\Crlib\Crlib.csproj" />
-    <ProjectReference Include="..\REVUnit.ImageLocator\REVUnit.ImageLocator\REVUnit.ImageLocator.csproj" />
+    <ProjectReference Include="..\ImageLocator\ImageLocator\ImageLocator.csproj" />
   </ItemGroup>
 </Project>
