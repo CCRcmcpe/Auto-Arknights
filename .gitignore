@@ -338,3 +338,5 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/Auto Arknights CLI/artifact
+/Auto Arknights GUI/artifact
