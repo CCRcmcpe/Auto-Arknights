@@ -2,16 +2,13 @@
 {
     public abstract class Job
     {
-        //public int RetryThreshold { get; set; }
-        public abstract ExecuteResult Execute(UI ui);
+        protected readonly UI Ui;
 
-        // public IEnumerable<Job> ReadJobs(string jobsDir)
-        // {
-        //     return Directory.EnumerateFiles(jobsDir,
-        //             "*.json",
-        //             SearchOption.AllDirectories)
-        //         .Select(jsonFile =>
-        //             JsonConvert.DeserializeObject<Job>(File.ReadAllText(jsonFile)));
-        // }
+        protected Job(UI ui)
+        {
+            Ui = ui;
+        }
+
+        public abstract ExecuteResult Execute();
     }
 }

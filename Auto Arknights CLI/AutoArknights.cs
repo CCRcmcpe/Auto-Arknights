@@ -14,7 +14,7 @@ namespace REVUnit.AutoArknights.CLI
         {
             if (!Library.CheckIfSupported())
             {
-                Console.WriteLine("你的CPU不支持当前OpenCV构建，无法正常运行本程序，抱歉。");
+                Log.Error("你的CPU不支持当前OpenCV构建，无法正常运行本程序，抱歉。");
                 Console.ReadKey(true);
                 return;
             }
@@ -28,25 +28,15 @@ namespace REVUnit.AutoArknights.CLI
             _automation.Dispose();
         }
 
-#if DEBUG
-        public void Test()
-        {
-            while (true)
-            {
-                Console.Write("Current sanity: ");
-                Console.WriteLine(_automation.UI.GetCurrentSanity().ToString());
-            }
-        }
-#endif
-
         public void Run()
         {
             var cin = new Cin();
             RepeatLevelJob.Mode mode = cin.Get<RepeatLevelJob.Mode>("输入模式");
             int repeatTime = -1;
-            if (mode == RepeatLevelJob.Mode.SpecifiedTimes) repeatTime = cin.Get<int>("输入刷关次数");
+            if (mode == RepeatLevelJob.Mode.SpecifiedTimes || mode == RepeatLevelJob.Mode.SpecTimesWithWait)
+                repeatTime = cin.Get<int>("输入刷关次数");
 
-            _automation.Schedule.Add(new RepeatLevelJob(mode, repeatTime));
+            _automation.Schedule.Add(new RepeatLevelJob(_automation.Ui, mode, repeatTime));
             _automation.Schedule.ExecuteAll();
 
             Console.Beep();

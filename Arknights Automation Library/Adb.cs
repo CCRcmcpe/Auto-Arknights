@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using OpenCvSharp;
+using Console = Colorful.Console;
 using Point = System.Drawing.Point;
 
 namespace REVUnit.AutoArknights.Core
@@ -22,6 +24,11 @@ namespace REVUnit.AutoArknights.Core
         {
             ReleaseUnmanagedResources();
             GC.SuppressFinalize(this);
+        }
+
+        private static void Log(string message)
+        {
+            Console.WriteLine($"[ADB]: {message}", Color.Gray);
         }
 
         public bool Connect(string target)
@@ -49,7 +56,7 @@ namespace REVUnit.AutoArknights.Core
 
         private MemoryStream ExecBin(string parameter, bool muteOut = true)
         {
-            if (!muteOut) Console.WriteLine(parameter);
+            if (!muteOut) Log(parameter);
 
             using var process = new Process
             {

@@ -18,7 +18,7 @@
 功能|状态|注释
 -|-|-
 任意次|已实现|Mode.SpecifiedTimes
-任意次，当理智耗尽时等待恢复|计划中
+任意次，当理智耗尽时等待恢复|已实现|Mode.SpecTimesWithWait
 直到理智耗尽|已实现|Mode.UntilNoSanity
 当理智耗尽时等待恢复|已实现|Mode.WaitWhileNoSanity
 当理智耗尽时自动嗑药|计划中

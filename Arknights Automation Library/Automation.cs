@@ -6,28 +6,26 @@ namespace REVUnit.AutoArknights.Core
     {
         public Automation(string adbPath)
         {
-            UI = new UI(adbPath);
-            Schedule = new Schedule(UI);
+            Ui = new UI(adbPath);
         }
 
         public Automation(string adbPath, string adbRemote)
         {
-            UI = new UI(adbPath, adbRemote);
-            Schedule = new Schedule(UI);
+            Ui = new UI(adbPath, adbRemote);
         }
 
-        public UI UI { get; }
+        public UI Ui { get; }
 
-        public Schedule Schedule { get; set; }
+        public Schedule Schedule { get; set; } = new Schedule();
 
         public void Dispose()
         {
-            UI.Dispose();
+            Ui.Dispose();
         }
 
         public void Connect(string adbRemote)
         {
-            UI.NewRemote(adbRemote);
+            Ui.NewRemote(adbRemote);
         }
     }
 }

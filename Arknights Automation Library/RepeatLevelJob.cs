@@ -8,11 +8,14 @@ namespace REVUnit.AutoArknights.Core
         public enum Mode
         {
             SpecifiedTimes,
+            SpecTimesWithWait,
             UntilNoSanity,
             WaitWhileNoSanity
         }
 
-        public RepeatLevelJob(Mode mode, int repeatTime)
+        private int _requiredSanity;
+
+        public RepeatLevelJob(UI ui, Mode mode, int repeatTime) : base(ui)
         {
             RepeatMode = mode;
             RepeatTime = repeatTime;
@@ -21,90 +24,113 @@ namespace REVUnit.AutoArknights.Core
         public Mode RepeatMode { get; set; }
         public int RepeatTime { get; set; }
 
-        public override ExecuteResult Execute(UI ui)
+        public override ExecuteResult Execute()
         {
-            Console.WriteLine(">>>任务开始");
+            Log.InfoAlt("任务开始", true);
+            _requiredSanity = Ui.GetRequiredSanity();
+            Log.Info($"检测到此关卡需要[{_requiredSanity}]理智");
+
             switch (RepeatMode)
             {
                 case Mode.SpecifiedTimes:
-                    SpecifiedTimes(ui, RepeatTime);
+                    SpecifiedTimes();
+                    break;
+                case Mode.SpecTimesWithWait:
+                    SpecTimesWithWait();
                     break;
                 case Mode.UntilNoSanity:
-                    UntilNoSanity(ui);
+                    UntilNoSanity();
                     break;
                 case Mode.WaitWhileNoSanity:
-                    WaitWhileNoSanity(ui);
+                    WaitWhileNoSanity();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
-            Console.WriteLine(">>>任务完成");
+            Log.InfoAlt("任务完成", true);
             return ExecuteResult.Success();
         }
 
-        private static void WaitWhileNoSanity(UI ui)
+        private bool HaveEnoughSanity()
         {
-            var currentTime = 0;
-            int requiredSanity = ui.GetRequiredSanity();
-            while (true)
+            Sanity sanity = Ui.GetCurrentSanity();
+            Log.Info($"当前理智[{sanity}]，需要理智[{_requiredSanity}]");
+            return sanity.Value >= _requiredSanity;
+        }
+
+        private void EnsureSanityEnough()
+        {
+            if (!HaveEnoughSanity()) WaitForSanityRecovery();
+        }
+
+        private void WaitForSanityRecovery()
+        {
+            Log.Info("正在等待理智恢复...", true);
+            while (Ui.GetCurrentSanity().Value < Ui.GetRequiredSanity())
+                Thread.Sleep(TimeSpan.FromSeconds(10));
+            Log.Info("...理智恢复完成", true);
+        }
+
+        private void SpecifiedTimes()
+        {
+            for (var currentTime = 1; currentTime <= RepeatTime; currentTime++)
             {
-                Sanity sanity = ui.GetCurrentSanity();
-                bool flag = sanity.Value >= requiredSanity;
-                Console.WriteLine($">>当前理智[{sanity}]，需要理智[{requiredSanity}]，{(flag ? "继续" : "暂停")}");
-                if (flag)
-                {
-                    RunOnce(ui);
-                    currentTime++;
-                    Console.WriteLine($">>关卡完成，目前已刷关{currentTime}次");
-                }
-                else
-                {
-                    Console.WriteLine(">>正在等待理智恢复...");
-                    while (ui.GetCurrentSanity().Value - ui.GetRequiredSanity() < 0)
-                        Thread.Sleep(TimeSpan.FromSeconds(15));
-                }
+                Log.Info($"正在执行第{currentTime}次刷关", true);
+                RunOnce();
             }
         }
 
-        private static void UntilNoSanity(UI ui)
+        private void SpecTimesWithWait()
+        {
+            for (var currentTime = 1; currentTime <= RepeatTime; currentTime++)
+            {
+                Log.Info($"正在执行第{currentTime}次刷关", true);
+                EnsureSanityEnough();
+                RunOnce();
+            }
+        }
+
+        private void UntilNoSanity()
         {
             var currentTime = 0;
-            int requiredSanity = ui.GetRequiredSanity();
             while (true)
-            {
-                Sanity sanity = ui.GetCurrentSanity();
-                bool flag = sanity.Value >= requiredSanity;
-                Console.WriteLine($">>当前理智[{sanity}]，需要理智[{requiredSanity}]，{(flag ? "继续" : "停止")}");
-                if (flag)
+                if (HaveEnoughSanity())
                 {
-                    RunOnce(ui);
+                    RunOnce();
                     currentTime++;
-                    Console.WriteLine($">>关卡完成，目前已刷关{currentTime}次");
+                    Log.InfoAlt($"关卡完成，目前已刷关{currentTime}次");
                 }
                 else
                 {
                     break;
                 }
-            }
         }
 
-        private static void SpecifiedTimes(UI ui, int time)
+        private void WaitWhileNoSanity()
         {
-            for (var currentTime = 1; currentTime <= time; currentTime++)
-            {
-                Console.WriteLine($">>正在执行第{currentTime}次刷关");
-                RunOnce(ui);
-            }
+            var currentTime = 0;
+            while (true)
+                if (HaveEnoughSanity())
+                {
+                    RunOnce();
+                    currentTime++;
+                    Log.Info($"关卡完成，目前已刷关{currentTime}次");
+                }
+                else
+                {
+                    WaitForSanityRecovery();
+                }
         }
 
-        private static void RunOnce(UI i)
+        private void RunOnce()
         {
-            i.Clk("作战 开始");
-            i.Clk("作战 确认");
-            i.WaitAp("作战 完成");
-            i.Slp(2);
-            i.Clk(5, 5);
+            Ui.Clk("作战 开始");
+            Ui.Clk("作战 确认");
+            Ui.WaitAp("作战 完成");
+            Log.Info("检测到关卡完成", true);
+            Ui.Slp(2);
+            Ui.Clk(5, 5);
         }
     }
 }
