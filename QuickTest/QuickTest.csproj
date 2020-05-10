@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <UseWpf>true</UseWpf>
+    <UseWindowsForms>true</UseWindowsForms>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>REVUnit.AutoArknights.QuickTest</RootNamespace>
+    <Platforms>x64</Platforms>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Arknights Automation Library\Arknights Automation Library.csproj" />
+    <ProjectReference Include="..\ImageLocator\ImageLocator\ImageLocator.csproj" />
+  </ItemGroup>
+
+</Project>
