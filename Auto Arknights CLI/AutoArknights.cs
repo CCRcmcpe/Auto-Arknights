@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Microsoft.Extensions.Configuration;
 using REVUnit.AutoArknights.Core;
 using REVUnit.Crlib.Extension;
@@ -8,6 +9,7 @@ namespace REVUnit.AutoArknights.CLI
 {
     public class AutoArknights : IDisposable
     {
+        private const string ConfigJson = ".\\Config.json";
         private readonly Automation _automation;
 
         public AutoArknights()
@@ -19,7 +21,9 @@ namespace REVUnit.AutoArknights.CLI
                 return;
             }
 
-            IConfiguration config = new ConfigurationBuilder().AddJsonFile(".\\Config.json").Build();
+            if (!File.Exists(ConfigJson)) File.Create(ConfigJson);
+            IConfiguration config = new ConfigurationBuilder().AddJsonFile(ConfigJson).Build();
+
             _automation = new Automation(config["Adb:Path"], config["Adb:Remote"]);
         }
 

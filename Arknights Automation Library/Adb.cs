@@ -5,6 +5,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using OpenCvSharp;
+using REVUnit.Crlib.Extension;
 using Console = Colorful.Console;
 using Point = System.Drawing.Point;
 
@@ -39,8 +40,31 @@ namespace REVUnit.AutoArknights.Core
 
         public bool Connect()
         {
-            string result = Exec($"connect {Target}", false);
-            return !result.Contains("cannot connect");
+            void Fail(string message)
+            {
+                Core.Log.Error(message);
+                Exec($"disconnect {Target}");
+                XConsole.AnyKey();
+            }
+
+            while (true)
+            {
+                string result = Exec($"connect {Target}", false);
+
+                if (result.Contains("failed to authenticate"))
+                {
+                    Fail("授权失败，请点击允许调试");
+                    continue;
+                }
+
+                if (result.Contains("cannot connect") || result.Contains("failed to connect"))
+                {
+                    Fail($"未能连接到{Target}，请检查设置");
+                    return false;
+                }
+
+                return true;
+            }
         }
 
         public void Click(Point point)
@@ -62,6 +86,7 @@ namespace REVUnit.AutoArknights.Core
             {
                 StartInfo = new ProcessStartInfo(Executable, parameter)
                 {
+                    StandardOutputEncoding = Encoding.UTF8,
                     UseShellExecute = false,
                     CreateNoWindow = true,
                     RedirectStandardOutput = true,

@@ -37,7 +37,7 @@ namespace REVUnit.AutoArknights.Core
 
         public void NewRemote(string adbRemote)
         {
-            _adb.Connect(adbRemote);
+            if (!_adb.Connect(adbRemote)) throw new Exception("未能连接到目标ADB");
         }
 
         private T Ocr<T>(Func<Mat, Mat> src, string regex, TryParser<string[], T> tryParser, TimeSpan waitSpan)

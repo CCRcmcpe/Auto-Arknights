@@ -16,6 +16,9 @@
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="artifact\**" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Arknights Automation Library\Arknights Automation Library.csproj" />
     <ProjectReference Include="..\Crlib\Crlib\Crlib.csproj" />
   </ItemGroup>
