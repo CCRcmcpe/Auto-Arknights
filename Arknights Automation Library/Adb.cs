@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using OpenCvSharp;
@@ -57,7 +58,8 @@ namespace REVUnit.AutoArknights.Core
                     continue;
                 }
 
-                if (result.Contains("cannot connect") || result.Contains("failed to connect"))
+
+                if (Exec("devices").Split(Environment.NewLine).All(it => it != $"{Target}\tdevice"))
                 {
                     Fail($"未能连接到{Target}，请检查设置");
                     return false;
@@ -69,7 +71,7 @@ namespace REVUnit.AutoArknights.Core
 
         public void Click(Point point)
         {
-            Exec($"shell input tap {point.X} {point.Y}", false);
+            Exec($"-s {Target} shell input tap {point.X} {point.Y}", false);
         }
 
         public string Exec(string parameter, bool muteOut = true)
@@ -111,14 +113,14 @@ namespace REVUnit.AutoArknights.Core
              */
             if (ms.Length < 200)
                 if (Encoding.UTF8.GetString(ms.ToArray()).Contains("cannot connect"))
-                    throw new Exception("Cannot connect to remote");
+                    throw new Exception("未能连接到目标ADB");
 
             return ms;
         }
 
         public Mat GetScreenShot()
         {
-            using MemoryStream stream = ExecBin("exec-out screencap -p");
+            using MemoryStream stream = ExecBin($"-s {Target} exec-out screencap -p");
             stream.Position = 0;
             return Mat.FromStream(stream, ImreadModes.Color);
         }
