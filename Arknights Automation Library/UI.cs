@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using System.Threading;
 using OpenCvSharp;
 using REVUnit.Crlib;
 using REVUnit.Crlib.Extension;
@@ -62,7 +62,7 @@ namespace REVUnit.AutoArknights.Core
                 (string[] arr, out int result) => int.TryParse(arr[0], out result), TimeSpan.FromSeconds(1));
         }
 
-        private Mat GetRequiredSanityPart(Mat super)
+        private static Mat GetRequiredSanityPart(Mat super)
         {
             var sanityRect = new Rect((int) (super.Width * 0.927), (int) (super.Height * 0.941),
                 (int) (super.Width * 0.035), (int) (super.Height * 0.035));
@@ -92,9 +92,9 @@ namespace REVUnit.AutoArknights.Core
             return GetPart(super, sanityRect);
         }
 
-        public void Slp(double sec)
+        public static void Slp(double sec)
         {
-            Task.Delay(TimeSpan.FromSeconds(sec)).Wait();
+            Thread.Sleep(TimeSpan.FromSeconds(sec));
         }
 
         private Mat Scrn()
@@ -102,7 +102,7 @@ namespace REVUnit.AutoArknights.Core
             return X.While(_adb.GetScreenShot, result => !result.Empty());
         }
 
-        public void WaitAp(string expr, double durationSec = 1.75)
+        public void WaitAp(string expr, double durationSec = 3)
         {
             X.While(() => Loc(expr), result => result.Succeed, TimeSpan.FromSeconds(durationSec));
         }
@@ -131,7 +131,7 @@ namespace REVUnit.AutoArknights.Core
 
         public void Clk(Mat model)
         {
-            Clk(X.While(() => Loc(model), result => result.Succeed).CenterPoint);
+            Clk(X.While(() => Loc(model), result => result.Succeed, TimeSpan.FromSeconds(2)).CenterPoint);
         }
 
         public void Clk(int x, int y)
