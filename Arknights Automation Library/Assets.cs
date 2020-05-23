@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using OpenCvSharp;
+using REVUnit.ImageLocator;
 
 namespace REVUnit.AutoArknights.Core
 {
@@ -29,7 +30,7 @@ namespace REVUnit.AutoArknights.Core
             return mat;
         }
 
-        private string GetFileName(string expr)
+        private static string GetFileName(string expr)
         {
             return Path.Combine("Assets", string.Join('\\', expr.Split(' ', StringSplitOptions.RemoveEmptyEntries))) +
                    ".png";
