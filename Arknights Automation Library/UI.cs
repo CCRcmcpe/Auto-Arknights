@@ -15,7 +15,9 @@ namespace REVUnit.AutoArknights.Core
         private static readonly Random Random = new Random();
         private readonly Adb _adb;
         private readonly Assets _assets = new Assets();
-        private readonly FMLocator _loc = new FMLocator(new Feature2DInfo(Feature2Ds.Sift));
+
+        private readonly FMLocator _loc = new FMLocator(new Feature2DInfo(Feature2Ds.Sift))
+            {CacheDir = "Assets\\Cache"};
 
         public UI(string adbPath)
         {
