@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using REVUnit.AutoArknights.Core;
 using REVUnit.Crlib.Extension;
@@ -15,6 +16,7 @@ namespace REVUnit.AutoArknights.CLI
 
         public AutoArknights()
         {
+            Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             Console.BackgroundColor = ConsoleColor.Black;
 
             if (!Library.CheckIfSupported())
@@ -41,7 +43,7 @@ namespace REVUnit.AutoArknights.CLI
             _config = new ConfigurationBuilder().AddJsonFile(ConfigJson).Build();
         }
 
-        public static string Conf(string key)
+        private static string Conf(string key)
         {
             return _config[key] ?? throw new Exception($"需要设置值 {key}");
         }

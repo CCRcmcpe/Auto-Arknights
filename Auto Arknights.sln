@@ -18,8 +18,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crlib", "Crlib\Crlib\Crlib.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickTest", "QuickTest\QuickTest.csproj", "{F7707506-2D86-44D9-B3D1-20F757F8755B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auto Arknights GUI", "Auto Arknights GUI\Auto Arknights GUI.csproj", "{594658B6-809D-4083-A334-ECC54BB211F9}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,12 +39,6 @@ Global
 		{F7707506-2D86-44D9-B3D1-20F757F8755B}.Debug|x64.ActiveCfg = Debug|x64
 		{F7707506-2D86-44D9-B3D1-20F757F8755B}.Debug|x64.Build.0 = Debug|x64
 		{F7707506-2D86-44D9-B3D1-20F757F8755B}.Release|x64.ActiveCfg = Release|x64
-		{594658B6-809D-4083-A334-ECC54BB211F9}.Debug|x64.ActiveCfg = Debug|x64
-		{594658B6-809D-4083-A334-ECC54BB211F9}.Debug|x64.Build.0 = Debug|x64
-		{594658B6-809D-4083-A334-ECC54BB211F9}.Debug|x64.Deploy.0 = Debug|x64
-		{594658B6-809D-4083-A334-ECC54BB211F9}.Release|x64.ActiveCfg = Release|x64
-		{594658B6-809D-4083-A334-ECC54BB211F9}.Release|x64.Build.0 = Release|x64
-		{594658B6-809D-4083-A334-ECC54BB211F9}.Release|x64.Deploy.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

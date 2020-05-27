@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using OpenCvSharp;
 using REVUnit.Crlib.Extension;
@@ -39,32 +38,22 @@ namespace REVUnit.AutoArknights.Core
 
         public bool Connect()
         {
-            void Fail(string message)
-            {
-                Log.Error(message, "ADB");
-                Exec($"disconnect {Target}");
-                XConsole.AnyKey();
-            }
-
-            while (true)
-            {
-                string result = Exec($"connect {Target}", false);
-
-                if (result.Contains("failed to authenticate"))
-                {
-                    Fail("授权失败，请点击允许调试");
-                    continue;
-                }
-
-
-                if (Exec("devices").Split(Environment.NewLine).All(it => it != $"{Target}\tdevice"))
-                {
-                    Fail($"未能连接到{Target}，请检查设置");
-                    return false;
-                }
-
+            try
+            { 
+                Exec($"connect {Target}", false);
                 return true;
             }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private void Error(string message)
+        {
+            Log.Error(message, "ADB");
+            Exec($"disconnect {Target}");
+            XConsole.AnyKey();
         }
 
         public void Click(Point point)
@@ -74,11 +63,10 @@ namespace REVUnit.AutoArknights.Core
 
         public string Exec(string parameter, bool muteOut = true)
         {
-            using MemoryStream stream = ExecBin(parameter, muteOut);
-            return Encoding.UTF8.GetString(stream.ToArray());
+            return Encoding.UTF8.GetString(ExecBin(parameter, muteOut));
         }
 
-        private MemoryStream ExecBin(string parameter, bool muteOut = true)
+        private byte[] ExecBin(string parameter, bool muteOut = true)
         {
             if (!muteOut) Out(parameter);
 
@@ -89,48 +77,55 @@ namespace REVUnit.AutoArknights.Core
                     StandardOutputEncoding = Encoding.UTF8,
                     UseShellExecute = false,
                     CreateNoWindow = true,
-                    RedirectStandardOutput = true,
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+                    RedirectStandardOutput = true
                 }
             };
 
             process.Start();
-            var ms = new MemoryStream();
+            using var ms = new MemoryStream();
             Stream stdout = process.StandardOutput.BaseStream;
             int val;
             while ((val = stdout.ReadByte()) != -1) ms.WriteByte((byte) val);
-            process.WaitForExit();
 
-            /*
-             * daemon not running; starting now at tcp:5037
-             * daemon started successfully
-             * error: no devices/emulators found
-             *
-             * Lengths 112 bytes in UTF-8
-             */
-            if (ms.Length < 200)
-                if (Encoding.UTF8.GetString(ms.ToArray()).Contains("cannot connect"))
-                    throw new Exception("未能连接到目标ADB");
+            byte[] bytes = ms.ToArray();
+            if (bytes.Length < 200)
+            {
+                string result = Encoding.UTF8.GetString(bytes).Trim();
+                if (result.Contains("cannot connect")||result.Contains("no device") || result.Contains("no emulators") ||
+                    result.Contains("device unauthorized") || result.Contains("device still") ||
+                    result.Contains("device offline"))
+                {
+                    ReleaseUnmanagedResources();
+                    throw new Exception("无法连接到目标ADB");
+                }
+            }
 
-            return ms;
+            return bytes;
         }
 
         public Mat GetScreenShot()
         {
-            using MemoryStream stream = ExecBin($"-s {Target} exec-out screencap -p");
-            stream.Position = 0;
-            return Mat.FromStream(stream, ImreadModes.Color);
-        }
+            byte[] bytes = ExecBin($"-s {Target} exec-out screencap -p");
+            var screenshot = Mat.ImDecode(bytes);
+            if (screenshot.Empty())
+            {
+                throw new Exception("接收到了一个空截图");
+            }
 
-        private void ReleaseUnmanagedResources()
-        {
-            Exec("kill-server");
+            return screenshot;
         }
 
         ~Adb()
         {
             ReleaseUnmanagedResources();
+        }
+
+        private static void ReleaseUnmanagedResources()
+        {
+            foreach (Process process in Process.GetProcessesByName("adb"))
+            {
+                process.Kill();
+            }
         }
     }
 }
