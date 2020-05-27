@@ -8,6 +8,21 @@ namespace REVUnit.AutoArknights.Core
     {
         public static Level LogLevel { get; set; } = Level.Debug;
 
+        public static void Debug(string message, string prefix = null, bool withTime = false)
+        {
+            That(message, Level.Debug, prefix, withTime);
+        }
+
+        public static void Error(string message, string prefix = null, bool withTime = false)
+        {
+            That(message, Level.Error, prefix, withTime);
+        }
+
+        public static void Info(string message, string prefix = null, bool withTime = false)
+        {
+            That(message, Level.Info, prefix, withTime);
+        }
+
         public static void That(string message, Level level = null, string prefix = null, bool withTime = false)
         {
             if (level != null && level.ImportanceLevel < LogLevel.ImportanceLevel) return;
@@ -32,24 +47,9 @@ namespace REVUnit.AutoArknights.Core
             }
         }
 
-        public static void Debug(string message, string prefix = null, bool withTime = false)
-        {
-            That(message, Level.Debug, prefix, withTime);
-        }
-
-        public static void Info(string message, string prefix = null, bool withTime = false)
-        {
-            That(message, Level.Info, prefix, withTime);
-        }
-
         public static void Warning(string message, string prefix = null, bool withTime = false)
         {
             That(message, Level.Warning, prefix, withTime);
-        }
-
-        public static void Error(string message, string prefix = null, bool withTime = false)
-        {
-            That(message, Level.Error, prefix, withTime);
         }
 
         public class Level
@@ -74,11 +74,6 @@ namespace REVUnit.AutoArknights.Core
             public Color? LevelColor { get; set; }
             public Color? MessageColor { get; set; }
 
-            public override string ToString()
-            {
-                return Name;
-            }
-
             public static Level Get(string name)
             {
                 return name.ToLower() switch
@@ -89,6 +84,11 @@ namespace REVUnit.AutoArknights.Core
                     "error" => Error,
                     _ => null
                 };
+            }
+
+            public override string ToString()
+            {
+                return Name;
             }
         }
     }

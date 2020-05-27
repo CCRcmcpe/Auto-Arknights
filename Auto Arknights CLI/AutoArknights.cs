@@ -43,24 +43,24 @@ namespace REVUnit.AutoArknights.CLI
             _config = new ConfigurationBuilder().AddJsonFile(ConfigJson).Build();
         }
 
-        private static string Conf(string key)
-        {
-            return _config[key] ?? throw new Exception($"需要设置值 {key}");
-        }
-
         public void Run()
         {
             var cin = new Cin();
-            RepeatLevelJob.Mode mode = cin.Get<RepeatLevelJob.Mode>("输入模式");
+            RepeatLevelAction.Mode mode = cin.Get<RepeatLevelAction.Mode>("输入模式");
             int repeatTime = -1;
-            if (mode == RepeatLevelJob.Mode.SpecifiedTimes || mode == RepeatLevelJob.Mode.SpecTimesWithWait)
+            if (mode == RepeatLevelAction.Mode.SpecifiedTimes || mode == RepeatLevelAction.Mode.SpecTimesWithWait)
                 repeatTime = cin.Get<int>("输入刷关次数");
 
-            _automation.Schedule.Add(new RepeatLevelJob(_automation.Ui, mode, repeatTime));
-            _automation.Schedule.ExecuteAll();
+            _automation.Actions.Enqueue(new RepeatLevelAction(mode, repeatTime));
+            _automation.DoAll();
 
             Console.Beep();
             XConsole.AnyKey("所有任务完成");
+        }
+
+        private static string Conf(string key)
+        {
+            return _config[key] ?? throw new Exception($"需要设置值 {key}");
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace REVUnit.AutoArknights.Core
 {
@@ -6,26 +7,36 @@ namespace REVUnit.AutoArknights.Core
     {
         public Automation(string adbPath)
         {
-            Ui = new UI(adbPath);
+            Interactor = new Interactor(adbPath);
         }
 
         public Automation(string adbPath, string adbRemote)
         {
-            Ui = new UI(adbPath, adbRemote);
+            Interactor = new Interactor(adbPath, adbRemote);
         }
 
-        public UI Ui { get; }
+        public Queue<ArkAction> Actions { get; set; } = new Queue<ArkAction>();
 
-        public Schedule Schedule { get; set; } = new Schedule();
+        public Interactor Interactor { get; }
 
         public void Dispose()
         {
-            Ui.Dispose();
+            Interactor.Dispose();
         }
 
         public void Connect(string adbRemote)
         {
-            Ui.NewRemote(adbRemote);
+            Interactor.NewRemote(adbRemote);
+        }
+
+        public void DoAll()
+        {
+            if (!Interactor.Connected) throw new Exception("未连接到目标ADB，不能执行");
+            for (var i = 0; i < Actions.Count; i++)
+            {
+                ArkAction action = Actions.Dequeue();
+                action.Execute(Interactor);
+            }
         }
     }
 }

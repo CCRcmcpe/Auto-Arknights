@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace REVUnit.AutoArknights.Core
 {
-    public class RepeatLevelJob : Job
+    public class RepeatLevelAction : ArkAction
     {
         public enum Mode
         {
@@ -13,9 +13,11 @@ namespace REVUnit.AutoArknights.Core
             WaitWhileNoSanity
         }
 
+        private Interactor _ia;
+
         private int _requiredSanity;
 
-        public RepeatLevelJob(UI ui, Mode mode, int repeatTime) : base(ui)
+        public RepeatLevelAction(Mode mode, int repeatTime)
         {
             RepeatMode = mode;
             RepeatTime = repeatTime;
@@ -24,9 +26,10 @@ namespace REVUnit.AutoArknights.Core
         public Mode RepeatMode { get; set; }
         public int RepeatTime { get; set; }
 
-        public override ExecuteResult Execute()
+        public override ExecuteResult Execute(Interactor interactor)
         {
             Log.Info("任务开始", withTime: true);
+            _ia = interactor;
 
             switch (RepeatMode)
             {
@@ -47,20 +50,8 @@ namespace REVUnit.AutoArknights.Core
             }
 
             Log.Info("任务完成", withTime: true);
+            _ia = null;
             return ExecuteResult.Success();
-        }
-
-        private void InitRequiredSanity()
-        {
-            _requiredSanity = Ui.GetRequiredSanity();
-            Log.Info($"检测到此关卡需要[{_requiredSanity}]理智");
-        }
-
-        private bool HaveEnoughSanity()
-        {
-            Sanity sanity = Ui.GetCurrentSanity();
-            Log.Info($"当前理智[{sanity}]，需要理智[{_requiredSanity}]");
-            return sanity.Value >= _requiredSanity;
         }
 
         private void EnsureSanityEnough()
@@ -68,12 +59,26 @@ namespace REVUnit.AutoArknights.Core
             if (!HaveEnoughSanity()) WaitForSanityRecovery();
         }
 
-        private void WaitForSanityRecovery()
+        private bool HaveEnoughSanity()
         {
-            Log.Info("正在等待理智恢复...", withTime: true);
-            while (Ui.GetCurrentSanity().Value < Ui.GetRequiredSanity())
-                Thread.Sleep(TimeSpan.FromSeconds(10));
-            Log.Info("...理智恢复完成", withTime: true);
+            Sanity sanity = _ia.GetCurrentSanity();
+            Log.Info($"当前理智[{sanity}]，需要理智[{_requiredSanity}]");
+            return sanity.Value >= _requiredSanity;
+        }
+
+        private void InitRequiredSanity()
+        {
+            _requiredSanity = _ia.GetRequiredSanity();
+            Log.Info($"检测到此关卡需要[{_requiredSanity}]理智");
+        }
+
+        private void RunOnce()
+        {
+            _ia.Clk("作战 开始");
+            _ia.Clk("作战 确认");
+            _ia.WaitAp("作战 完成");
+            _ia.Slp(2);
+            _ia.Clk(5, 5);
         }
 
         private void SpecifiedTimes()
@@ -113,6 +118,14 @@ namespace REVUnit.AutoArknights.Core
                 }
         }
 
+        private void WaitForSanityRecovery()
+        {
+            Log.Info("正在等待理智恢复...", withTime: true);
+            while (_ia.GetCurrentSanity().Value < _ia.GetRequiredSanity())
+                Thread.Sleep(TimeSpan.FromSeconds(10));
+            Log.Info("...理智恢复完成", withTime: true);
+        }
+
         private void WaitWhileNoSanity()
         {
             InitRequiredSanity();
@@ -128,15 +141,6 @@ namespace REVUnit.AutoArknights.Core
                 {
                     WaitForSanityRecovery();
                 }
-        }
-
-        private void RunOnce()
-        {
-            Ui.Clk("作战 开始");
-            Ui.Clk("作战 确认");
-            Ui.WaitAp("作战 完成");
-            UI.Slp(2);
-            Ui.Clk(5, 5);
         }
     }
 }

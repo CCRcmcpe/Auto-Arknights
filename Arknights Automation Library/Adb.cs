@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
 using OpenCvSharp;
-using REVUnit.Crlib.Extension;
 using Point = System.Drawing.Point;
 
 namespace REVUnit.AutoArknights.Core
 {
-    public class Adb : IDisposable
+    public class Adb
     {
         public Adb(string executable)
         {
@@ -19,15 +17,9 @@ namespace REVUnit.AutoArknights.Core
         public string Target { get; set; }
         public string Executable { get; set; }
 
-        public void Dispose()
+        public void Click(Point point)
         {
-            ReleaseUnmanagedResources();
-            GC.SuppressFinalize(this);
-        }
-
-        private static void Out(string message)
-        {
-            Log.That(message, Log.Level.Debug, "ADB");
+            Exec($"-s {Target} shell input tap {point.X} {point.Y}", false);
         }
 
         public bool Connect(string target)
@@ -39,7 +31,7 @@ namespace REVUnit.AutoArknights.Core
         public bool Connect()
         {
             try
-            { 
+            {
                 Exec($"connect {Target}", false);
                 return true;
             }
@@ -49,21 +41,18 @@ namespace REVUnit.AutoArknights.Core
             }
         }
 
-        private void Error(string message)
-        {
-            Log.Error(message, "ADB");
-            Exec($"disconnect {Target}");
-            XConsole.AnyKey();
-        }
-
-        public void Click(Point point)
-        {
-            Exec($"-s {Target} shell input tap {point.X} {point.Y}", false);
-        }
-
         public string Exec(string parameter, bool muteOut = true)
         {
             return Encoding.UTF8.GetString(ExecBin(parameter, muteOut));
+        }
+
+        public Mat GetScreenShot()
+        {
+            byte[] bytes = ExecBin($"-s {Target} exec-out screencap -p");
+            var screenshot = Mat.ImDecode(bytes);
+            if (screenshot.Empty()) throw new Exception("接收到了一个空截图");
+
+            return screenshot;
         }
 
         private byte[] ExecBin(string parameter, bool muteOut = true)
@@ -91,41 +80,19 @@ namespace REVUnit.AutoArknights.Core
             if (bytes.Length < 200)
             {
                 string result = Encoding.UTF8.GetString(bytes).Trim();
-                if (result.Contains("cannot connect")||result.Contains("no device") || result.Contains("no emulators") ||
+                if (result.Contains("cannot connect") || result.Contains("no device") ||
+                    result.Contains("no emulators") ||
                     result.Contains("device unauthorized") || result.Contains("device still") ||
                     result.Contains("device offline"))
-                {
-                    ReleaseUnmanagedResources();
                     throw new Exception("无法连接到目标ADB");
-                }
             }
 
             return bytes;
         }
 
-        public Mat GetScreenShot()
+        private static void Out(string message)
         {
-            byte[] bytes = ExecBin($"-s {Target} exec-out screencap -p");
-            var screenshot = Mat.ImDecode(bytes);
-            if (screenshot.Empty())
-            {
-                throw new Exception("接收到了一个空截图");
-            }
-
-            return screenshot;
-        }
-
-        ~Adb()
-        {
-            ReleaseUnmanagedResources();
-        }
-
-        private static void ReleaseUnmanagedResources()
-        {
-            foreach (Process process in Process.GetProcessesByName("adb"))
-            {
-                process.Kill();
-            }
+            Log.That(message, Log.Level.Debug, "ADB");
         }
     }
 }
