@@ -18,18 +18,14 @@
 1. **目前暂不支持剿灭作战！**
 2. 如果刷关过程中博士等级升级了会卡住
 ### 重复单关卡
-功能|状态|注释
--|-|-
-任意次|已实现|`Mode.SpecifiedTimes`，请注意如果理智不够会卡住
-任意次，当理智耗尽时等待恢复|已实现|`Mode.SpecTimesWithWait`，功能同上且不会出现上列问题
-直到理智耗尽|已实现|`Mode.UntilNoSanity`
-当理智耗尽时等待恢复|已实现|`Mode.WaitWhileNoSanity`
+功能|说明
+-|-
+任意次|`Mode.SpecifiedTimes`，请注意如果理智不够会卡住
+任意次，当理智耗尽时等待恢复|`Mode.SpecTimesWithWait`，功能同上且不会出现上列问题
+直到理智耗尽|`Mode.UntilNoSanity`
+当理智耗尽时等待恢复|`Mode.WaitWhileNoSanity`
 ## 构建
 1. 切换到项目根目录。  
 2. 运行`build-winx64.bat`，构建成果在`artifact/`。
 ## 关于
-开发者并没有很多经验，如果有问题欢迎提出`issue`。  
-### 本程序使用..
-* `Feature Matching`进行精准图像识别、定位
-* ~~白嫖的~~`腾讯OCR`进行文字识别
-* `ADB`与明日方舟客户端交互
+开发者并没有很多经验，如果有问题欢迎提出`issue`。
