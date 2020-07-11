@@ -49,7 +49,7 @@ namespace REVUnit.AutoArknights.Core
         public Mat GetScreenShot()
         {
             byte[] bytes = ExecBin($"-s {Target} exec-out screencap -p");
-            var screenshot = Mat.ImDecode(bytes);
+            Mat screenshot = Mat.ImDecode(bytes);
             if (screenshot.Empty()) throw new Exception("接收到了一个空截图");
 
             return screenshot;

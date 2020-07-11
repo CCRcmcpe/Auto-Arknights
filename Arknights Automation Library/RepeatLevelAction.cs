@@ -141,6 +141,8 @@ namespace REVUnit.AutoArknights.Core
                 {
                     WaitForSanityRecovery();
                 }
+
+            // ReSharper disable once FunctionNeverReturns
         }
     }
 }

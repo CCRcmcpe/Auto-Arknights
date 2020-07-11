@@ -16,7 +16,7 @@ namespace REVUnit.AutoArknights.CLI
 
         public AutoArknights()
         {
-            Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
             Console.BackgroundColor = ConsoleColor.Black;
 
             if (!Library.CheckIfSupported())
@@ -46,7 +46,7 @@ namespace REVUnit.AutoArknights.CLI
         public void Run()
         {
             var cin = new Cin();
-            RepeatLevelAction.Mode mode = cin.Get<RepeatLevelAction.Mode>("输入模式");
+            var mode = cin.Get<RepeatLevelAction.Mode>("输入模式");
             int repeatTime = -1;
             if (mode == RepeatLevelAction.Mode.SpecifiedTimes || mode == RepeatLevelAction.Mode.SpecTimesWithWait)
                 repeatTime = cin.Get<int>("输入刷关次数");

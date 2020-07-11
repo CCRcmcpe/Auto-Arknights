@@ -23,7 +23,7 @@ namespace REVUnit.AutoArknights.Core
 
         public static string[] OcrMulti(Mat image)
         {
-            return ((JArray) OcrInner(image)["data"]["item_list"]).Select(it => (string) it["itemstring"]).ToArray();
+            return ((JArray) OcrInner(image)["data"]!["item_list"])!.Select(it => (string) it["itemstring"]).ToArray();
         }
 
         private static JObject OcrInner(Mat image)

@@ -1,6 +1,7 @@
 # Auto Arknights
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FCCRcmcpe%2FAuto-Arknights.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FCCRcmcpe%2FAuto-Arknights?ref=badge_shield)  
-*用于自动化明日方舟刷关的程序。*
+*用于自动化明日方舟刷关的程序。*  
+*For non-CN server Arknights players:* now this program **only** works for CN server
 ## 运行
 ### 必须运行要求
 * 最新版的 `.NET 5.0 Preview`。([官方下载](https://dotnet.microsoft.com/download/dotnet-core/5.0))

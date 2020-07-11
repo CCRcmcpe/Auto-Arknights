@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Console = Colorful.Console;
 
@@ -52,6 +53,7 @@ namespace REVUnit.AutoArknights.Core
             That(message, Level.Warning, prefix, withTime);
         }
 
+        [SuppressMessage("ReSharper", "MemberHidesStaticFromOuterClass")]
         public class Level
         {
             public static readonly Level None = new Level
