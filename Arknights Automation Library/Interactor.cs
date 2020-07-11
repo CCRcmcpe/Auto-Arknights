@@ -16,7 +16,7 @@ namespace REVUnit.AutoArknights.Core
         private readonly Adb _adb;
         private readonly Assets _assets = new Assets();
 
-        private readonly FMLocator _loc = new FMLocator(new Feature2DInfo(Feature2Ds.Sift), "Assets\\Cache");
+        private readonly FMLocator _loc = new FMLocator(Feature2DType.Sift, "Assets\\Cache");
 
         public Interactor(string adbPath)
         {
