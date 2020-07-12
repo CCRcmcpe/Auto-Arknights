@@ -60,19 +60,20 @@ namespace REVUnit.AutoArknights.Core
 
         public Sanity GetCurrentSanity()
         {
-            return Ocr(GetCurrentSanityPart, @"(\d+)\s*\/\s*(\d+)", (string[] arr, out Sanity result) =>
-            {
-                int[] ints = arr.SelectCanParse<string, int>(int.TryParse).ToArray();
-                bool valid = ints.Length == 2;
-                result = valid ? new Sanity(ints[0], ints[1]) : default;
-                return valid;
-            }, TimeSpan.FromSeconds(1));
+            return Ocr(scrn => ScreenArea.CurrentSanity.Apply(scrn), @"(\d+)\s*\/\s*(\d+)",
+                (string[] arr, out Sanity result) =>
+                {
+                    int[] numbers = arr.SelectCanParse<string, int>(int.TryParse).ToArray();
+                    bool valid = numbers.Length == 2;
+                    result = valid ? new Sanity(numbers[0], numbers[1]) : default;
+                    return valid;
+                });
         }
 
         public int GetRequiredSanity()
         {
-            return Ocr(GetRequiredSanityPart, @"\d+",
-                (string[] arr, out int result) => int.TryParse(arr[0], out result), TimeSpan.FromSeconds(1));
+            return Ocr(scrn => ScreenArea.RequiredSanity.Apply(scrn), @"\d+",
+                (string[] arr, out int result) => int.TryParse(arr[0], out result));
         }
 
         public LocateResult Loc(string expr)
@@ -103,9 +104,9 @@ namespace REVUnit.AutoArknights.Core
             return Loc(expr).Succeed;
         }
 
-        public void WaitAp(string expr, double durationSec = 3)
+        public void WaitAp(string expr, double waitSec = 3)
         {
-            X.While(() => Loc(expr), result => result.Succeed, TimeSpan.FromSeconds(durationSec));
+            X.While(() => Loc(expr), result => result.Succeed, TimeSpan.FromSeconds(waitSec));
         }
 
         private Mat Asset(string expr)
@@ -113,26 +114,7 @@ namespace REVUnit.AutoArknights.Core
             return _assets.Get(expr);
         }
 
-        private static Mat GetCurrentSanityPart(Mat super)
-        {
-            var sanityRect = new Rect((int) (super.Width * 0.88), (int) (super.Height * 0.02),
-                (int) (super.Width * 0.1), (int) (super.Height * 0.08));
-            return GetPart(super, sanityRect);
-        }
-
-        private static Mat GetPart(Mat super, Rect rect)
-        {
-            return super.Clone(rect);
-        }
-
-        private static Mat GetRequiredSanityPart(Mat super)
-        {
-            var sanityRect = new Rect((int) (super.Width * 0.927), (int) (super.Height * 0.941),
-                (int) (super.Width * 0.035), (int) (super.Height * 0.035));
-            return GetPart(super, sanityRect);
-        }
-
-        private T Ocr<T>(Func<Mat, Mat> src, string regex, TryParser<string[], T> tryParser, TimeSpan waitSpan)
+        private T Ocr<T>(Func<Mat, Mat> src, string regex, TryParser<string[], T> tryParser, double waitSec = 1)
         {
             return X.While(() =>
             {
@@ -145,7 +127,7 @@ namespace REVUnit.AutoArknights.Core
                 T result = default;
                 return (match.Success && tryParser(match.Groups.Values.Select(it => it.Value).ToArray(), out result),
                     result);
-            }, waitSpan);
+            }, TimeSpan.FromSeconds(waitSec));
         }
 
         private static Point Randomize(Point point)

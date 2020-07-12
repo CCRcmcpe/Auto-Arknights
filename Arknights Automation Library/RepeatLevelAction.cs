@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 
 namespace REVUnit.AutoArknights.Core
 {
@@ -77,7 +76,7 @@ namespace REVUnit.AutoArknights.Core
             _ia.Clk("作战 开始");
             _ia.Clk("作战 确认");
             _ia.WaitAp("作战 完成");
-            _ia.Slp(2);
+            _ia.Slp(3);
             _ia.Clk(5, 5);
         }
 
@@ -122,7 +121,7 @@ namespace REVUnit.AutoArknights.Core
         {
             Log.Info("正在等待理智恢复...", withTime: true);
             while (_ia.GetCurrentSanity().Value < _ia.GetRequiredSanity())
-                Thread.Sleep(TimeSpan.FromSeconds(10));
+                _ia.Slp(5);
             Log.Info("...理智恢复完成", withTime: true);
         }
 
