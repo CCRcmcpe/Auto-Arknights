@@ -27,6 +27,6 @@
 当理智耗尽时等待恢复|`Mode.WaitWhileNoSanity`
 ## 构建
 1. 切换到项目根目录。  
-2. 运行`build-winx64.bat`，构建成果在`artifact/`。
+2. 运行`build-winx64.ps1`，构建成果在`artifact/`。
 ## 关于
 开发者并没有很多经验，如果有问题欢迎提出`issue`。
