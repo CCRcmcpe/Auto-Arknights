@@ -11,7 +11,7 @@
     <PublishReadyToRun>true</PublishReadyToRun>
     <PublishDir>artifact\</PublishDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>

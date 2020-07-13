@@ -8,6 +8,10 @@ namespace REVUnit.AutoArknights.CLI
     {
         public static void Main()
         {
+#if DEBUG
+            using var app = new AutoArknights();
+            app.Run();
+#else
             try
             {
                 using var app = new AutoArknights();
@@ -19,6 +23,7 @@ namespace REVUnit.AutoArknights.CLI
                 Log.Debug(e.StackTrace);
                 XConsole.AnyKey();
             }
+#endif
         }
     }
 }
