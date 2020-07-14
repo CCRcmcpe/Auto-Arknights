@@ -4,6 +4,7 @@
     <RootNamespace>REVUnit.AutoArknights.Core</RootNamespace>
     <Platforms>x64</Platforms>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <nullable>enable</nullable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Colorful.Console" Version="1.2.10" />

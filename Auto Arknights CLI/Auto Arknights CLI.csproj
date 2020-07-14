@@ -1,8 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp5.0</TargetFramework>
-    <UseWpf>true</UseWpf>
-    <UseWindowsForms>true</UseWindowsForms>
     <OutputType>Exe</OutputType>
     <RootNamespace>REVUnit.AutoArknights.CLI</RootNamespace>
     <Platforms>x64</Platforms>
@@ -10,6 +8,7 @@
     <SelfContained>false</SelfContained>
     <PublishReadyToRun>true</PublishReadyToRun>
     <PublishDir>artifact\</PublishDir>
+    <nullable>enable</nullable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <DebugType>none</DebugType>

@@ -1,6 +1,8 @@
-﻿using System;
+﻿#if RELEASE
+using System;
 using REVUnit.AutoArknights.Core;
 using REVUnit.Crlib.Extension;
+#endif
 
 namespace REVUnit.AutoArknights.CLI
 {
@@ -9,12 +11,12 @@ namespace REVUnit.AutoArknights.CLI
         public static void Main()
         {
 #if DEBUG
-            using var app = new AutoArknights();
+            var app = new AutoArknightsCli();
             app.Run();
 #else
             try
             {
-                using var app = new AutoArknights();
+                var app = new AutoArknightsCli();
                 app.Run();
             }
             catch (Exception e)

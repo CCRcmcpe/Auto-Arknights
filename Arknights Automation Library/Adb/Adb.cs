@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Text;
 using OpenCvSharp;
@@ -14,7 +13,7 @@ namespace REVUnit.AutoArknights.Core
             Executable = executable;
         }
 
-        public string Target { get; set; }
+        public string? Target { get; set; }
         public string Executable { get; set; }
 
         public void Click(Point point)
@@ -50,7 +49,7 @@ namespace REVUnit.AutoArknights.Core
         {
             byte[] bytes = ExecBin($"-s {Target} exec-out screencap -p");
             Mat screenshot = Mat.ImDecode(bytes);
-            if (screenshot.Empty()) throw new Exception("接收到了一个空截图");
+            if (screenshot.Empty()) throw new AdbException("Empty screenshot received from adb");
 
             return screenshot;
         }
@@ -84,7 +83,7 @@ namespace REVUnit.AutoArknights.Core
                     result.Contains("no emulators") ||
                     result.Contains("device unauthorized") || result.Contains("device still") ||
                     result.Contains("device offline"))
-                    throw new Exception("无法连接到目标ADB");
+                    throw new AdbException("Cannot connect to target device");
             }
 
             return bytes;

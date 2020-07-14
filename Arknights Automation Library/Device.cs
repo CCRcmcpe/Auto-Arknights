@@ -10,7 +10,7 @@ using Point = System.Drawing.Point;
 
 namespace REVUnit.AutoArknights.Core
 {
-    public class Interactor : IDisposable
+    public class Device : IDisposable
     {
         private static readonly Random Random = new Random();
         private readonly Adb _adb;
@@ -18,19 +18,11 @@ namespace REVUnit.AutoArknights.Core
 
         private readonly FMLocator _loc = new FMLocator(Feature2DType.Sift, "Assets\\Cache");
 
-        public Interactor(string adbPath)
+        public Device(string adbPath, string adbRemote)
         {
             _adb = new Adb(adbPath);
+            if (!_adb.Connect(adbRemote)) throw new AdbException("Cannot connect to target device");
         }
-
-        public Interactor(string adbPath, string adbRemote)
-        {
-            _adb = new Adb(adbPath);
-            NewRemote(adbRemote);
-            Connected = true;
-        }
-
-        public bool Connected { get; }
 
         public void Dispose()
         {
@@ -61,13 +53,13 @@ namespace REVUnit.AutoArknights.Core
         public Sanity GetCurrentSanity()
         {
             return Ocr(scrn => ScreenArea.CurrentSanity.Apply(scrn), @"(\d+)\s*\/\s*(\d+)",
-                (string[] arr, out Sanity result) =>
+                (string[] arr, out Sanity? result) =>
                 {
                     int[] numbers = arr.SelectCanParse<string, int>(int.TryParse).ToArray();
                     bool valid = numbers.Length == 2;
-                    result = valid ? new Sanity(numbers[0], numbers[1]) : default;
+                    result = valid ? new Sanity(numbers[0], numbers[1]) : null;
                     return valid;
-                });
+                })!;
         }
 
         public int GetRequiredSanity()
@@ -86,11 +78,6 @@ namespace REVUnit.AutoArknights.Core
         {
             using Mat scrn = Scrn();
             return _loc.Locate(model, scrn);
-        }
-
-        public void NewRemote(string adbRemote)
-        {
-            if (!_adb.Connect(adbRemote)) throw new Exception("未能连接到目标ADB");
         }
 
         // ReSharper disable once MemberCanBeMadeStatic.Global
@@ -127,7 +114,7 @@ namespace REVUnit.AutoArknights.Core
                 T result = default;
                 return (match.Success && tryParser(match.Groups.Values.Select(it => it.Value).ToArray(), out result),
                     result);
-            }, TimeSpan.FromSeconds(waitSec));
+            }, TimeSpan.FromSeconds(waitSec))!;
         }
 
         private static Point Randomize(Point point)
@@ -138,7 +125,7 @@ namespace REVUnit.AutoArknights.Core
 
         private Mat Scrn()
         {
-            return X.While(_adb.GetScreenShot, result => !result.Empty());
+            return X.While(_adb.GetScreenShot, result => !result.Empty())!;
         }
     }
 }

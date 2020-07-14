@@ -17,7 +17,7 @@ namespace REVUnit.AutoArknights.Core
         public Mat Get(string expr)
         {
             expr = expr.Trim();
-            if (!_memoryCacheMap.TryGetValue(expr, out Mat mat))
+            if (!_memoryCacheMap.TryGetValue(expr, out Mat? mat))
             {
                 string fileName = GetFileName(expr);
                 if (!File.Exists(fileName)) throw new IOException($"Asset not found: {expr}");

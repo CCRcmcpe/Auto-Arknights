@@ -2,7 +2,7 @@
 
 namespace REVUnit.AutoArknights.Core
 {
-    public class RepeatLevelAction : ArkAction
+    public class LevelRepeater : ArkTask
     {
         public enum Mode
         {
@@ -12,11 +12,9 @@ namespace REVUnit.AutoArknights.Core
             WaitWhileNoSanity
         }
 
-        private Interactor _ia;
-
         private int _requiredSanity;
 
-        public RepeatLevelAction(Mode mode, int repeatTime)
+        public LevelRepeater(Device device, Mode mode, int repeatTime) : base(device)
         {
             RepeatMode = mode;
             RepeatTime = repeatTime;
@@ -25,10 +23,9 @@ namespace REVUnit.AutoArknights.Core
         public Mode RepeatMode { get; set; }
         public int RepeatTime { get; set; }
 
-        public override ExecuteResult Execute(Interactor interactor)
+        public override ExecuteResult Execute()
         {
-            Log.Info("任务开始", withTime: true);
-            _ia = interactor;
+            Log.Info("任务开始");
 
             switch (RepeatMode)
             {
@@ -45,11 +42,10 @@ namespace REVUnit.AutoArknights.Core
                     WaitWhileNoSanity();
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(RepeatMode), RepeatMode, null);
             }
 
-            Log.Info("任务完成", withTime: true);
-            _ia = null;
+            Log.Info("任务完成");
             return ExecuteResult.Success();
         }
 
@@ -60,31 +56,31 @@ namespace REVUnit.AutoArknights.Core
 
         private bool HaveEnoughSanity()
         {
-            Sanity sanity = _ia.GetCurrentSanity();
+            Sanity sanity = Device.GetCurrentSanity();
             Log.Info($"当前理智[{sanity}]，需要理智[{_requiredSanity}]");
             return sanity.Value >= _requiredSanity;
         }
 
         private void InitRequiredSanity()
         {
-            _requiredSanity = _ia.GetRequiredSanity();
+            _requiredSanity = Device.GetRequiredSanity();
             Log.Info($"检测到此关卡需要[{_requiredSanity}]理智");
         }
 
         private void RunOnce()
         {
-            _ia.Clk("作战 开始");
-            _ia.Clk("作战 确认");
-            _ia.WaitAp("作战 完成");
-            _ia.Slp(3);
-            _ia.Clk(5, 5);
+            Device.Clk("作战 开始");
+            Device.Clk("作战 确认");
+            Device.WaitAp("作战 完成");
+            Device.Slp(3);
+            Device.Clk(5, 5);
         }
 
         private void SpecifiedTimes()
         {
             for (var currentTime = 1; currentTime <= RepeatTime; currentTime++)
             {
-                Log.Info($"正在执行第{currentTime}次刷关", withTime: true);
+                Log.Info($"正在执行第{currentTime}次刷关");
                 RunOnce();
             }
         }
@@ -94,7 +90,7 @@ namespace REVUnit.AutoArknights.Core
             InitRequiredSanity();
             for (var currentTime = 1; currentTime <= RepeatTime; currentTime++)
             {
-                Log.Info($"正在执行第{currentTime}次刷关", withTime: true);
+                Log.Info($"正在执行第{currentTime}次刷关");
                 EnsureSanityEnough();
                 RunOnce();
             }
@@ -109,7 +105,7 @@ namespace REVUnit.AutoArknights.Core
                 {
                     RunOnce();
                     currentTime++;
-                    Log.Info($"关卡完成，目前已刷关{currentTime}次", withTime: true);
+                    Log.Info($"关卡完成，目前已刷关{currentTime}次");
                 }
                 else
                 {
@@ -119,10 +115,10 @@ namespace REVUnit.AutoArknights.Core
 
         private void WaitForSanityRecovery()
         {
-            Log.Info("正在等待理智恢复...", withTime: true);
-            while (_ia.GetCurrentSanity().Value < _ia.GetRequiredSanity())
-                _ia.Slp(5);
-            Log.Info("...理智恢复完成", withTime: true);
+            Log.Info("正在等待理智恢复...");
+            while (Device.GetCurrentSanity().Value < Device.GetRequiredSanity())
+                Device.Slp(5);
+            Log.Info("...理智恢复完成");
         }
 
         private void WaitWhileNoSanity()
@@ -134,7 +130,7 @@ namespace REVUnit.AutoArknights.Core
                 {
                     RunOnce();
                     currentTime++;
-                    Log.Info($"关卡完成，目前已刷关{currentTime}次", withTime: true);
+                    Log.Info($"关卡完成，目前已刷关{currentTime}次");
                 }
                 else
                 {

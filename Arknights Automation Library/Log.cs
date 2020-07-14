@@ -9,22 +9,22 @@ namespace REVUnit.AutoArknights.Core
     {
         public static Level LogLevel { get; set; } = Level.Debug;
 
-        public static void Debug(string message, string prefix = null, bool withTime = false)
+        public static void Debug(string? message, string? prefix = null, bool withTime = true)
         {
             That(message, Level.Debug, prefix, withTime);
         }
 
-        public static void Error(string message, string prefix = null, bool withTime = false)
+        public static void Error(string? message, string? prefix = null, bool withTime = true)
         {
             That(message, Level.Error, prefix, withTime);
         }
 
-        public static void Info(string message, string prefix = null, bool withTime = false)
+        public static void Info(string? message, string? prefix = null, bool withTime = true)
         {
             That(message, Level.Info, prefix, withTime);
         }
 
-        public static void That(string message, Level level = null, string prefix = null, bool withTime = false)
+        public static void That(string? message, Level? level = null, string? prefix = null, bool withTime = true)
         {
             if (level != null && level.ImportanceLevel < LogLevel.ImportanceLevel) return;
             if (withTime) Console.Write($"[{DateTime.Now:HH:mm:ss}]", Color.Gray);
@@ -48,7 +48,7 @@ namespace REVUnit.AutoArknights.Core
             }
         }
 
-        public static void Warning(string message, string prefix = null, bool withTime = false)
+        public static void Warning(string message, string? prefix = null, bool withTime = false)
         {
             That(message, Level.Warning, prefix, withTime);
         }
@@ -72,11 +72,11 @@ namespace REVUnit.AutoArknights.Core
                 {ImportanceLevel = 2, Name = "Error", LevelColor = Color.Red};
 
             public int ImportanceLevel { get; set; }
-            public string Name { get; set; }
+            public string? Name { get; set; }
             public Color? LevelColor { get; set; }
             public Color? MessageColor { get; set; }
 
-            public static Level Get(string name)
+            public static Level? Get(string name)
             {
                 return name.ToLower() switch
                 {
@@ -90,7 +90,7 @@ namespace REVUnit.AutoArknights.Core
 
             public override string ToString()
             {
-                return Name;
+                return Name ?? string.Empty;
             }
         }
     }

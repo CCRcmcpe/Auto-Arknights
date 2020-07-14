@@ -2,17 +2,17 @@
 {
     public class ExecuteResult
     {
-        public string Message { get; set; }
+        public string? Message { get; set; }
         public bool Succeed { get; set; }
 
-        public static ExecuteResult MaxRetryReached(int position)
+        public static ExecuteResult MaxRetryReached(string operation, int triedCount)
         {
-            return new ExecuteResult {Succeed = false, Message = $"在第{position}步未能点击目标"};
+            return new ExecuteResult {Succeed = false, Message = $"尝试了{triedCount}次也未能达成{operation}操作"};
         }
 
-        public static ExecuteResult Success(string message = "")
+        public static ExecuteResult Success()
         {
-            return new ExecuteResult {Succeed = true, Message = message};
+            return new ExecuteResult {Succeed = true, Message = "任务全部顺利完成"};
         }
     }
 }
