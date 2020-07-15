@@ -10,7 +10,7 @@
 
 确保你的电脑满足运行要求后，[下载](https://github.com/CCRcmcpe/Auto-Arknights/releases/latest)并运行
 ### 如何使用
-0. （第一次运行）本程序需要连接目标设备的`ADB`，运行前编辑`Config.json`更改`ADB:Remote`至你想要的地址即可。  
+0. （第一次运行）本程序需要连接目标设备的`ADB`，运行前编辑`Auto Arknights CLI.config.json`更改`ADB:Remote`至你想要的地址即可。  
 各大模拟器的`ADB`地址不同，请自行搜索。此外，也可以连接开启了局域网调试的手机等设备。
 1. 打开作战界面（带作战开始按钮的），并确保你勾选了代理作战。
 2. 选择模式然后运行，各个模式的功能在下面有介绍。

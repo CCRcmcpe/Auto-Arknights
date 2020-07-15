@@ -22,7 +22,7 @@
     <ProjectReference Include="..\Crlib\Crlib\Crlib.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="Config.json">
+    <None Update="Auto Arknights CLI.config.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

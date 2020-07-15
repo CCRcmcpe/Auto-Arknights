@@ -11,7 +11,7 @@ namespace REVUnit.AutoArknights.CLI
 {
     public class AutoArknightsCli
     {
-        private const string ConfigJson = ".\\Config.json";
+        private const string ConfigJson = "Auto Arknights CLI.config.json";
         private readonly IConfiguration _config;
 
         public AutoArknightsCli()
