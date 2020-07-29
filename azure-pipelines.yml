@@ -33,4 +33,4 @@ steps:
     replaceExistingArchive: true
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: Auto-Arknights-CLI-win-x64.zip
+    targetPath: 'Auto-Arknights-CLI-win-x64.zip'

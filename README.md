@@ -1,4 +1,5 @@
 # Auto Arknights
+[![Build Status](https://rev-unit.visualstudio.com/Auto-Arknights/_apis/build/status/CCRcmcpe.Auto-Arknights?branchName=master)](https://rev-unit.visualstudio.com/Auto-Arknights/_build/latest?definitionId=1&branchName=master)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FCCRcmcpe%2FAuto-Arknights.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FCCRcmcpe%2FAuto-Arknights?ref=badge_shield)  
 *用于自动化明日方舟刷关的程序。*  
 *For non-CN server Arknights players:* now this program **only** works for CN server
