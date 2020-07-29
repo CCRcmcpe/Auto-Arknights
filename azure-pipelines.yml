@@ -1,0 +1,33 @@
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    exclude:
+    - '**/*.md'
+
+pool:
+  vmImage: windows-latest
+steps:
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '5.0'
+    includePreviewVersions: true
+    performMultiLevelLookup: true
+- task: PowerShell@2
+  inputs:
+    filePath: 'Auto Arknights CLI/build-winx64.ps1'
+    workingDirectory: 'Auto Arknights CLI'
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: 'Auto Arknights CLI/artifact'
+    includeRootFolder: true
+    archiveType: 'zip'
+    archiveFile: '$(Build.BuildId).zip'
+    replaceExistingArchive: true
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: 'Auto Arknights CLI/artifact/$(Build.BuildId).zip'
+    ArtifactName: 'release'
+    publishLocation: 'Container'
