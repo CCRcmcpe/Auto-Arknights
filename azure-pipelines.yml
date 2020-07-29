@@ -29,10 +29,8 @@ steps:
     rootFolderOrFile: 'Auto Arknights CLI/artifact'
     includeRootFolder: true
     archiveType: 'zip'
-    archiveFile: '$(Build.BuildId).zip'
+    archiveFile: 'Auto-Arknights-CLI-win-x64.zip'
     replaceExistingArchive: true
-- task: PublishBuildArtifacts@1
+- task: PublishPipelineArtifact@1
   inputs:
-    PathtoPublish: 'Auto Arknights CLI/artifact/$(Build.BuildId).zip'
-    ArtifactName: 'release'
-    publishLocation: 'Container'
+    targetPath: Auto-Arknights-CLI-win-x64.zip
