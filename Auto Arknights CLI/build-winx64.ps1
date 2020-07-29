@@ -6,4 +6,4 @@ $deps = [System.IO.File]::ReadAllText($depsFile).Replace('
             "fileVersion": "0.0.0.0"
           },', [System.String]::Empty)
 [System.IO.File]::WriteAllText($depsFile, $deps)
-Pause
+try { Pause } catch { }
