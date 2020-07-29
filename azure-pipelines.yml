@@ -9,6 +9,10 @@ trigger:
 pool:
   vmImage: windows-latest
 steps:
+- checkout: self
+  clean: true
+  fetchDepth: 1
+  submodules: true | recursive
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
