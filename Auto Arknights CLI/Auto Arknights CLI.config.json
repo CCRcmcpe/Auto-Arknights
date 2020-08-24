@@ -1,7 +1,7 @@
 ﻿{
   "Adb": {
     "Path": "adb/adb.exe",
-    "Remote": "127.0.0.1:21503"
+    "Remote": "127.0.0.1:7555"
   },
   "Log": {
     "Level": "Info"

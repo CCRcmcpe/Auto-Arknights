@@ -12,6 +12,8 @@ namespace REVUnit.AutoArknights.Core
             WaitWhileNoSanity
         }
 
+        private Sanity? _previousSanity;
+
         private int _requiredSanity;
 
         public LevelRepeater(Device device, Mode mode, int repeatTime) : base(device)
@@ -56,9 +58,20 @@ namespace REVUnit.AutoArknights.Core
 
         private bool HaveEnoughSanity()
         {
-            Sanity sanity = Device.GetCurrentSanity();
-            Log.Info($"当前理智[{sanity}]，需要理智[{_requiredSanity}]");
-            return sanity.Value >= _requiredSanity;
+            Sanity nowSanity = Device.GetCurrentSanity();
+            // 防止OCR抽风
+            if (_previousSanity != null)
+            {
+                int dSanity = _previousSanity.Value - nowSanity.Value; //20
+                if (Math.Abs(nowSanity.Max - _previousSanity.Max) > 1 // 理智上限变动大于1
+                    || dSanity > 0 && _requiredSanity - dSanity > 10) // 没有嗑药，且理智对于一般情况下的刷关后理智差大于10
+                    nowSanity = Device.GetCurrentSanity();
+            }
+
+            _previousSanity = nowSanity;
+
+            Log.Info($"当前理智[{nowSanity}]，需要理智[{_requiredSanity}]");
+            return nowSanity.Value >= _requiredSanity;
         }
 
         private void InitRequiredSanity()
@@ -80,8 +93,9 @@ namespace REVUnit.AutoArknights.Core
         {
             for (var currentTime = 1; currentTime <= RepeatTime; currentTime++)
             {
-                Log.Info($"正在执行第{currentTime}次刷关");
+                Log.Info($"开始第{currentTime}次刷关");
                 RunOnce();
+                Log.Info($"关卡完成，目前已刷关{currentTime}次");
             }
         }
 
@@ -90,9 +104,10 @@ namespace REVUnit.AutoArknights.Core
             InitRequiredSanity();
             for (var currentTime = 1; currentTime <= RepeatTime; currentTime++)
             {
-                Log.Info($"正在执行第{currentTime}次刷关");
+                Log.Info($"开始第{currentTime}次刷关");
                 EnsureSanityEnough();
                 RunOnce();
+                Log.Info($"关卡完成，目前已刷关{currentTime}次");
             }
         }
 
@@ -103,8 +118,9 @@ namespace REVUnit.AutoArknights.Core
             while (true)
                 if (HaveEnoughSanity())
                 {
-                    RunOnce();
                     currentTime++;
+                    Log.Info($"开始第{currentTime}次刷关");
+                    RunOnce();
                     Log.Info($"关卡完成，目前已刷关{currentTime}次");
                 }
                 else
@@ -128,8 +144,9 @@ namespace REVUnit.AutoArknights.Core
             while (true)
                 if (HaveEnoughSanity())
                 {
-                    RunOnce();
                     currentTime++;
+                    Log.Info($"开始第{currentTime}次刷关");
+                    RunOnce();
                     Log.Info($"关卡完成，目前已刷关{currentTime}次");
                 }
                 else
