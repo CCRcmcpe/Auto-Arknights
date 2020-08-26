@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <TargetFramework>netcoreapp5.0</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <OutputType>Exe</OutputType>
     <RootNamespace>REVUnit.AutoArknights.CLI</RootNamespace>
     <Platforms>x64</Platforms>
@@ -10,25 +11,31 @@
     <PublishDir>artifact\</PublishDir>
     <nullable>enable</nullable>
   </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
+
   <ItemGroup>
     <None Remove="artifact\**" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Arknights Automation Library\Arknights Automation Library.csproj" />
     <ProjectReference Include="..\Crlib\Crlib\Crlib.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <None Update="Auto Arknights CLI.config.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.7" />
   </ItemGroup>
+
 </Project>

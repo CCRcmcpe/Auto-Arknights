@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.IO;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
@@ -26,7 +25,7 @@ namespace REVUnit.AutoArknights.CLI
             _config = new ConfigurationBuilder().AddJsonFile(ConfigJson).Build();
 
             Log.LogLevel = Log.Level.Get(Conf("Log:Level")) ??
-                           throw new ConfigurationErrorsException("Value of Log:Level in configuration is invalid");
+                           throw new Exception("Value of Log:Level in configuration is invalid");
         }
 
         public void Run()
@@ -46,7 +45,7 @@ namespace REVUnit.AutoArknights.CLI
 
         private string Conf(string key)
         {
-            return _config[key] ?? throw new ConfigurationErrorsException($"Configuration key {key} is required");
+            return _config[key] ?? throw new Exception($"Configuration key {key} is required");
         }
     }
 }
