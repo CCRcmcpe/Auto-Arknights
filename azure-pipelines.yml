@@ -24,13 +24,7 @@ steps:
   inputs:
     filePath: 'Auto Arknights CLI/build-winx64.ps1'
     workingDirectory: 'Auto Arknights CLI'
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: 'Auto Arknights CLI/artifact'
-    includeRootFolder: true
-    archiveType: 'zip'
-    archiveFile: 'Auto-Arknights-CLI-win-x64.zip'
-    replaceExistingArchive: true
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: 'Auto-Arknights-CLI-win-x64.zip'
+    targetPath: 'Auto Arknights CLI/artifact'
+    artifactName: 'Auto-Arknights-CLI-win-x64'
