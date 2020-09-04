@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Arknights Automation Library\Arknights Automation Library.csproj" />
+    <ProjectReference Include="..\Auto Arknights Core\Auto Arknights Core.csproj" />
     <ProjectReference Include="..\Crlib\Crlib\Crlib.csproj" />
   </ItemGroup>
 

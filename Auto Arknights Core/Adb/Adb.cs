@@ -1,13 +1,20 @@
 ﻿using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using OpenCvSharp;
 using Point = System.Drawing.Point;
 
 namespace REVUnit.AutoArknights.Core
 {
-    public class Adb
+    public sealed class Adb
     {
+        private static readonly string[] FailSigns =
+        {
+            "cannot connect", "no device", "no emulators",
+            "device unauthorized", "device still", "device offline"
+        };
+
         public Adb(string executable)
         {
             Executable = executable;
@@ -18,7 +25,7 @@ namespace REVUnit.AutoArknights.Core
 
         public void Click(Point point)
         {
-            Exec($"-s {Target} shell input tap {point.X} {point.Y}", false);
+            Execute($"shell input tap {point.X} {point.Y}");
         }
 
         public bool Connect(string target)
@@ -31,7 +38,7 @@ namespace REVUnit.AutoArknights.Core
         {
             try
             {
-                Exec($"connect {Target}", false);
+                ExecuteCore($"connect {Target}");
                 return true;
             }
             catch
@@ -40,27 +47,27 @@ namespace REVUnit.AutoArknights.Core
             }
         }
 
-        public string Exec(string parameter, bool muteOut = true)
+        public string Execute(string parameter)
         {
-            return Encoding.UTF8.GetString(ExecBin(parameter, muteOut));
+            return Encoding.UTF8.GetString(ExecuteCore(parameter));
         }
 
         public Mat GetScreenShot()
         {
-            byte[] bytes = ExecBin($"-s {Target} exec-out screencap -p");
+            byte[] bytes = ExecuteCore("exec-out screencap -p");
             Mat screenshot = Mat.ImDecode(bytes);
             if (screenshot.Empty()) throw new AdbException("Empty screenshot received from adb");
 
             return screenshot;
         }
 
-        private byte[] ExecBin(string parameter, bool muteOut = true)
+        private byte[] ExecuteCore(string parameter)
         {
-            if (!muteOut) Out(parameter);
+            Log.That(parameter, Log.Level.Debug, "ADB");
 
             using var process = new Process
             {
-                StartInfo = new ProcessStartInfo(Executable, parameter)
+                StartInfo = new ProcessStartInfo(Executable, $"-s {Target} {parameter}")
                 {
                     StandardOutputEncoding = Encoding.UTF8,
                     UseShellExecute = false,
@@ -79,19 +86,11 @@ namespace REVUnit.AutoArknights.Core
             if (bytes.Length < 200)
             {
                 string result = Encoding.UTF8.GetString(bytes).Trim();
-                if (result.Contains("cannot connect") || result.Contains("no device") ||
-                    result.Contains("no emulators") ||
-                    result.Contains("device unauthorized") || result.Contains("device still") ||
-                    result.Contains("device offline"))
+                if (FailSigns.Contains(result))
                     throw new AdbException("Cannot connect to target device");
             }
 
             return bytes;
-        }
-
-        private static void Out(string message)
-        {
-            Log.That(message, Log.Level.Debug, "ADB");
         }
     }
 }

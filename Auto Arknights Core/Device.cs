@@ -10,7 +10,7 @@ using Point = System.Drawing.Point;
 
 namespace REVUnit.AutoArknights.Core
 {
-    public class Device : IDisposable
+    public sealed class Device : IDisposable
     {
         private static readonly Random Random = new Random();
         private readonly Adb _adb;
@@ -26,8 +26,8 @@ namespace REVUnit.AutoArknights.Core
 
         public void Dispose()
         {
-            _loc.Dispose();
             _assets.Dispose();
+            _loc.Dispose();
         }
 
         public void Clk(string asset)
