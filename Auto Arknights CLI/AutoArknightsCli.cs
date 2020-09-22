@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using REVUnit.AutoArknights.Core;
 using REVUnit.Crlib.Extension;
@@ -8,16 +7,13 @@ using REVUnit.Crlib.Input;
 
 namespace REVUnit.AutoArknights.CLI
 {
-    public class AutoArknightsCli
+    public sealed class AutoArknightsCli
     {
         private const string ConfigJson = "Auto Arknights CLI.config.json";
         private readonly IConfiguration _config;
 
         public AutoArknightsCli()
         {
-            Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
-            Console.BackgroundColor = ConsoleColor.Black;
-
             if (!Library.CheckIfSupported())
                 throw new NotSupportedException("This program is not supported in this environment");
 
@@ -45,7 +41,7 @@ namespace REVUnit.AutoArknights.CLI
 
         private string Conf(string key)
         {
-            return _config[key] ?? throw new Exception($"Configuration key {key} is required");
+            return _config![key] ?? throw new Exception($"Configuration key {key} is required");
         }
     }
 }

@@ -2,7 +2,6 @@
 using System;
 using REVUnit.AutoArknights.Core;
 using REVUnit.Crlib.Extension;
-
 #endif
 
 namespace REVUnit.AutoArknights.CLI

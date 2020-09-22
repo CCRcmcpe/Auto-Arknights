@@ -132,7 +132,7 @@ namespace REVUnit.AutoArknights.Core
         private void WaitForSanityRecovery()
         {
             Log.Info("正在等待理智恢复...");
-            while (Device.GetCurrentSanity().Value < Device.GetRequiredSanity())
+            while (Device.GetCurrentSanity().Value < _requiredSanity)
                 Device.Slp(5);
             Log.Info("...理智恢复完成");
         }
