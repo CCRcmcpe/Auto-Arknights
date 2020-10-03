@@ -20,9 +20,9 @@ namespace REVUnit.AutoArknights.Core
             if (!_memoryCacheMap.TryGetValue(expr, out Mat? mat))
             {
                 string fileName = GetFileName(expr);
-                if (!File.Exists(fileName)) throw new IOException($"Asset not found: {expr}");
+                if (!File.Exists(fileName)) throw new IOException($"无法找到资源: {expr}");
                 mat = Utils.Imread(fileName);
-                if (mat.Empty()) throw new IOException($"Invalid asset: {expr}");
+                if (mat.Empty()) throw new IOException($"无效资源: {expr}");
 
                 _memoryCacheMap.Add(expr, mat);
             }

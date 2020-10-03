@@ -21,7 +21,7 @@ namespace REVUnit.AutoArknights.Core
         public Device(string adbPath, string adbRemote)
         {
             _adb = new Adb(adbPath);
-            if (!_adb.Connect(adbRemote)) throw new AdbException("Cannot connect to target device");
+            if (!_adb.Connect(adbRemote)) throw new AdbException("无法连接到目标设备");
         }
 
         public void Dispose()

@@ -56,7 +56,7 @@ namespace REVUnit.AutoArknights.Core
         {
             byte[] bytes = ExecuteCore("exec-out screencap -p");
             Mat screenshot = Mat.ImDecode(bytes);
-            if (screenshot.Empty()) throw new AdbException("Empty screenshot received from adb");
+            if (screenshot.Empty()) throw new AdbException("从ADB收到了空截图");
 
             return screenshot;
         }
@@ -87,7 +87,7 @@ namespace REVUnit.AutoArknights.Core
             {
                 string result = Encoding.UTF8.GetString(bytes).Trim();
                 if (FailSigns.Contains(result))
-                    throw new AdbException("Cannot connect to target device");
+                    throw new AdbException("无法连接到目标设备");
             }
 
             return bytes;
