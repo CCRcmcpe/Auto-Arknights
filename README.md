@@ -2,13 +2,13 @@
 
 [![Build Status](https://rev-unit.visualstudio.com/Auto-Arknights/_apis/build/status/CCRcmcpe.Auto-Arknights?branchName=master)](https://rev-unit.visualstudio.com/Auto-Arknights/_build/latest?definitionId=1&branchName=master)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FCCRcmcpe%2FAuto-Arknights.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FCCRcmcpe%2FAuto-Arknights?ref=badge_shield)  
-![](../ "Logo Title Text 1")  
+![刷关演示](Docs/Sample.png "刷关演示")   
 *用于自动化明日方舟刷关的程序。*  
 *For non-CN server Arknights players:* now this program **only** works for CN server
 
 ## 运行
 
-确保你已了解下面的“必须运行要求”和“如何使用”章节后由[此处](https://github.com/CCRcmcpe/Auto-Arknights/releases/latest)下载，运行`Auto Arknights CLI.exe`。
+确保你已了解下面的“必须运行要求”和“如何使用”章节后由[此处](../../releases/latest)下载，运行`Auto Arknights CLI.exe`。
 
 ### 必须运行要求
 
