@@ -16,8 +16,8 @@ namespace REVUnit.AutoArknights.CLI
         private readonly string _adbExecutable;
         private readonly string _adbRemote;
         private readonly IConfiguration _config;
-        private readonly string? _emuProcessName;
         private readonly bool _forcedSuspend;
+        private readonly string? _shutdownCommand;
 
         private LevelRepeater.Mode _mode;
         private PostAction[]? _postActions;
@@ -42,7 +42,7 @@ namespace REVUnit.AutoArknights.CLI
                            throw new Exception("配置文件中 Log:Level 的值无效");
             _adbExecutable = ConfigRequired("Remote:AdbExecutable");
             _adbRemote = ConfigRequired("Remote:Address");
-            _emuProcessName = ConfigOptional("Remote:EmuProcessName");
+            _shutdownCommand = ConfigOptional("Remote:ShutdownCommand")?.Trim();
             string? forcedSuspend = ConfigOptional("ForcedSuspend");
             if (forcedSuspend != null && !bool.TryParse(ConfigOptional("ForcedSuspend"), out _forcedSuspend))
                 throw new Exception("配置文件中 ForcedSuspend 的值无效");
@@ -53,8 +53,8 @@ namespace REVUnit.AutoArknights.CLI
             var cin = new Cin();
             var parameters = cin.Get<string>(@"<\d: 模式>[\d+: 刷关次数][\w+: 后续操作]");
             ParseParameters(parameters);
-            if (_postActions!.Contains(PostAction.ShutdownEmulator) && _emuProcessName == null)
-                throw new Exception("需要有效的 Remote:EmuProcessName 才能执行关闭模拟器操作");
+            if (_postActions!.Contains(PostAction.ShutdownEmulator) && _shutdownCommand == null)
+                throw new Exception("需要有效的 Remote:ShutdownCommand 才能执行关闭远端操作");
             if (_postActions!.Contains(PostAction.Hibernate) && !Native.IsPwrHibernateAllowed())
                 throw new Exception("系统未开启/不支持休眠");
 
@@ -115,16 +115,7 @@ namespace REVUnit.AutoArknights.CLI
                     Native.SetSuspendState(true, _forcedSuspend, _forcedSuspend);
                     break;
                 case PostAction.ShutdownEmulator:
-                    foreach (Process process in Process.GetProcessesByName(_emuProcessName))
-                        try
-                        {
-                            process.Kill();
-                        }
-                        catch
-                        {
-                            Log.Warning($"无法关闭 {process.ProcessName}");
-                        }
-
+                    Process.Start(new ProcessStartInfo("cmd.exe", "/c " + _shutdownCommand) {CreateNoWindow = true});
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(action), action, null);
