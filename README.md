@@ -17,7 +17,7 @@
 
 ### 如何使用
 
-参见[Wiki:使用手册](https://github.com/CCRcmcpe/Auto-Arknights/wiki/%E4%BD%BF%E7%94%A8%E6%89%8B%E5%86%8C)
+参见 [Wiki:使用手册](https://github.com/CCRcmcpe/Auto-Arknights/wiki/%E4%BD%BF%E7%94%A8%E6%89%8B%E5%86%8C)
 
 ## 构建
 
