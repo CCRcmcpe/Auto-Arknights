@@ -52,20 +52,18 @@ namespace REVUnit.AutoArknights.Core
 
         public Sanity GetCurrentSanity()
         {
-            return Ocr(scrn => ScreenArea.CurrentSanity.Apply(scrn), @"(\d+)\s*\/\s*(\d+)",
-                (string[] arr, out Sanity? result) =>
+            return Ocr(ScreenArea.CurrentSanity, @"(\d+)\s*\/\s*(\d+)",
+                matches =>
                 {
-                    int[] numbers = arr.SelectCanParse<string, int>(int.TryParse).ToArray();
-                    bool valid = numbers.Length == 2;
-                    result = valid ? new Sanity(numbers[0], numbers[1]) : null;
-                    return valid;
+                    int[] numbers = matches.SelectCanParse<string, int>(int.TryParse).ToArray();
+                    if (numbers.Length != 2) throw new FormatException();
+                    return new Sanity(numbers[0], numbers[1]);
                 })!;
         }
 
         public int GetRequiredSanity()
         {
-            return Ocr(scrn => ScreenArea.RequiredSanity.Apply(scrn), @"\d+",
-                (string[] arr, out int result) => int.TryParse(arr[0], out result));
+            return Ocr(ScreenArea.RequiredSanity, @"\d+", matches => int.Parse(matches[0]));
         }
 
         public LocateResult Loc(string expr)
@@ -101,20 +99,22 @@ namespace REVUnit.AutoArknights.Core
             return _assets.Get(expr);
         }
 
-        private T Ocr<T>(Func<Mat, Mat> src, string regex, TryParser<string[], T> tryParser, double waitSec = 1)
+        private T Ocr<T>(Rect2f area, string regex, Func<string[], T> parser, double waitSec = 1)
         {
-            return X.While(() =>
+            T ret = default;
+            X.While(() =>
             {
                 using Mat scrn = Scrn();
-                using Mat sub = src(scrn);
+                using Mat sub = area.Apply(scrn);
                 string result = TxOcr.Ocr(sub);
                 return Regex.Match(result, regex);
             }, match =>
             {
-                T result = default;
-                return (match.Success && tryParser(match.Groups.Values.Select(it => it.Value).ToArray(), out result),
-                    result);
-            }, TimeSpan.FromSeconds(waitSec))!;
+                return match.Success &&
+                       new TryParser<string[], T>(parser).TryParse(match.Groups.Values.Select(it => it.Value).ToArray(),
+                           out ret);
+            }, TimeSpan.FromSeconds(waitSec));
+            return ret!;
         }
 
         private static Point Randomize(Point point)

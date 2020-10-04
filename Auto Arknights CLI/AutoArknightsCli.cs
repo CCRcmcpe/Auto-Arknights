@@ -50,7 +50,7 @@ namespace REVUnit.AutoArknights.CLI
 
         public void Run()
         {
-            var cin = new Cin();
+            var cin = new Cin {AutoTrim = true, IgnoreCase = true, ThrowOnUndefinedEnum = true};
             var parameters = cin.Get<string>(@"<\d: 模式>[\d+: 刷关次数][\w+: 后续操作]");
             ParseParameters(parameters);
             if (_postActions!.Contains(PostAction.ShutdownEmulator) && _shutdownCommand == null)
