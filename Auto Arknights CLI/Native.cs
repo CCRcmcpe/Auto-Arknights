@@ -7,7 +7,7 @@ namespace REVUnit.AutoArknights.CLI
         [DllImport("powrprof.dll")]
         public static extern bool IsPwrHibernateAllowed();
 
-        [DllImport("Powrprof.dll")]
+        [DllImport("powrprof.dll")]
         public static extern uint SetSuspendState(bool hibernate, bool forceCritical, bool disableWakeEvent);
     }
 }

@@ -133,9 +133,9 @@ namespace REVUnit.AutoArknights.CLI
             if (_mode == LevelRepeater.Mode.SpecifiedTimes || _mode == LevelRepeater.Mode.SpecTimesWithWait)
             {
                 var end = 0;
-                while (char.IsDigit(parameters, end)) end++;
+                while (end < parameters.Length - 1 && char.IsDigit(parameters, end)) end++;
 
-                if (end == 1) throw new Exception("在模式 SpecifiedTimes 或 SpecTimesWithWait 下，你应该输入一个有效的刷关次数值");
+                if (end <= 1) throw new Exception("在模式 SpecifiedTimes 或 SpecTimesWithWait 下，你应该输入一个有效的刷关次数值");
 
                 _repeatTime = int.Parse(parameters[1..end]);
                 if (end == parameters.Length) return;
