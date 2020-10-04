@@ -21,7 +21,7 @@ namespace REVUnit.AutoArknights.CLI
             }
             catch (Exception e)
             {
-                Log.Error(e.Message, withTime: true);
+                Log.Error(e.Message);
                 Log.Debug(e.StackTrace);
                 XConsole.AnyKey();
             }
