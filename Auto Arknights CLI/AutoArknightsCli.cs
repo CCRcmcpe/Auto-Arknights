@@ -51,8 +51,11 @@ namespace REVUnit.AutoArknights.CLI
         public void Run()
         {
             var cin = new Cin {AutoTrim = true, IgnoreCase = true, ThrowOnUndefinedEnum = true};
-            var parameters = cin.Get<string>(@"<\d: 模式>[\d+: 刷关次数][\w+: 后续操作]");
-            ParseParameters(parameters);
+            cin.Get<string>(@"<\d: 模式>[\d+: 刷关次数][\w+: 后续操作]", s =>
+            {
+                ParseParameters(s);
+                return null!;
+            });
             if (_postActions!.Contains(PostAction.ShutdownEmulator) && _shutdownCommand == null)
                 throw new Exception("需要有效的 Remote:ShutdownCommand 才能执行关闭远端操作");
             if (_postActions!.Contains(PostAction.Hibernate) && !Native.IsPwrHibernateAllowed())
@@ -88,15 +91,10 @@ namespace REVUnit.AutoArknights.CLI
             }
         }
 
-        private string? ConfigOptional(string key)
-        {
-            return _config![key];
-        }
+        private string? ConfigOptional(string key) => _config![key];
 
-        private string ConfigRequired(string key, string? messageOnNil = null)
-        {
-            return _config![key] ?? throw new Exception(messageOnNil ?? $"配置文件需填写 {key}");
-        }
+        private string ConfigRequired(string key, string? messageOnNil = null) =>
+            _config![key] ?? throw new Exception(messageOnNil ?? $"配置文件需填写 {key}");
 
         private void ExecutePostAction(PostAction action)
         {
@@ -132,14 +130,13 @@ namespace REVUnit.AutoArknights.CLI
             var parsedIndex = 1;
             if (_mode == LevelRepeater.Mode.SpecifiedTimes || _mode == LevelRepeater.Mode.SpecTimesWithWait)
             {
-                var end = 0;
-                while (end < parameters.Length - 1 && char.IsDigit(parameters, end)) end++;
+                var end = 1;
+                while (end < parameters.Length && char.IsDigit(parameters, end)) end++;
 
-                if (end <= 1) throw new Exception("在模式 SpecifiedTimes 或 SpecTimesWithWait 下，你应该输入一个有效的刷关次数值");
-
+                if (end == 1) throw new Exception("在模式 SpecifiedTimes 或 SpecTimesWithWait 下，你应该输入一个有效的刷关次数值");
                 _repeatTime = int.Parse(parameters[1..end]);
-                if (end == parameters.Length) return;
 
+                if (end == parameters.Length) return;
                 parsedIndex = end;
             }
 
