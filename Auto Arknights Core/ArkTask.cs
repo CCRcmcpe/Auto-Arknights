@@ -4,10 +4,7 @@
     {
         protected readonly Device Device;
 
-        protected ArkTask(Device device)
-        {
-            Device = device;
-        }
+        protected ArkTask(Device device) => Device = device;
 
         public abstract ExecuteResult Execute();
     }

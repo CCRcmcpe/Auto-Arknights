@@ -4,9 +4,6 @@ namespace REVUnit.AutoArknights.Core
 {
     public static class Library
     {
-        public static bool CheckIfSupported()
-        {
-            return Avx2.IsSupported;
-        }
+        public static bool CheckIfSupported() => Avx2.IsSupported;
     }
 }

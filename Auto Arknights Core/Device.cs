@@ -84,20 +84,14 @@ namespace REVUnit.AutoArknights.Core
             Thread.Sleep(TimeSpan.FromSeconds(sec));
         }
 
-        public bool TestAp(string expr)
-        {
-            return Loc(expr).Succeed;
-        }
+        public bool TestAp(string expr) => Loc(expr).Succeed;
 
         public void WaitAp(string expr, double waitSec = 3)
         {
             X.While(() => Loc(expr), result => result.Succeed, TimeSpan.FromSeconds(waitSec));
         }
 
-        private Mat Asset(string expr)
-        {
-            return _assets.Get(expr);
-        }
+        private Mat Asset(string expr) => _assets.Get(expr);
 
         private T Ocr<T>(Rect2f area, string regex, Func<string[], T> parser, double waitSec = 1)
         {
@@ -117,11 +111,9 @@ namespace REVUnit.AutoArknights.Core
             return ret!;
         }
 
-        private static Point Randomize(Point point)
-        {
-            return new Point(Math.Abs(Random.Next(-3, 3) + point.X),
+        private static Point Randomize(Point point) =>
+            new Point(Math.Abs(Random.Next(-3, 3) + point.X),
                 Math.Abs(Random.Next(-3, 3) + point.Y));
-        }
 
         private Mat Scrn()
         {

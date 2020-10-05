@@ -15,10 +15,7 @@ namespace REVUnit.AutoArknights.Core
             "device unauthorized", "device still", "device offline"
         };
 
-        public Adb(string executable)
-        {
-            Executable = executable;
-        }
+        public Adb(string executable) => Executable = executable;
 
         public string? Target { get; set; }
         public string Executable { get; set; }
@@ -47,10 +44,7 @@ namespace REVUnit.AutoArknights.Core
             }
         }
 
-        public string Execute(string parameter)
-        {
-            return Encoding.UTF8.GetString(ExecuteCore(parameter));
-        }
+        public string Execute(string parameter) => Encoding.UTF8.GetString(ExecuteCore(parameter));
 
         public Mat GetScreenShot()
         {

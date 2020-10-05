@@ -10,10 +10,7 @@ namespace REVUnit.AutoArknights.Core
     {
         private static readonly ITxOcr Api;
 
-        static TxOcr()
-        {
-            Api = RestService.For<ITxOcr>("https://ai.qq.com");
-        }
+        static TxOcr() => Api = RestService.For<ITxOcr>("https://ai.qq.com");
 
         public static string Ocr(Mat image)
         {

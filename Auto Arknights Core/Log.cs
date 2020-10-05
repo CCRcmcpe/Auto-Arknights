@@ -88,10 +88,7 @@ namespace REVUnit.AutoArknights.Core
                 };
             }
 
-            public override string ToString()
-            {
-                return Name ?? string.Empty;
-            }
+            public override string ToString() => Name ?? string.Empty;
         }
     }
 }

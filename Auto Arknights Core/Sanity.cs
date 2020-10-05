@@ -11,9 +11,6 @@
             Max = max;
         }
 
-        public override string ToString()
-        {
-            return $"{Value}/{Max}";
-        }
+        public override string ToString() => $"{Value}/{Max}";
     }
 }
