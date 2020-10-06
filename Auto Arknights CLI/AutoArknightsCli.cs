@@ -146,7 +146,7 @@ namespace REVUnit.AutoArknights.CLI
             _postActions = postActions.Select(c =>
             {
                 if (!char.IsLetter(c)) throw new Exception($"无效的后续操作值 \"{c}\"");
-                var postAction = (PostAction) (short) c;
+                var postAction = (PostAction) (short) char.ToLowerInvariant(c);
                 if (!Enum.IsDefined(postAction)) throw new Exception("无效的后续操作");
                 return postAction;
             }).ToArray();
