@@ -20,8 +20,8 @@ namespace REVUnit.AutoArknights.CLI
         private readonly string? _shutdownCommand;
 
         private LevelRepeater.Mode _mode;
-        private PostAction[]? _postActions;
-        private int _repeatTime;
+        private PostAction[] _postActions = Array.Empty<PostAction>();
+        private int _repeatTimes;
 
         public AutoArknightsCli()
         {
@@ -56,15 +56,19 @@ namespace REVUnit.AutoArknights.CLI
                 ParseParameters(s);
                 return null!;
             });
-            if (_postActions!.Contains(PostAction.ShutdownEmulator) && _shutdownCommand == null)
-                throw new Exception("需要有效的 Remote:ShutdownCommand 才能执行关闭远端操作");
-            if (_postActions!.Contains(PostAction.Hibernate) && !Native.IsPwrHibernateAllowed())
-                throw new Exception("系统未开启/不支持休眠");
+
+            if (_postActions.Length != 0)
+            {
+                if (_postActions.Contains(PostAction.ShutdownEmulator) && _shutdownCommand == null)
+                    throw new Exception("需要有效的 Remote:ShutdownCommand 才能执行关闭远端操作");
+                if (_postActions.Contains(PostAction.Hibernate) && !Native.IsPwrHibernateAllowed())
+                    throw new Exception("系统未开启/不支持休眠");
+            }
 
             using var levelRepeatTask = new Task(() =>
             {
                 using Device device = new Device(_adbExecutable, _adbRemote);
-                new LevelRepeater(device, _mode, _repeatTime).Execute();
+                new LevelRepeater(device, _mode, _repeatTimes).Execute();
             }, TaskCreationOptions.LongRunning);
             levelRepeatTask.Start();
 
@@ -80,9 +84,9 @@ namespace REVUnit.AutoArknights.CLI
                 Log.Error($"出现异常：{innerException.GetType().Name}，异常信息：\"{innerException.Message}\"");
             }
 
-            if (_postActions!.Any())
+            if (_postActions.Length != 0)
             {
-                foreach (PostAction postAction in _postActions!) ExecutePostAction(postAction);
+                foreach (PostAction postAction in _postActions) ExecutePostAction(postAction);
             }
             else
             {
@@ -127,29 +131,23 @@ namespace REVUnit.AutoArknights.CLI
             _mode = (LevelRepeater.Mode) modeValue;
             if (!Enum.IsDefined(_mode)) throw new Exception("输入的模式超出范围");
 
-            var parsedIndex = 1;
+            var index = 1;
             if (_mode == LevelRepeater.Mode.SpecifiedTimes || _mode == LevelRepeater.Mode.SpecTimesWithWait)
             {
-                var end = 1;
-                while (end < parameters.Length && char.IsDigit(parameters, end)) end++;
+                while (index < parameters.Length && char.IsDigit(parameters, index)) index++;
 
-                if (end == 1) throw new Exception("在模式 SpecifiedTimes 或 SpecTimesWithWait 下，你应该输入一个有效的刷关次数值");
-                _repeatTime = int.Parse(parameters[1..end]);
-
-                if (end == parameters.Length) return;
-                parsedIndex = end;
+                if (index == 1) throw new Exception("在模式 SpecifiedTimes 或 SpecTimesWithWait 下，你应该输入一个有效的刷关次数值");
+                _repeatTimes = int.Parse(parameters[1..index]);
             }
 
-            string postActions = parameters[parsedIndex..];
+            if (index == parameters.Length) return; // A mode value and maybe a repeat times number parsed
+
+            string postActions = parameters[index..];
             _postActions = postActions.Select(c =>
             {
-                PostAction postAction = default;
-                if (char.IsLetter(c)) // Confirmed as post action spec
-                {
-                    postAction = (PostAction) (short) c;
-                    if (!Enum.IsDefined(postAction)) throw new Exception("无效的后续操作");
-                }
-
+                if (!char.IsLetter(c)) throw new Exception($"无效的后续操作值 \"{c}\"");
+                var postAction = (PostAction) (short) c;
+                if (!Enum.IsDefined(postAction)) throw new Exception("无效的后续操作");
                 return postAction;
             }).ToArray();
         }
