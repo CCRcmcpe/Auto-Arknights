@@ -146,19 +146,19 @@ namespace REVUnit.AutoArknights.CLI
             _postActions = postActions.Select(c =>
             {
                 if (!char.IsLetter(c)) throw new Exception($"无效的后续操作值 \"{c}\"");
-                var postAction = (PostAction) (short) char.ToLowerInvariant(c);
+                var postAction = (PostAction) char.ToLowerInvariant(c);
                 if (!Enum.IsDefined(postAction)) throw new Exception("无效的后续操作");
                 return postAction;
             }).ToArray();
         }
 
-        private enum PostAction : short
+        private enum PostAction : ushort
         {
-            Shutdown = (short) 'c',
-            Reboot = (short) 'r',
-            Sleep = (short) 's',
-            Hibernate = (short) 'h',
-            ShutdownEmulator = (short) 'e'
+            Shutdown = 'c',
+            Reboot = 'r',
+            Sleep = 's',
+            Hibernate = 'h',
+            ShutdownEmulator = 'e'
         }
     }
 }
