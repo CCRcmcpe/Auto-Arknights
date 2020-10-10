@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-    - master
+    - main
   paths:
     exclude:
     - '**/*.md'
@@ -27,4 +27,4 @@ steps:
 - task: PublishPipelineArtifact@1
   inputs:
     targetPath: 'Auto Arknights CLI/artifact'
-    artifactName: 'Auto-Arknights-CLI-win-x64'
+    artifactName: 'Auto-Arknights-CLI'
