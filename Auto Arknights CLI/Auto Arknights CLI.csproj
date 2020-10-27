@@ -4,7 +4,7 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <OutputType>Exe</OutputType>
     <RootNamespace>REVUnit.AutoArknights.CLI</RootNamespace>
-    <Platforms>x64</Platforms>
+    <Platform>x64</Platform>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>false</SelfContained>
     <PublishReadyToRun>true</PublishReadyToRun>
@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Auto Arknights Core\Auto Arknights Core.csproj" />
-    <ProjectReference Include="..\Crlib\Crlib\Crlib.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -3,9 +3,9 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using OpenCvSharp;
+using REVUnit.AutoArknights.Core.CV;
 using REVUnit.Crlib;
 using REVUnit.Crlib.Extension;
-using REVUnit.ImageLocator;
 using Point = System.Drawing.Point;
 
 namespace REVUnit.AutoArknights.Core
@@ -16,12 +16,12 @@ namespace REVUnit.AutoArknights.Core
         private readonly Adb _adb;
         private readonly Assets _assets = new Assets();
 
-        private readonly FMLocator _loc = new FMLocator(Feature2DType.Sift, "Assets\\Cache");
+        private readonly ImageRegister _loc = new ImageRegister("Assets\\Cache");
 
         public Device(string adbPath, string adbRemote)
         {
             _adb = new Adb(adbPath);
-            if (!_adb.Connect(adbRemote)) throw new AdbException("无法连接到目标设备");
+            _adb.Connect(adbRemote);
         }
 
         public void Dispose()
@@ -37,7 +37,7 @@ namespace REVUnit.AutoArknights.Core
 
         public void Clk(Mat model)
         {
-            Clk(X.While(() => Loc(model), result => result.Succeed, TimeSpan.FromSeconds(2))!.CenterPoint);
+            Clk(X.While(() => Loc(model), result => result.IsSucceed, TimeSpan.FromSeconds(2))!.CenterPoint);
         }
 
         public void Clk(int x, int y)
@@ -53,12 +53,12 @@ namespace REVUnit.AutoArknights.Core
         public Sanity GetCurrentSanity()
         {
             return Ocr(ScreenArea.CurrentSanity, @"(\d+)\s*\/\s*(\d+)",
-                matches =>
-                {
-                    int[] numbers = matches.SelectCanParse<string, int>(int.TryParse).ToArray();
-                    if (numbers.Length != 2) throw new FormatException();
-                    return new Sanity(numbers[0], numbers[1]);
-                })!;
+                       matches =>
+                       {
+                           int[] numbers = matches.SelectCanParse<string, int>(int.TryParse).ToArray();
+                           if (numbers.Length != 2) throw new FormatException();
+                           return new Sanity(numbers[0], numbers[1]);
+                       })!;
         }
 
         public int GetRequiredSanity()
@@ -84,11 +84,11 @@ namespace REVUnit.AutoArknights.Core
             Thread.Sleep(TimeSpan.FromSeconds(sec));
         }
 
-        public bool TestAp(string expr) => Loc(expr).Succeed;
+        public bool TestAp(string expr) => Loc(expr).IsSucceed;
 
         public void WaitAp(string expr, double waitSec = 3)
         {
-            X.While(() => Loc(expr), result => result.Succeed, TimeSpan.FromSeconds(waitSec));
+            X.While(() => Loc(expr), result => result.IsSucceed, TimeSpan.FromSeconds(waitSec));
         }
 
         private Mat Asset(string expr) => _assets.Get(expr);
@@ -106,14 +106,14 @@ namespace REVUnit.AutoArknights.Core
             {
                 return match.Success &&
                        new TryParser<string[], T>(parser).TryParse(match.Groups.Values.Select(it => it.Value).ToArray(),
-                           out ret);
+                                                                   out ret);
             }, TimeSpan.FromSeconds(waitSec));
             return ret!;
         }
 
         private static Point Randomize(Point point) =>
             new Point(Math.Abs(Random.Next(-3, 3) + point.X),
-                Math.Abs(Random.Next(-3, 3) + point.Y));
+                      Math.Abs(Random.Next(-3, 3) + point.Y));
 
         private Mat Scrn()
         {

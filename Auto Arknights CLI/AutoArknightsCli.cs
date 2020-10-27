@@ -25,8 +25,7 @@ namespace REVUnit.AutoArknights.CLI
 
         public AutoArknightsCli()
         {
-            if (!Library.CheckIfSupported())
-                throw new NotSupportedException("你当前的CPU不支持AVX2指令集，无法运行本程序");
+            if (!Library.CheckIfSupported()) throw new NotSupportedException("你当前的CPU不支持AVX2指令集，无法运行本程序");
 
             if (!File.Exists(ConfigJson)) File.Create(ConfigJson);
             try
@@ -50,7 +49,7 @@ namespace REVUnit.AutoArknights.CLI
 
         public void Run()
         {
-            var cin = new Cin {AutoTrim = true, IgnoreCase = true, ThrowOnUndefinedEnum = true};
+            var cin = new Cin { AutoTrim = true, IgnoreCase = true, ThrowOnUndefinedEnum = true };
             cin.Get<string>(@"<\d: 模式>[\d+: 刷关次数][\w+: 后续操作]", s =>
             {
                 ParseParameters(s);
@@ -117,10 +116,9 @@ namespace REVUnit.AutoArknights.CLI
                     Native.SetSuspendState(true, _forcedSuspend, _forcedSuspend);
                     break;
                 case PostAction.ShutdownEmulator:
-                    Process.Start(new ProcessStartInfo("cmd.exe", "/c " + _shutdownCommand) {CreateNoWindow = true});
+                    Process.Start(new ProcessStartInfo("cmd.exe", "/c " + _shutdownCommand) { CreateNoWindow = true });
                     break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(action), action, null);
+                default: throw new ArgumentOutOfRangeException(nameof(action), action, null);
             }
         }
 

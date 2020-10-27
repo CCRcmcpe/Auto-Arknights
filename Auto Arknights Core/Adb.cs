@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,8 +12,7 @@ namespace REVUnit.AutoArknights.Core
     {
         private static readonly string[] FailSigns =
         {
-            "cannot connect", "no device", "no emulators",
-            "device unauthorized", "device still", "device offline"
+            "cannot connect", "no device", "no emulators", "device unauthorized", "device still", "device offline"
         };
 
         public Adb(string executable) => Executable = executable;
@@ -22,26 +22,13 @@ namespace REVUnit.AutoArknights.Core
 
         public void Click(Point point)
         {
-            Execute($"shell input tap {point.X} {point.Y}");
+            ExecuteCore($"shell input tap {point.X} {point.Y}");
         }
 
-        public bool Connect(string target)
+        public void Connect(string target)
         {
             Target = target;
-            return Connect();
-        }
-
-        public bool Connect()
-        {
-            try
-            {
-                ExecuteCore($"connect {Target}");
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            ExecuteCore($"connect {target}");
         }
 
         public string Execute(string parameter) => Encoding.UTF8.GetString(ExecuteCore(parameter));
@@ -50,7 +37,7 @@ namespace REVUnit.AutoArknights.Core
         {
             byte[] bytes = ExecuteCore("exec-out screencap -p");
             Mat screenshot = Mat.ImDecode(bytes);
-            if (screenshot.Empty()) throw new AdbException("从ADB收到了空截图");
+            if (screenshot.Empty()) throw new Exception("收到了空截图");
 
             return screenshot;
         }
@@ -80,8 +67,7 @@ namespace REVUnit.AutoArknights.Core
             if (bytes.Length < 200)
             {
                 string result = Encoding.UTF8.GetString(bytes).Trim();
-                if (FailSigns.Contains(result))
-                    throw new AdbException("无法连接到目标设备");
+                if (FailSigns.Any(failSign => result.Contains(failSign))) throw new Exception("无法连接到目标设备");
             }
 
             return bytes;

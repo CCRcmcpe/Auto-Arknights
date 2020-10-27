@@ -43,8 +43,7 @@ namespace REVUnit.AutoArknights.Core
                 case Mode.WaitWhileNoSanity:
                     WaitWhileNoSanity();
                     break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(RepeatMode), RepeatMode, null);
+                default: throw new ArgumentOutOfRangeException(nameof(RepeatMode), RepeatMode, null);
             }
 
             Log.Info("任务完成");
@@ -63,8 +62,8 @@ namespace REVUnit.AutoArknights.Core
             if (_previousSanity != null)
             {
                 int dSanity = _previousSanity.Value - nowSanity.Value; //20
-                if (Math.Abs(nowSanity.Max - _previousSanity.Max) > 1 // 理智上限变动大于1
-                    || dSanity > 0 && _requiredSanity - dSanity > 10) // 没有嗑药，且理智对于一般情况下的刷关后理智差大于10
+                if (Math.Abs(nowSanity.Max - _previousSanity.Max) > 1  // 理智上限变动大于1
+                 || dSanity > 0 && _requiredSanity - dSanity > 10)     // 没有嗑药，且理智对于一般情况下的刷关后理智差大于10
                     nowSanity = Device.GetCurrentSanity();
             }
 
@@ -116,6 +115,7 @@ namespace REVUnit.AutoArknights.Core
             InitRequiredSanity();
             var currentTime = 0;
             while (true)
+            {
                 if (HaveEnoughSanity())
                 {
                     currentTime++;
@@ -124,16 +124,14 @@ namespace REVUnit.AutoArknights.Core
                     Log.Info($"关卡完成，目前已刷关{currentTime}次");
                 }
                 else
-                {
                     break;
-                }
+            }
         }
 
         private void WaitForSanityRecovery()
         {
             Log.Info("正在等待理智恢复...");
-            while (Device.GetCurrentSanity().Value < _requiredSanity)
-                Device.Slp(5);
+            while (Device.GetCurrentSanity().Value < _requiredSanity) Device.Slp(5);
             Log.Info("...理智恢复完成");
         }
 
@@ -142,6 +140,7 @@ namespace REVUnit.AutoArknights.Core
             InitRequiredSanity();
             var currentTime = 0;
             while (true)
+            {
                 if (HaveEnoughSanity())
                 {
                     currentTime++;
@@ -150,9 +149,8 @@ namespace REVUnit.AutoArknights.Core
                     Log.Info($"关卡完成，目前已刷关{currentTime}次");
                 }
                 else
-                {
                     WaitForSanityRecovery();
-                }
+            }
 
             // ReSharper disable once FunctionNeverReturns
         }

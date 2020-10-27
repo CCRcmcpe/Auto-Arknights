@@ -43,9 +43,7 @@ namespace REVUnit.AutoArknights.Core
                     Console.WriteLine(message);
             }
             else
-            {
                 Console.WriteLine(message);
-            }
         }
 
         public static void Warning(string message, string? prefix = null, bool withTime = false)
@@ -56,20 +54,24 @@ namespace REVUnit.AutoArknights.Core
         [SuppressMessage("ReSharper", "MemberHidesStaticFromOuterClass")]
         public class Level
         {
-            public static readonly Level None = new Level
-                {ImportanceLevel = int.MinValue};
+            public static readonly Level None = new Level { ImportanceLevel = int.MinValue };
 
             public static readonly Level Debug = new Level
-                {ImportanceLevel = -1, Name = "Debug", LevelColor = Color.Gray, MessageColor = Color.Gray};
+            {
+                ImportanceLevel = -1, Name = "Debug", LevelColor = Color.Gray, MessageColor = Color.Gray
+            };
 
-            public static readonly Level Info = new Level
-                {ImportanceLevel = 0, Name = "Info"};
+            public static readonly Level Info = new Level { ImportanceLevel = 0, Name = "Info" };
 
             public static readonly Level Warning = new Level
-                {ImportanceLevel = 1, Name = "Warn", LevelColor = Color.Yellow};
+            {
+                ImportanceLevel = 1, Name = "Warn", LevelColor = Color.Yellow
+            };
 
             public static readonly Level Error = new Level
-                {ImportanceLevel = 2, Name = "Error", LevelColor = Color.Red};
+            {
+                ImportanceLevel = 2, Name = "Error", LevelColor = Color.Red
+            };
 
             public int ImportanceLevel { get; set; }
             public string? Name { get; set; }
@@ -80,11 +82,11 @@ namespace REVUnit.AutoArknights.Core
             {
                 return name.ToLower() switch
                 {
-                    "debug" => Debug,
-                    "info" => Info,
+                    "debug"   => Debug,
+                    "info"    => Info,
                     "warning" => Warning,
-                    "error" => Error,
-                    _ => null
+                    "error"   => Error,
+                    _         => null
                 };
             }
 

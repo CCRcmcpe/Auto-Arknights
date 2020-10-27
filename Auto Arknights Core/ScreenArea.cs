@@ -13,8 +13,8 @@ namespace REVUnit.AutoArknights.Core
             int w = super.Width;
             int h = super.Height;
             return super.Clone(new Rect((int) Math.Round(w * area.X), (int) Math.Round(h * area.Y),
-                (int) Math.Round(w * area.Width),
-                (int) Math.Round(h * area.Height)));
+                                        (int) Math.Round(w * area.Width),
+                                        (int) Math.Round(h * area.Height)));
         }
     }
 }
