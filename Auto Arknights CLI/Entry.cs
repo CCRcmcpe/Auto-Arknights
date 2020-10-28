@@ -1,4 +1,4 @@
-﻿#if RELEASE
+﻿#if !DEBUG
 using System;
 using REVUnit.AutoArknights.Core;
 using REVUnit.Crlib.Extension;
@@ -21,7 +21,7 @@ namespace REVUnit.AutoArknights.CLI
             }
             catch (Exception e)
             {
-                Log.Error(e.Message);
+                Log.Error($"出现异常：{e.GetType().Name}，异常信息：\"{e.Message}\"");
                 Log.Debug(e.StackTrace);
                 XConsole.AnyKey();
             }

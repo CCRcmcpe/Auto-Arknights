@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.IO;
 using OpenCvSharp;
 using OpenCvSharp.Features2D;
 
@@ -19,8 +18,6 @@ namespace REVUnit.AutoArknights.Core.CV
             _useCache = cacheDirPath != null;
 
             FeatureMatcher = new FeatureMatcher(_f2d);
-
-            if (cacheDirPath != null && !Directory.Exists(cacheDirPath)) Directory.CreateDirectory(cacheDirPath);
         }
 
         public FeatureDetector FeatureDetector { get; }

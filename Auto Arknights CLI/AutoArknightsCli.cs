@@ -80,13 +80,12 @@ namespace REVUnit.AutoArknights.CLI
             if (levelRepeatTask.IsFaulted)
             {
                 Exception innerException = levelRepeatTask.Exception!.InnerExceptions[0];
-                Log.Error($"出现异常：{innerException.GetType().Name}，异常信息：\"{innerException.Message}\"");
+                throw innerException;
             }
 
             if (_postActions.Length != 0)
-            {
-                foreach (PostAction postAction in _postActions) ExecutePostAction(postAction);
-            }
+                foreach (PostAction postAction in _postActions)
+                    ExecutePostAction(postAction);
             else
             {
                 Console.Beep();

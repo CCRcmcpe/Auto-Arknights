@@ -13,19 +13,28 @@ namespace REVUnit.AutoArknights.Core.CV
     {
         private class Cache : IDisposable
         {
-            private static readonly MD5 Md5 = MD5.Create();
+            private static readonly string _coreAssemblySerial =
+                GetMd5(File.ReadAllBytes(Assembly.GetCallingAssembly().Location));
+
             private readonly string _cacheDirPath;
             private readonly Dictionary<string, MatFeature> _md5map = new Dictionary<string, MatFeature>();
-            private readonly string VersionFileName;
+            private readonly string _serialFilePath;
 
             public Cache(string cacheDirPath)
             {
                 _cacheDirPath = cacheDirPath;
+                Directory.CreateDirectory(cacheDirPath);
 
-                VersionFileName = Path.Combine(cacheDirPath, "version.txt");
-                Version.TryParse(File.ReadAllText(Path.Combine(cacheDirPath, VersionFileName)),
-                                 out Version? cacheVersion);
-                bool rebuildCache = Assembly.GetExecutingAssembly().GetName().Version != cacheVersion;
+                _serialFilePath = Path.Combine(_cacheDirPath, "version");
+
+                // Rebuild cache when updated
+
+                var rebuildCache = true;
+                if (File.Exists(_serialFilePath))
+                {
+                    string serial = File.ReadAllText(_serialFilePath);
+                    rebuildCache = _coreAssemblySerial != serial;
+                }
 
                 if (rebuildCache)
                     foreach (string cacheFile in GetCacheFiles(cacheDirPath))
@@ -57,11 +66,19 @@ namespace REVUnit.AutoArknights.Core.CV
 
             public void Dispose()
             {
-                Md5.Dispose();
                 foreach (MatFeature matFeature in _md5map.Values) matFeature.Dispose();
             }
 
             private static string[] GetCacheFiles(string cacheDirPath) => Directory.GetFiles(cacheDirPath, "*.json.gz");
+
+            private static string GetMd5(byte[] data)
+            {
+                byte[] hash = MD5.HashData(data);
+
+                var hashStr = new StringBuilder();
+                foreach (byte @byte in hash) hashStr.Append(@byte.ToString("x2"));
+                return hashStr.ToString();
+            }
 
             private static string GetMd5(Mat mat)
             {
@@ -69,11 +86,7 @@ namespace REVUnit.AutoArknights.Core.CV
                 var data = new byte[total];
                 Marshal.Copy(mat.Data, data, 0, (int) total);
 
-                byte[] hash = Md5.ComputeHash(mat.ToBytes());
-
-                var hashStr = new StringBuilder();
-                foreach (byte @byte in hash) hashStr.Append(@byte.ToString("x2"));
-                return hashStr.ToString();
+                return GetMd5(data);
             }
 
             private MatFeature? GetCache(Mat mat)
@@ -95,8 +108,7 @@ namespace REVUnit.AutoArknights.Core.CV
                 storage.Write("OriginWidth", mat.Width);
                 storage.Write("OriginHeight", mat.Height);
 
-                File.WriteAllText(Path.Combine(_cacheDirPath, VersionFileName),
-                                  Assembly.GetExecutingAssembly().GetName().Version!.ToString());
+                File.WriteAllText(_serialFilePath, _coreAssemblySerial);
             }
         }
     }

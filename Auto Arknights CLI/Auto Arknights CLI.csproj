@@ -4,7 +4,7 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <OutputType>Exe</OutputType>
     <RootNamespace>REVUnit.AutoArknights.CLI</RootNamespace>
-    <Platform>x64</Platform>
+    <Platforms>x64</Platforms>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>false</SelfContained>
     <PublishReadyToRun>true</PublishReadyToRun>

@@ -3,18 +3,37 @@ using OpenCvSharp;
 
 namespace REVUnit.AutoArknights.Core
 {
-    internal static class ScreenArea
+    internal class ScreenArea
     {
-        public static Rect2f CurrentSanity = new Rect2f(0.872f, 0.021f, 0.125f, 0.07f);
-        public static Rect2f RequiredSanity = new Rect2f(0.92f, 0.9426f, 0.04f, 0.0296f);
+        public const double Rw = 1920.0;
+        public const double Rh = 1080.0;
+        public static readonly ScreenArea CurrentSanity = new ScreenArea(1672 / Rw, 23 / Rh, 247 / Rw, 74 / Rh);
+        public static readonly ScreenArea RequiredSanity = new ScreenArea(1763 / Rw, 1014 / Rh, 78 / Rw, 39 / Rh);
 
-        public static Mat Apply(this Rect2f area, Mat super)
+        public readonly double Ch;
+        public readonly double Cw;
+        public readonly double Cx;
+        public readonly double Cy;
+
+        public ScreenArea(double cx, double cy, double cw, double ch)
         {
-            int w = super.Width;
-            int h = super.Height;
-            return super.Clone(new Rect((int) Math.Round(w * area.X), (int) Math.Round(h * area.Y),
-                                        (int) Math.Round(w * area.Width),
-                                        (int) Math.Round(h * area.Height)));
+            Cx = cx;
+            Cy = cy;
+            Cw = cw;
+            Ch = ch;
+        }
+
+        public Mat Apply(Mat super)
+        {
+            int sw = super.Width;
+            int sh = super.Height;
+            var x = (int) Math.Round(sw * Cx);
+            var y = (int) Math.Round(sh * Cy);
+            var w = (int) Math.Round(sw * Cw);
+            var h = (int) Math.Round(sh * Ch);
+            if (sw - x - w > 0) w = sw - x;
+            if (sh - y - h > 0) h = sh - y;
+            return super.Clone(new Rect(x, y, w, h));
         }
     }
 }

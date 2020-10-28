@@ -19,16 +19,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Adb\**">
+    <None Include="Adb\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Assets\**">
+    <None Include="Assets\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Assets\Cache" />
   </ItemGroup>
 
 </Project>

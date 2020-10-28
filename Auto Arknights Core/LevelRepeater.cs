@@ -61,7 +61,7 @@ namespace REVUnit.AutoArknights.Core
             // 防止OCR抽风
             if (_previousSanity != null)
             {
-                int dSanity = _previousSanity.Value - nowSanity.Value; //20
+                int dSanity = _previousSanity.Value - nowSanity.Value; // 理智变动
                 if (Math.Abs(nowSanity.Max - _previousSanity.Max) > 1  // 理智上限变动大于1
                  || dSanity > 0 && _requiredSanity - dSanity > 10)     // 没有嗑药，且理智对于一般情况下的刷关后理智差大于10
                     nowSanity = Device.GetCurrentSanity();
