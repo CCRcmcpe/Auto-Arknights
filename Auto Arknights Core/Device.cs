@@ -54,10 +54,8 @@ namespace REVUnit.AutoArknights.Core
             return Ocr(ScreenArea.CurrentSanity, @"(\d+)\s*\/\s*(\d+)", matches =>
             {
                 int[] numbers = matches.SelectCanParse<string, int>(int.TryParse).ToArray();
-                int value, max;
-                if (numbers.Length != 2 || (max = numbers[1]) > 150 || (value = numbers[0]) > max)
-                    throw new Exception();
-                return new Sanity(value, max);
+                if (numbers.Length != 2) throw new Exception();
+                return new Sanity(numbers[0], numbers[1]);
             })!;
         }
 
