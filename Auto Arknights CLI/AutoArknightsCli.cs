@@ -38,8 +38,7 @@ namespace REVUnit.AutoArknights.CLI
                 throw new FormatException("配置文件无效，请检查语法", e);
             }
 
-            Log.LogLevel = Log.Level.Get(ConfigRequired("Log:Level")) ??
-                           throw new Exception("配置文件中 Log:Level 的值无效");
+            Log.LogLevel = Log.Level.Get(ConfigOptional("Log:Level")) ?? Log.Level.Info;
             _adbExecutable = ConfigRequired("Remote:AdbExecutable");
             _adbRemote = ConfigRequired("Remote:Address");
             _shutdownCommand = ConfigOptional("Remote:ShutdownCommand")?.Trim();

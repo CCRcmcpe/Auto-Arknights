@@ -2,8 +2,5 @@
   "Remote": {
     "AdbExecutable": "adb/adb.exe",
     "Address": "127.0.0.1:7555"
-  },
-  "Log": {
-    "Level": "Info"
   }
 }

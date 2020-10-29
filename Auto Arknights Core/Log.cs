@@ -82,9 +82,9 @@ namespace REVUnit.AutoArknights.Core
             public Color? LevelColor { get; set; }
             public Color? MessageColor { get; set; }
 
-            public static Level? Get(string name)
+            public static Level? Get(string? name)
             {
-                return name.ToLower() switch
+                return name?.ToLower() switch
                 {
                     "debug"   => Debug,
                     "info"    => Info,
