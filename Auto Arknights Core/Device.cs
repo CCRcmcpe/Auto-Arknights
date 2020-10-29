@@ -29,22 +29,22 @@ namespace REVUnit.AutoArknights.Core
             _register.Dispose();
         }
 
-        public void Clk(string asset)
+        public void Click(string asset)
         {
-            Clk(Asset(asset));
+            Click(Asset(asset));
         }
 
-        public void Clk(Mat model)
+        public void Click(Mat model)
         {
-            Clk(X.While(() => Loc(model), result => result.IsSucceed, TimeSpan.FromSeconds(2))!.CenterPoint);
+            Click(X.While(() => Locate(model), result => result.IsSucceed, TimeSpan.FromSeconds(2))!.CenterPoint);
         }
 
-        public void Clk(int x, int y)
+        public void Click(int x, int y)
         {
-            Clk(new Point(x, y));
+            Click(new Point(x, y));
         }
 
-        public void Clk(Point point)
+        public void Click(Point point)
         {
             _adb.Click(Randomize(point));
         }
@@ -55,6 +55,7 @@ namespace REVUnit.AutoArknights.Core
             {
                 int[] numbers = matches.SelectCanParse<string, int>(int.TryParse).ToArray();
                 if (numbers.Length != 2) throw new Exception();
+
                 return new Sanity(numbers[0], numbers[1]);
             })!;
         }
@@ -64,29 +65,29 @@ namespace REVUnit.AutoArknights.Core
             return Ocr(ScreenArea.RequiredSanity, @"\d+", matches => int.Parse(matches[0]));
         }
 
-        public LocateResult Loc(string expr)
+        public LocateResult Locate(string expr)
         {
             Mat model = Asset(expr);
-            return Loc(model);
+            return Locate(model);
         }
 
-        public LocateResult Loc(Mat model)
+        public LocateResult Locate(Mat model)
         {
             using Mat scrn = Scrn();
             return _register.Locate(model, scrn);
         }
 
         // ReSharper disable once MemberCanBeMadeStatic.Global
-        public void Slp(double sec)
+        public void Sleep(double sec)
         {
             Thread.Sleep(TimeSpan.FromSeconds(sec));
         }
 
-        public bool TestAp(string expr) => Loc(expr).IsSucceed;
+        public bool TestAp(string expr) => Locate(expr).IsSucceed;
 
         public void WaitAp(string expr, double waitSec = 3)
         {
-            X.While(() => Loc(expr), result => result.IsSucceed, TimeSpan.FromSeconds(waitSec));
+            X.While(() => Locate(expr), result => result.IsSucceed, TimeSpan.FromSeconds(waitSec));
         }
 
         private Mat Asset(string expr) => _assets.Get(expr);
@@ -104,19 +105,16 @@ namespace REVUnit.AutoArknights.Core
                     match =>
                     {
                         return match.Success &&
-                               new TryParser<string[], T>(parser)
-                                  .TryParse(match.Groups.Values.Select(it => it.Value).ToArray(),
-                                            out ret);
-                    }, TimeSpan.FromSeconds(waitSec));
+                               new TryParser<string[], T>(parser).TryParse(
+                                   match.Groups.Values.Select(it => it.Value).ToArray(), out ret);
+                    },
+                    TimeSpan.FromSeconds(waitSec));
             return ret!;
         }
 
         private static Point Randomize(Point point) =>
             new Point(Math.Abs(Random.Next(-5, 5) + point.X), Math.Abs(Random.Next(-5, 5) + point.Y));
 
-        private Mat Scrn()
-        {
-            return X.While(_adb.GetScreenShot, result => !result.Empty())!;
-        }
+        private Mat Scrn() => _adb.GetScreenShot();
     }
 }

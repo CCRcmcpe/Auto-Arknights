@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace REVUnit.AutoArknights.Core
 {
@@ -81,11 +82,11 @@ namespace REVUnit.AutoArknights.Core
 
         private void RunOnce()
         {
-            Device.Clk("作战 开始");
-            Device.Clk("作战 确认");
+            Device.Click("作战 开始");
+            Device.Click("作战 确认");
             Device.WaitAp("作战 完成");
-            Device.Slp(3);
-            Device.Clk(5, 5);
+            Device.Sleep(3);
+            Device.Click(5, 5);
         }
 
         private void SpecifiedTimes()
@@ -124,17 +125,22 @@ namespace REVUnit.AutoArknights.Core
                     Log.Info($"关卡完成，目前已刷关{currentTime}次");
                 }
                 else
+                {
                     break;
+                }
             }
         }
 
         private void WaitForSanityRecovery()
         {
             Log.Info("正在等待理智恢复...");
-            while (Device.GetCurrentSanity().Value < _requiredSanity) Device.Slp(5);
+
+            while (Device.GetCurrentSanity().Value < _requiredSanity) Device.Sleep(5);
+
             Log.Info("...理智恢复完成");
         }
 
+        [DoesNotReturn]
         private void WaitWhileNoSanity()
         {
             InitRequiredSanity();
@@ -149,10 +155,10 @@ namespace REVUnit.AutoArknights.Core
                     Log.Info($"关卡完成，目前已刷关{currentTime}次");
                 }
                 else
+                {
                     WaitForSanityRecovery();
+                }
             }
-
-            // ReSharper disable once FunctionNeverReturns
         }
     }
 }

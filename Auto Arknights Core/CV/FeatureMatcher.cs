@@ -66,7 +66,9 @@ namespace REVUnit.AutoArknights.Core.CV
                     mask.Set(i, true);
                 }
                 else
+                {
                     mask.Set(i, false);
+                }
             }
 
             if ((float) mask.CountNonZero() / matches.Length < SuccessThreshold) return false;
@@ -126,6 +128,7 @@ namespace REVUnit.AutoArknights.Core.CV
 
             var scaleBinSize = (int) Math.Ceiling((maxS - minS) / Math.Log10(scaleIncrement));
             if (scaleBinSize < 2) scaleBinSize = 2;
+
             float[] scaleRanges = { (float) minS, (float) (minS + scaleBinSize + Math.Log10(scaleIncrement)) };
 
             using var scalesMat = new Mat<float>(logScale.Count, 1, logScale.ToArray());

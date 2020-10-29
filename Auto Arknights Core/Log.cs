@@ -27,7 +27,9 @@ namespace REVUnit.AutoArknights.Core
         public static void That(string? message, Level? level = null, string? prefix = null, bool withTime = true)
         {
             if (level != null && level.ImportanceLevel < LogLevel.ImportanceLevel) return;
+
             if (withTime) Console.Write($"[{DateTime.Now:HH:mm:ss}]", Color.Gray);
+
             if (prefix != null) Console.Write($"[{prefix}]");
 
             if (level != null)
@@ -43,7 +45,9 @@ namespace REVUnit.AutoArknights.Core
                     Console.WriteLine(message);
             }
             else
+            {
                 Console.WriteLine(message);
+            }
         }
 
         public static void Warning(string message, string? prefix = null, bool withTime = false)

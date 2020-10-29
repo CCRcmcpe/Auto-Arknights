@@ -44,6 +44,7 @@ namespace REVUnit.AutoArknights.Core.CV
             finally
             {
                 if (!_useCache) modelFeature?.Dispose();
+
                 observedFeature?.Dispose();
             }
         }

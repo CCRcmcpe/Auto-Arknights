@@ -50,10 +50,7 @@ namespace REVUnit.AutoArknights.Core
             {
                 StartInfo = new ProcessStartInfo(Executable, $"-s {Target} {parameter}")
                 {
-                    StandardOutputEncoding = Encoding.UTF8,
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    RedirectStandardOutput = true
+                    StandardOutputEncoding = Encoding.UTF8, CreateNoWindow = true, RedirectStandardOutput = true
                 }
             };
 

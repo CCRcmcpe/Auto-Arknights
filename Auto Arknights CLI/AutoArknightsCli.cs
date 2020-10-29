@@ -28,6 +28,7 @@ namespace REVUnit.AutoArknights.CLI
             if (!Library.CheckIfSupported()) throw new NotSupportedException("你当前的CPU不支持AVX2指令集，无法运行本程序");
 
             if (!File.Exists(ConfigJson)) File.Create(ConfigJson);
+
             try
             {
                 _config = new ConfigurationBuilder().AddJsonFile(ConfigJson).Build();
@@ -43,6 +44,7 @@ namespace REVUnit.AutoArknights.CLI
             _adbRemote = ConfigRequired("Remote:Address");
             _shutdownCommand = ConfigOptional("Remote:ShutdownCommand")?.Trim();
             string? forcedSuspend = ConfigOptional("ForcedSuspend");
+
             if (forcedSuspend != null && !bool.TryParse(ConfigOptional("ForcedSuspend"), out _forcedSuspend))
                 throw new Exception("配置文件中 ForcedSuspend 的值无效");
         }
@@ -60,6 +62,7 @@ namespace REVUnit.AutoArknights.CLI
             {
                 if (_postActions.Contains(PostAction.ShutdownEmulator) && _shutdownCommand == null)
                     throw new Exception("需要有效的 Remote:ShutdownCommand 才能执行关闭远端操作");
+
                 if (_postActions.Contains(PostAction.Hibernate) && !Native.IsPwrHibernateAllowed())
                     throw new Exception("系统未开启/不支持休眠");
             }
@@ -84,8 +87,9 @@ namespace REVUnit.AutoArknights.CLI
             }
 
             if (_postActions.Length != 0)
-                foreach (PostAction postAction in _postActions)
-                    ExecutePostAction(postAction);
+            {
+                foreach (PostAction postAction in _postActions) ExecutePostAction(postAction);
+            }
             else
             {
                 Console.Beep();
@@ -134,6 +138,7 @@ namespace REVUnit.AutoArknights.CLI
                 while (index < parameters.Length && char.IsDigit(parameters, index)) index++;
 
                 if (index == 1) throw new Exception("在模式 SpecifiedTimes 或 SpecTimesWithWait 下，你应该输入一个有效的刷关次数值");
+
                 _repeatTimes = int.Parse(parameters[1..index]);
             }
 
@@ -143,8 +148,10 @@ namespace REVUnit.AutoArknights.CLI
             _postActions = postActions.Select(c =>
             {
                 if (!char.IsLetter(c)) throw new Exception($"无效的后续操作值 \"{c}\"");
+
                 var postAction = (PostAction) char.ToLowerInvariant(c);
                 if (!Enum.IsDefined(postAction)) throw new Exception("无效的后续操作");
+
                 return postAction;
             }).ToArray();
         }

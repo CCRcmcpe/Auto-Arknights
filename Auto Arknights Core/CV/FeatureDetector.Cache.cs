@@ -40,7 +40,6 @@ namespace REVUnit.AutoArknights.Core.CV
                     foreach (string cacheFile in GetCacheFiles(cacheDirPath))
                         File.Delete(cacheFile);
                 else
-                {
                     foreach (string cacheFile in GetCacheFiles(cacheDirPath))
                     {
                         using var storage = new FileStorage(cacheFile, FileStorage.Mode.Read);
@@ -55,7 +54,6 @@ namespace REVUnit.AutoArknights.Core.CV
                         _md5map.Add(Path.GetFileNameWithoutExtension(cacheFile),
                                     new MatFeature(keyPoints, descriptors, originWidth, originHeight));
                     }
-                }
             }
 
             public MatFeature? this[Mat mat]
@@ -77,6 +75,7 @@ namespace REVUnit.AutoArknights.Core.CV
 
                 var hashStr = new StringBuilder();
                 foreach (byte @byte in hash) hashStr.Append(@byte.ToString("x2"));
+
                 return hashStr.ToString();
             }
 
