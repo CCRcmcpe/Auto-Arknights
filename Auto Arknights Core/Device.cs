@@ -15,7 +15,7 @@ namespace REVUnit.AutoArknights.Core
         private static readonly Random Random = new Random();
         private readonly Adb _adb;
         private readonly Assets _assets = new Assets();
-        private readonly ImageRegister _register = new ImageRegister("Assets\\Cache");
+        private readonly ImageRegister _register = new ImageRegister("Assets/Cache");
 
         public Device(string adbPath, string adbRemote)
         {
@@ -73,7 +73,7 @@ namespace REVUnit.AutoArknights.Core
 
         public LocateResult Locate(Mat model)
         {
-            using Mat scrn = Scrn();
+            using Mat scrn = Screenshot();
             return _register.Locate(model, scrn);
         }
 
@@ -83,9 +83,9 @@ namespace REVUnit.AutoArknights.Core
             Thread.Sleep(TimeSpan.FromSeconds(sec));
         }
 
-        public bool TestAp(string expr) => Locate(expr).IsSucceed;
+        public bool TestAppear(string expr) => Locate(expr).IsSucceed;
 
-        public void WaitAp(string expr, double waitSec = 3)
+        public void WaitAppear(string expr, double waitSec = 3)
         {
             X.While(() => Locate(expr), result => result.IsSucceed, TimeSpan.FromSeconds(waitSec));
         }
@@ -97,7 +97,7 @@ namespace REVUnit.AutoArknights.Core
             T ret = default;
             X.While(() =>
                     {
-                        using Mat scrn = Scrn();
+                        using Mat scrn = Screenshot();
                         using Mat sub = area.Apply(scrn);
                         string result = TxOcr.Ocr(sub);
                         return Regex.Match(result, regex);
@@ -115,6 +115,6 @@ namespace REVUnit.AutoArknights.Core
         private static Point Randomize(Point point) =>
             new Point(Math.Abs(Random.Next(-5, 5) + point.X), Math.Abs(Random.Next(-5, 5) + point.Y));
 
-        private Mat Scrn() => _adb.GetScreenShot();
+        private Mat Screenshot() => _adb.GetScreenShot();
     }
 }
