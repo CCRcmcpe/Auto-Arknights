@@ -31,9 +31,9 @@ namespace REVUnit.AutoArknights.Core
             var y = (int) Math.Round(sh * Cy);
             var w = (int) Math.Round(sw * Cw);
             var h = (int) Math.Round(sh * Ch);
-            if (sw - x - w > 0) w = sw - x;
 
-            if (sh - y - h > 0) h = sh - y;
+            if (x + w > sw) w = sw - x;
+            if (y + h > sh) h = sh - y;
 
             return super.Clone(new Rect(x, y, w, h));
         }
