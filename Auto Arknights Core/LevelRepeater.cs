@@ -85,7 +85,7 @@ namespace REVUnit.AutoArknights.Core
             Device.Click("作战 开始");
             Device.Click("作战 确认");
             Device.WaitAppear("作战 完成");
-            Device.Sleep(3);
+            Device.Sleep(5);
             Device.Click(5, 5);
         }
 
