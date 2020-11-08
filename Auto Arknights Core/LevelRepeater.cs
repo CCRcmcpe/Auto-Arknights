@@ -25,6 +25,7 @@ namespace REVUnit.AutoArknights.Core
 
         public Mode RepeatMode { get; set; }
         public int RepeatTime { get; set; }
+        public double LevelCompleteSleepTime { get; set; } = 3;
 
         public override ExecuteResult Execute()
         {
@@ -85,7 +86,7 @@ namespace REVUnit.AutoArknights.Core
             Device.Click("作战 开始");
             Device.Click("作战 确认");
             Device.WaitAppear("作战 完成");
-            Device.Sleep(5);
+            Device.Sleep(LevelCompleteSleepTime);
             Device.Click(5, 5);
         }
 

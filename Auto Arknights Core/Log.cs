@@ -82,7 +82,7 @@ namespace REVUnit.AutoArknights.Core
             public Color? LevelColor { get; set; }
             public Color? MessageColor { get; set; }
 
-            public static Level? Get(string? name)
+            public static Level Get(string? name)
             {
                 return name?.ToLower() switch
                 {
@@ -90,7 +90,7 @@ namespace REVUnit.AutoArknights.Core
                     "info"    => Info,
                     "warning" => Warning,
                     "error"   => Error,
-                    _         => null
+                    _         => throw new ArgumentOutOfRangeException(nameof(name), name, "不存在此 Level 名")
                 };
             }
 
