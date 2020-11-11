@@ -8,8 +8,8 @@ namespace REVUnit.AutoArknights.Core
         public static Mat Imread(string path, ImreadModes mode = ImreadModes.Color) =>
             Cv2.ImDecode(File.ReadAllBytes(path), mode);
 
-        public static Point ToCvPoint(this System.Drawing.Point point) => new Point(point.X, point.Y);
+        public static Point ToCvPoint(this System.Drawing.Point point) => new(point.X, point.Y);
 
-        public static System.Drawing.Point ToPoint(this Point point) => new System.Drawing.Point(point.X, point.Y);
+        public static System.Drawing.Point ToPoint(this Point point) => new(point.X, point.Y);
     }
 }

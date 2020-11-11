@@ -8,10 +8,10 @@ namespace REVUnit.AutoArknights.Core.CV
         public Point CenterPoint { get; init; }
         public Rectangle Rect { get; init; }
 
-        public static LocateResult Failed() => new LocateResult();
+        public static LocateResult Failed() => new();
 
         public static LocateResult Succeed(Rectangle rect) =>
-            new LocateResult
+            new()
             {
                 IsSucceed = true,
                 Rect = rect,

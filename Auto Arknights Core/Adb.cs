@@ -8,6 +8,11 @@ using Point = System.Drawing.Point;
 
 namespace REVUnit.AutoArknights.Core
 {
+    public class AdbException : Exception
+    {
+        public AdbException(string? message) : base(message) { }
+    }
+
     public sealed class Adb
     {
         private static readonly string[] FailSigns =
@@ -20,29 +25,28 @@ namespace REVUnit.AutoArknights.Core
         public string? Target { get; set; }
         public string Executable { get; set; }
 
-        public void Click(Point point)
-        {
-            ExecuteCore($"shell input tap {point.X} {point.Y}");
-        }
-
         public void Connect(string target)
         {
             Target = target;
             ExecuteCore($"connect {target}");
         }
 
-        public string Execute(string parameter) => Encoding.UTF8.GetString(ExecuteCore(parameter));
-
-        public Mat GetScreenShot()
+        public void Click(Point point)
         {
-            byte[] bytes = ExecuteCore("exec-out screencap -p");
-            Mat screenshot = Mat.ImDecode(bytes);
-            if (screenshot.Empty()) throw new Exception("收到了空截图");
-
-            return screenshot;
+            ExecuteCore($"shell input tap {point.X} {point.Y}");
         }
 
-        private byte[] ExecuteCore(string parameter)
+        public Mat GetScreenshot()
+        {
+            Mat result = Cv2.ImDecode(ExecuteCore("exec-out screencap -p", 5 * 1024 * 1024), ImreadModes.Color);
+            if (result.Empty()) throw new AdbException("未接收到有效数据");
+
+            return result;
+        }
+
+        public string Execute(string parameter) => Encoding.UTF8.GetString(ExecuteCore(parameter));
+
+        private byte[] ExecuteCore(string parameter, int bufferSize = 1024)
         {
             Log.That(parameter, Log.Level.Debug, "ADB");
 
@@ -50,24 +54,26 @@ namespace REVUnit.AutoArknights.Core
             {
                 StartInfo = new ProcessStartInfo(Executable, $"-s {Target} {parameter}")
                 {
-                    StandardOutputEncoding = Encoding.UTF8, CreateNoWindow = true, RedirectStandardOutput = true
+                    CreateNoWindow = true, RedirectStandardOutput = true
                 }
             };
 
             process.Start();
-            using var ms = new MemoryStream();
-            Stream stdout = process.StandardOutput.BaseStream;
-            int val;
-            while ((val = stdout.ReadByte()) != -1) ms.WriteByte((byte) val);
 
-            byte[] bytes = ms.ToArray();
-            if (bytes.Length < 200)
-            {
-                string result = Encoding.UTF8.GetString(bytes).Trim();
-                if (FailSigns.Any(failSign => result.Contains(failSign))) throw new Exception("无法连接到目标设备");
-            }
+            byte[] buffer = new byte[bufferSize];
+            Stream stdOut = process.StandardOutput.BaseStream;
 
-            return bytes;
+            int read;
+            var totalLen = 0;
+            while ((read = stdOut.Read(buffer, totalLen, bufferSize - totalLen)) > 0) totalLen += read;
+
+            Array.Resize(ref buffer, totalLen);
+
+            // 检查ADB连接状态, 但是不在收到截图之类较大的数据的时候检查
+            if (totalLen > 200) return buffer;
+            string result = Encoding.UTF8.GetString(buffer);
+            if (FailSigns.Any(failSign => result.Contains(failSign))) throw new AdbException("不能在未连接的情况下使用ADB");
+            return buffer;
         }
     }
 }

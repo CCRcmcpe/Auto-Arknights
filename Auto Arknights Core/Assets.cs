@@ -12,7 +12,7 @@ namespace REVUnit.AutoArknights.Core
 
     public class Assets : IDisposable
     {
-        private readonly Dictionary<string, Mat> _cache = new Dictionary<string, Mat>();
+        private readonly Dictionary<string, Mat> _cache = new();
 
         public void Dispose()
         {

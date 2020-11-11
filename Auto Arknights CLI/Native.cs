@@ -2,7 +2,7 @@
 
 namespace REVUnit.AutoArknights.CLI
 {
-    public static class Native
+    internal static class Native
     {
         [DllImport("powrprof.dll")]
         public static extern bool IsPwrHibernateAllowed();

@@ -58,29 +58,26 @@ namespace REVUnit.AutoArknights.Core
         [SuppressMessage("ReSharper", "MemberHidesStaticFromOuterClass")]
         public class Level
         {
-            public static readonly Level None = new Level { ImportanceLevel = int.MinValue };
+            public static readonly Level None = new() { ImportanceLevel = int.MinValue };
 
-            public static readonly Level Debug = new Level
+            public static readonly Level Debug = new()
             {
                 ImportanceLevel = -1, Name = "Debug", LevelColor = Color.Gray, MessageColor = Color.Gray
             };
 
-            public static readonly Level Info = new Level { ImportanceLevel = 0, Name = "Info" };
+            public static readonly Level Info = new() { ImportanceLevel = 0, Name = "Info" };
 
-            public static readonly Level Warning = new Level
+            public static readonly Level Warning = new()
             {
                 ImportanceLevel = 1, Name = "Warn", LevelColor = Color.Yellow
             };
 
-            public static readonly Level Error = new Level
-            {
-                ImportanceLevel = 2, Name = "Error", LevelColor = Color.Red
-            };
+            public static readonly Level Error = new() { ImportanceLevel = 2, Name = "Error", LevelColor = Color.Red };
 
-            public int ImportanceLevel { get; set; }
-            public string? Name { get; set; }
-            public Color? LevelColor { get; set; }
-            public Color? MessageColor { get; set; }
+            public int ImportanceLevel { get; init; }
+            public string? Name { get; init; }
+            public Color? LevelColor { get; init; }
+            public Color? MessageColor { get; init; }
 
             public static Level Get(string? name)
             {

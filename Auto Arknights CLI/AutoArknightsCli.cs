@@ -11,7 +11,7 @@ namespace REVUnit.AutoArknights.CLI
     public sealed class AutoArknightsCli
     {
         private const string ConfigFilePath = "Auto Arknights CLI.config.json";
-        private readonly Settings _settings = new Settings(ConfigFilePath);
+        private readonly Settings _settings = new(ConfigFilePath);
 
         private LevelRepeater.Mode _mode;
         private PostAction[] _postActions = Array.Empty<PostAction>();
@@ -43,7 +43,7 @@ namespace REVUnit.AutoArknights.CLI
 
             using var levelRepeatTask = new Task(() =>
             {
-                using Device device = new Device(_settings.Remote_AdbExecutable, _settings.Remote_Address);
+                using Device device = new(_settings.Remote_AdbExecutable, _settings.Remote_Address);
                 new LevelRepeater(device, _mode, _repeatTimes)
                 {
                     LevelCompleteSleepTime = _settings.LevelCompleteSleepTime

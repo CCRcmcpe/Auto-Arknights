@@ -17,7 +17,7 @@ namespace REVUnit.AutoArknights.Core.CV
                 GetMd5(File.ReadAllBytes(Assembly.GetCallingAssembly().Location));
 
             private readonly string _cacheDirPath;
-            private readonly Dictionary<string, MatFeature> _md5map = new Dictionary<string, MatFeature>();
+            private readonly Dictionary<string, MatFeature> _md5map = new();
             private readonly string _serialFilePath;
 
             public Cache(string cacheDirPath)

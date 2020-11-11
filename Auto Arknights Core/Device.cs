@@ -12,10 +12,10 @@ namespace REVUnit.AutoArknights.Core
 {
     public sealed class Device : IDisposable
     {
-        private static readonly Random Random = new Random();
+        private static readonly Random Random = new();
         private readonly Adb _adb;
-        private readonly Assets _assets = new Assets();
-        private readonly ImageRegister _register = new ImageRegister("Assets/Cache");
+        private readonly Assets _assets = new();
+        private readonly ImageRegister _register = new("Assets/Cache");
 
         public Device(string adbPath, string adbRemote)
         {
@@ -29,9 +29,9 @@ namespace REVUnit.AutoArknights.Core
             _register.Dispose();
         }
 
-        public void Click(string asset)
+        public void Click(string assetExpr)
         {
-            Click(Asset(asset));
+            Click(Asset(assetExpr));
         }
 
         public void Click(Mat model)
@@ -65,9 +65,9 @@ namespace REVUnit.AutoArknights.Core
             return Ocr(ScreenArea.RequiredSanity, @"\d+", matches => int.Parse(matches[0]));
         }
 
-        public LocateResult Locate(string expr)
+        public LocateResult Locate(string assetExpr)
         {
-            Mat model = Asset(expr);
+            Mat model = Asset(assetExpr);
             return Locate(model);
         }
 
@@ -77,20 +77,20 @@ namespace REVUnit.AutoArknights.Core
             return _register.Locate(model, scrn);
         }
 
-        // ReSharper disable once MemberCanBeMadeStatic.Global
-        public void Sleep(double sec)
+        // ReSharper disable once MemberCanBeMadeStatic.Global （为了统一性，这里使用非静态函数）
+        public void Sleep(double seconds)
         {
-            Thread.Sleep(TimeSpan.FromSeconds(sec));
+            Thread.Sleep(TimeSpan.FromSeconds(seconds));
         }
 
-        public bool TestAppear(string expr) => Locate(expr).IsSucceed;
+        public bool TestAppear(string assetExpr) => Locate(assetExpr).IsSucceed;
 
-        public void WaitAppear(string expr, double waitSec = 3)
+        public void WaitAppear(string assetExpr, double waitSec = 3)
         {
-            X.While(() => Locate(expr), result => result.IsSucceed, TimeSpan.FromSeconds(waitSec));
+            X.While(() => Locate(assetExpr), result => result.IsSucceed, TimeSpan.FromSeconds(waitSec));
         }
 
-        private Mat Asset(string expr) => _assets.Get(expr);
+        private Mat Asset(string assetExpr) => _assets.Get(assetExpr);
 
         private T Ocr<T>(ScreenArea area, string regex, Func<string[], T> parser, double waitSec = 1)
         {
@@ -113,8 +113,8 @@ namespace REVUnit.AutoArknights.Core
         }
 
         private static Point Randomize(Point point) =>
-            new Point(Math.Abs(Random.Next(-5, 5) + point.X), Math.Abs(Random.Next(-5, 5) + point.Y));
+            new(Math.Abs(Random.Next(-5, 5) + point.X), Math.Abs(Random.Next(-5, 5) + point.Y));
 
-        private Mat Screenshot() => _adb.GetScreenShot();
+        private Mat Screenshot() => _adb.GetScreenshot();
     }
 }

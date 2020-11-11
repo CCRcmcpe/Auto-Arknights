@@ -7,8 +7,8 @@ namespace REVUnit.AutoArknights.Core
     {
         public const double Rw = 1920.0;
         public const double Rh = 1080.0;
-        public static readonly ScreenArea CurrentSanity = new ScreenArea(1672 / Rw, 23 / Rh, 247 / Rw, 74 / Rh);
-        public static readonly ScreenArea RequiredSanity = new ScreenArea(1763 / Rw, 1014 / Rh, 78 / Rw, 39 / Rh);
+        public static readonly ScreenArea CurrentSanity = new(1672 / Rw, 23 / Rh, 247 / Rw, 74 / Rh);
+        public static readonly ScreenArea RequiredSanity = new(1763 / Rw, 1014 / Rh, 78 / Rw, 39 / Rh);
 
         public readonly double Ch;
         public readonly double Cw;
