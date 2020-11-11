@@ -4,6 +4,7 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <RootNamespace>REVUnit.AutoArknights.CLI</RootNamespace>
     <nullable>enable</nullable>
+    <RestoreSources>$(RestoreSources);../Packages;https://api.nuget.org/v3/index.json</RestoreSources>
   </PropertyGroup>
 
   <PropertyGroup>
