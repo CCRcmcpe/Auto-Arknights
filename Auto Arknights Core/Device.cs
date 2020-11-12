@@ -17,11 +17,7 @@ namespace REVUnit.AutoArknights.Core
         private readonly Assets _assets = new();
         private readonly ImageRegister _register = new("Assets/Cache");
 
-        public Device(string adbPath, string adbRemote)
-        {
-            _adb = new Adb(adbPath);
-            _adb.Connect(adbRemote);
-        }
+        public Device(string exePath, string targetSerial) => _adb = new Adb(exePath, targetSerial);
 
         public void Dispose()
         {

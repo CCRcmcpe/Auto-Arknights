@@ -15,65 +15,116 @@ namespace REVUnit.AutoArknights.Core
 
     public sealed class Adb
     {
-        private static readonly string[] FailSigns =
+        public Adb(string executable, string targetSerial)
         {
-            "cannot connect", "no device", "no emulators", "device unauthorized", "device still", "device offline"
-        };
+            Executable = executable;
+            TargetSerial = targetSerial;
 
-        public Adb(string executable) => Executable = executable;
+            if (Process.GetProcessesByName("adb").Any()) return;
+            ExecuteCore("start-server", out _);
 
-        public string? Target { get; set; }
-        public string Executable { get; set; }
-
-        public void Connect(string target)
-        {
-            Target = target;
-            ExecuteCore($"connect {target}");
+            var job = new Job();
+            job.AddProcess(Process.GetProcessesByName("adb")[0].Handle);
         }
+
+        public string Executable { get; set; }
+        public string TargetSerial { get; set; }
 
         public void Click(Point point)
         {
-            ExecuteCore($"shell input tap {point.X} {point.Y}");
+            Execute($"shell input tap {point.X} {point.Y}");
         }
 
         public Mat GetScreenshot()
         {
-            Mat result = Cv2.ImDecode(ExecuteCore("exec-out screencap -p", 5 * 1024 * 1024), ImreadModes.Color);
+            Mat result = Cv2.ImDecode(ExecuteOutBytes("exec-out screencap -p", 5 * 1024 * 1024), ImreadModes.Color);
             if (result.Empty()) throw new AdbException("未接收到有效数据");
 
             return result;
         }
 
-        public string Execute(string parameter) => Encoding.UTF8.GetString(ExecuteCore(parameter));
+        public void Execute(string parameter)
+        {
+            ExecuteCore(parameter, out string stdErr);
+            if (!string.IsNullOrWhiteSpace(stdErr)) throw new AdbException($"ADB错误 StdErr: {stdErr}");
+        }
 
-        private byte[] ExecuteCore(string parameter, int bufferSize = 1024)
+        public string ExecuteOut(string parameter, int bufferSize) =>
+            Encoding.UTF8.GetString(ExecuteOutBytes(parameter, bufferSize));
+
+        public byte[] ExecuteOutBytes(string parameter, int bufferSize)
         {
             Log.That(parameter, Log.Level.Debug, "ADB");
 
+            EnsureConnected();
+            ExecuteCore(parameter, out byte[] stdOutBytes, bufferSize, out string stdErr);
+            if (!string.IsNullOrWhiteSpace(stdErr)) throw new AdbException($"ADB错误 StdErr: {stdErr}");
+
+            return stdOutBytes;
+        }
+
+        private void EnsureConnected()
+        {
+            for (var timesTried = 0; timesTried < 2; timesTried++)
+            {
+                ExecuteCore("get-state", out string state, out _);
+                if (state == "device") return;
+
+                if (timesTried == 1) ExecuteCore("kill-server", out _);
+                Log.That($"正在连接到 {TargetSerial}", Log.Level.Debug, "ADB");
+                ExecuteCore($"connect {TargetSerial}", out _);
+            }
+
+            throw new AdbException($"无法连接到 {TargetSerial}");
+        }
+
+        private static byte[] ReadToEnd(Stream stream, int bufferSize)
+        {
+            byte[] buffer = new byte[bufferSize];
+
+            int read;
+            var totalLen = 0;
+            while ((read = stream.Read(buffer, totalLen, bufferSize - totalLen)) > 0) totalLen += read;
+
+            Array.Resize(ref buffer, totalLen);
+            return buffer;
+        }
+
+        private void ExecuteCore(string parameter, out string stdErr)
+        {
             using var process = new Process
             {
-                StartInfo = new ProcessStartInfo(Executable, $"-s {Target} {parameter}")
+                StartInfo = new ProcessStartInfo(Executable, parameter)
                 {
-                    CreateNoWindow = true, RedirectStandardOutput = true
+                    CreateNoWindow = true, RedirectStandardError = true
                 }
             };
 
             process.Start();
 
-            byte[] buffer = new byte[bufferSize];
-            Stream stdOut = process.StandardOutput.BaseStream;
+            stdErr = process.StandardError.ReadToEnd().Trim();
+        }
 
-            int read;
-            var totalLen = 0;
-            while ((read = stdOut.Read(buffer, totalLen, bufferSize - totalLen)) > 0) totalLen += read;
+        private void ExecuteCore(string parameter, out string stdOut, out string stdErr)
+        {
+            ExecuteCore(parameter, out byte[] stdOutBytes, 1024, out stdErr);
+            stdOut = Encoding.UTF8.GetString(stdOutBytes).Trim();
+        }
 
-            Array.Resize(ref buffer, totalLen);
+        private void ExecuteCore(string parameter, out byte[] stdOut, int stdOutBufferSize, out string stdErr)
+        {
+            using var process = new Process
+            {
+                StartInfo = new ProcessStartInfo(Executable, parameter)
+                {
+                    CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true
+                }
+            };
 
-            // 检查ADB连接状态, 但是不在收到截图之类较大的数据的时候检查
-            if (totalLen > 200) return buffer;
-            string result = Encoding.UTF8.GetString(buffer);
-            if (FailSigns.Any(failSign => result.Contains(failSign))) throw new AdbException("不能在未连接的情况下使用ADB");
-            return buffer;
+            process.Start();
+
+            stdOut = ReadToEnd(process.StandardOutput.BaseStream, stdOutBufferSize);
+            stdErr = process.StandardError.ReadToEnd().Trim();
         }
     }
 }
