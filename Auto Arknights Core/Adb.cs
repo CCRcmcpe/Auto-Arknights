@@ -23,8 +23,8 @@ namespace REVUnit.AutoArknights.Core
             if (Process.GetProcessesByName("adb").Any()) return;
             ExecuteCore("start-server", out _);
 
-            var job = new Job();
-            job.AddProcess(Process.GetProcessesByName("adb")[0].Handle);
+            var job = new ProcessTerminator();
+            job.Track(Process.GetProcessesByName("adb")[0]);
         }
 
         public string Executable { get; set; }

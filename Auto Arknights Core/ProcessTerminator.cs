@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 // ReSharper disable FieldCanBeMadeReadOnly.Global
@@ -9,13 +10,13 @@ namespace REVUnit.AutoArknights.Core
     /// <summary>
     ///     用来关闭ADB的黑科技。
     /// </summary>
-    public class Job
+    public class ProcessTerminator
     {
         private readonly IntPtr _handle;
 
-        public Job()
+        public ProcessTerminator()
         {
-            _handle = CreateJobObject(IntPtr.Zero, Guid.NewGuid().ToString());
+            _handle = CreateJobObject(IntPtr.Zero, $"AutoArknights ADB Tracker {Environment.ProcessId}");
 
             var info = new JOBOBJECT_BASIC_LIMIT_INFORMATION { LimitFlags = 0x2000 };
             var extendedInfo = new JOBOBJECT_EXTENDED_LIMIT_INFORMATION { BasicLimitInformation = info };
@@ -36,9 +37,9 @@ namespace REVUnit.AutoArknights.Core
             }
         }
 
-        public void AddProcess(IntPtr handle)
+        public void Track(Process process)
         {
-            AssignProcessToJobObject(_handle, handle);
+            AssignProcessToJobObject(_handle, process.Handle);
         }
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
