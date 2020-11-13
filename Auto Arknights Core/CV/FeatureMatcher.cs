@@ -83,8 +83,7 @@ namespace REVUnit.AutoArknights.Core.CV
 
             Point2f[] mCorners =
             {
-                new Point2f(0, 0), new Point2f(mf.OriginWidth, 0), new Point2f(mf.OriginWidth, mf.OriginHeight),
-                new Point2f(0, mf.OriginHeight)
+                new(0, 0), new(mf.OriginWidth, 0), new(mf.OriginWidth, mf.OriginHeight), new(0, mf.OriginHeight)
             };
 
             Point2f[] mCornersFt = Cv2.PerspectiveTransform(mCorners, homography);
@@ -139,10 +138,7 @@ namespace REVUnit.AutoArknights.Core.CV
 
             int[] histSize = { scaleBinSize, rotationBins };
             int[] channels = { 0, 1 };
-            Rangef[] ranges =
-            {
-                new Rangef(scaleRanges[0], scaleRanges[1]), new Rangef(rotations.Min(), rotations.Max())
-            };
+            Rangef[] ranges = { new(scaleRanges[0], scaleRanges[1]), new(rotations.Min(), rotations.Max()) };
 
             Mat[] arrs = { scalesMat, rotationsMat };
             Cv2.CalcHist(arrs, channels, null, hist, 2, histSize, ranges);
