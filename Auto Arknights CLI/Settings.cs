@@ -5,11 +5,11 @@ using REVUnit.AutoArknights.Core;
 
 namespace REVUnit.AutoArknights.CLI
 {
-    public class Settings
+    public class Config
     {
         private readonly IConfiguration _config;
 
-        public Settings(string jsonFilePath)
+        public Config(string jsonFilePath)
         {
             if (!File.Exists(jsonFilePath)) File.Create(jsonFilePath);
 
@@ -24,7 +24,7 @@ namespace REVUnit.AutoArknights.CLI
         }
 
         public bool ForcedSuspend => Optional("ForcedSuspend", bool.Parse, false);
-        public int LevelCompleteSleepTime => Optional("LevelCompleteSleepTime", int.Parse, 8);
+        public int? LevelCompleteSleepTime => Optional<int?>("LevelCompleteSleepTime", s => int.Parse(s), null);
         public Log.Level Log_Level => Optional("Log:Level", Log.Level.Get, Log.Level.Info);
         public string Remote_AdbExecutable => Required("Remote:AdbExecutable");
         public string Remote_Address => Required("Remote:Address");

@@ -1,4 +1,4 @@
-﻿#if !DEBUG
+﻿#if RELEASE
 using System;
 using REVUnit.AutoArknights.Core;
 using REVUnit.Crlib.Extension;
@@ -11,12 +11,12 @@ namespace REVUnit.AutoArknights.CLI
         public static void Main()
         {
 #if DEBUG
-            var app = new AutoArknightsCli();
+            var app = new App();
             app.Run();
-#else
+#elif RELEASE
             try
             {
-                var app = new AutoArknightsCli();
+                var app = new App();
                 app.Run();
             }
             catch (Exception e)

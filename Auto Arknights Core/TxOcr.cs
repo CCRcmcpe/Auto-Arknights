@@ -1,6 +1,6 @@
 ﻿using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OpenCvSharp;
 using Refit;
 
@@ -20,21 +20,18 @@ namespace REVUnit.AutoArknights.Core
 
         public static string[] OcrMulti(Mat image)
         {
-            return ((JArray) OcrInner(image)["data"]!["item_list"]!)!.Select(it => (string) it["itemstring"]!)
-                                                                     .ToArray();
-        }
-
-        private static JObject OcrInner(Mat image)
-        {
-            using var ms = image.ToMemoryStream();
-            return Api.Ocr(new StreamPart(ms, "file.png", "image/png")).Result;
+            using var ms = image.ToMemoryStream(".png", new ImageEncodingParam(ImwriteFlags.PngCompression, 8));
+            string json = Api.Ocr(new StreamPart(ms, "file.png", "image/png")).Result;
+            return JsonDocument.Parse(json).RootElement.GetProperty("data").GetProperty("item_list").EnumerateArray()
+                               .Select(it => it.GetProperty("itemstring").GetString()!).ToArray();
         }
 
         public interface ITxOcr
         {
+            [Headers("User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4321.0 Safari/537.36 Edg/88.0.702.0")]
             [Post("/cgi-bin/appdemo_generalocr")]
             [Multipart("------WebKitFormBoundary")]
-            Task<JObject> Ocr([AliasAs("image_file")] StreamPart stream);
+            Task<string> Ocr([AliasAs("image_file")] StreamPart stream);
         }
     }
 }

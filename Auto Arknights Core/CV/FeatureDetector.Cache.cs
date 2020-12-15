@@ -9,6 +9,12 @@ using OpenCvSharp;
 
 namespace REVUnit.AutoArknights.Core.CV
 {
+    public class CacheLoadException : Exception
+    {
+        public CacheLoadException(string cacheFilePath, string node, Exception? innerException = null) :
+            base($"Error loading node {node} in cache file {cacheFilePath}", innerException) { }
+    }
+
     public partial class FeatureDetector
     {
         private class Cache : IDisposable
@@ -44,15 +50,27 @@ namespace REVUnit.AutoArknights.Core.CV
                     {
                         using var storage = new FileStorage(cacheFile, FileStorage.Mode.Read);
 
-                        FileNode GetNode(string node) => storage[node] ?? throw new CacheLoadException(cacheFile, node);
+                        T Read<T>(string node, Func<FileNode, T> reader)
+                        {
+                            FileNode fileNode = storage![node] ?? throw new CacheLoadException(cacheFile, node);
+                            try
+                            {
+                                return reader(fileNode);
+                            }
+                            catch (Exception e)
+                            {
+                                throw new CacheLoadException(cacheDirPath, node, e);
+                            }
+                        }
 
-                        KeyPoint[] keyPoints = GetNode("Keypoints").ReadKeyPoints();
-                        Mat descriptors = GetNode("Descriptors").ReadMat();
-                        int originWidth = GetNode("OriginWidth").ReadInt();
-                        int originHeight = GetNode("OriginHeight").ReadInt();
+                        KeyPoint[] keyPoints = Read("Keypoints", it => it.ReadKeyPoints());
+                        Mat descriptors = Read("Descriptors", it => it.ReadMat());
+                        int originWidth = Read("MatWidth", it => it.ReadInt());
+                        int originHeight = Read("MatHeight", it => it.ReadInt());
+                        DeformationLevel type = Read("Type", it => Enum.Parse<DeformationLevel>(it.ReadString()));
 
                         _md5map.Add(Path.GetFileNameWithoutExtension(cacheFile),
-                                    new MatFeature(keyPoints, descriptors, originWidth, originHeight));
+                                    new MatFeature(keyPoints, descriptors, originWidth, originHeight, type));
                     }
             }
 
@@ -104,8 +122,9 @@ namespace REVUnit.AutoArknights.Core.CV
                     new FileStorage(Path.Combine(_cacheDirPath, $"{md5}.json.gz"), FileStorage.Mode.Write);
                 storage.Write("Keypoints", feature.KeyPoints);
                 storage.Write("Descriptors", feature.Descriptors);
-                storage.Write("OriginWidth", mat.Width);
-                storage.Write("OriginHeight", mat.Height);
+                storage.Write("MatWidth", mat.Width);
+                storage.Write("MatHeight", mat.Height);
+                storage.Write("Type", feature.Type.ToString());
 
                 File.WriteAllText(_serialFilePath, _coreAssemblySerial);
             }

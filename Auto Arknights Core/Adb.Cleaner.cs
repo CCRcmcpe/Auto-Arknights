@@ -3,13 +3,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-// ReSharper disable FieldCanBeMadeReadOnly.Global
-
 namespace REVUnit.AutoArknights.Core
 {
-    /// <summary>
-    ///     用来关闭ADB的黑科技。
-    /// </summary>
     public class ProcessTerminator
     {
         private readonly IntPtr _handle;
@@ -52,6 +47,8 @@ namespace REVUnit.AutoArknights.Core
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool AssignProcessToJobObject(IntPtr job, IntPtr process);
     }
+
+    // ReSharper disable FieldCanBeMadeReadOnly.Global
 
     [StructLayout(LayoutKind.Sequential)]
     internal struct IO_COUNTERS

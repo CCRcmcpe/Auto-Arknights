@@ -7,16 +7,18 @@ namespace REVUnit.AutoArknights.Core.CV
     {
         public readonly Mat Descriptors;
         public readonly KeyPoint[] KeyPoints;
-        public readonly int OriginHeight;
-        public readonly int OriginWidth;
+        public readonly int MatHeight;
+        public readonly int MatWidth;
+        public readonly DeformationLevel Type;
 
-        public MatFeature(KeyPoint[] keyPoints, Mat descriptors, int originWidth,
-                          int originHeight)
+        public MatFeature(KeyPoint[] keyPoints, Mat descriptors, int matWidth,
+                          int matHeight, DeformationLevel type)
         {
             KeyPoints = keyPoints;
             Descriptors = descriptors;
-            OriginWidth = originWidth;
-            OriginHeight = originHeight;
+            MatWidth = matWidth;
+            MatHeight = matHeight;
+            Type = type;
         }
 
         public void Dispose()

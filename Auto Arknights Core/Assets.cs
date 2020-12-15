@@ -34,8 +34,6 @@ namespace REVUnit.AutoArknights.Core
             return mat;
         }
 
-        private static string GetFilePath(string key) =>
-            Path.Combine("Assets", string.Join('\\', key.Split(' ', StringSplitOptions.RemoveEmptyEntries))) +
-            ".png";
+        private static string GetFilePath(string key) => Path.Combine("Assets", key) + ".png";
     }
 }

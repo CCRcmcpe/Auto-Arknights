@@ -1,145 +1,156 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 using REVUnit.AutoArknights.Core;
+using REVUnit.AutoArknights.Core.Tasks;
 using REVUnit.Crlib.Extension;
 using REVUnit.Crlib.Input;
 
 namespace REVUnit.AutoArknights.CLI
 {
-    public sealed class AutoArknightsCli
+    public class App
     {
         private const string ConfigFilePath = "Auto Arknights CLI.config.json";
-        private readonly Settings _settings = new(ConfigFilePath);
 
-        private LevelRepeater.Mode _mode;
-        private PostAction[] _postActions = Array.Empty<PostAction>();
-        private int _repeatTimes;
+        private const string Logo =
+            @"                                                                                                    
+                                   ,                                                                
+            (                      @@(                                       .                      
+            @@@       /            @@@(  /@,                                  @@@.                  
+            @@@  @@@  @@@          @@@/        (@@@                       @@/ @@                    
+            @@@  @@@  @@@   ,@@@   @@@/        (@@@        @(             @@@    (@*                
+            @@@  @@@  @@@   ,@@@   @@@/        (@@@         @@@           @@@  @@%   @@@            
+            @@@ .@@@  @@@*  ,@@@   @@@@#&.     (@@@ .%@@#    @@%          @@@   @@@  @@@            
+            @@@  @@@  @@@   ,@@@   @@@/        @@@@       @@@//@*         @@@&       @@@ @@         
+    ,@@@,   @@@  @@@  @@@   ,@@@   @@@/        #@@@      ,@@@         #@. @@@ %    /@@@@       (@@  
+            (@@@ @@@ %@@@&  ,@@@   @@@/        (@@@      (@@@            (@@   @@@   @@@            
+                     @@@    ,@@@   @@@/        (@@       @@@@     @@@@   @@@    @@@  @@@            
+                    @@@     ,@@@   @@&       @@@        *@@@      @@@@  @@.          @@@            
+                   %@,      ,@@                         @@@       @@@&           %&..@(             
+                          .@@                         .@@&        @@@,             #(               
+                                                     @&      @   ,@*                                
+                                                               %@,                                  
+                                                                                                    
+    使用本程序后果自行承担      /@@@@@@@@@@@@@@/Auto Arknights/@@@@@@@@@@@@@#           REVUnit 2020   
+                                                                                                    
 
-        public AutoArknightsCli()
+";
+
+        private static readonly Lazy<App> _lazyInitializer = new();
+
+        public App()
         {
             if (!Library.CheckIfSupported()) throw new NotSupportedException("你当前的CPU不支持AVX2指令集，无法运行本程序");
-            Log.LogLevel = _settings.Log_Level;
+            Log.LogLevel = Config.Log_Level;
         }
+
+        public static App Instance => _lazyInitializer.Value;
+        public Config Config { get; } = new(ConfigFilePath);
 
         public void Run()
         {
-            var cin = new Cin { AutoTrim = true, IgnoreCase = true, ThrowOnUndefinedEnum = true };
-            cin.Get<string>(@"<\d: 模式>[\d+: 刷关次数][\w+: 后续操作]", s =>
-            {
-                ParseParameters(s);
-                return null!;
-            });
+            Console.CursorVisible = false;
+            var cin = new Cin { AutoTrim = true };
 
-            if (_postActions.Length != 0)
-            {
-                if (_postActions.Contains(PostAction.ShutdownEmulator) && _settings.Remote_ShutdownCommand == null)
-                    throw new Exception("需要有效的 Remote:ShutdownCommand 才能执行关闭远端操作");
+            Console.Write(Logo);
+            Log.Info("正在初始化设备抽象层");
+            UserInterface.Initialize(Config.Remote_AdbExecutable, Config.Remote_Address);
+            Log.Info("启动成功");
+            Console.Clear();
 
-                if (_postActions.Contains(PostAction.Hibernate) && !Native.IsPwrHibernateAllowed())
-                    throw new Exception("系统未开启/不支持休眠");
+            Parameters parameters = cin.Get(@"<\d: 模式>[\d+: 刷关次数][\w+: 后续操作]", Parameters.Parse) ??
+                                    throw new Exception("意外的EOF");
+
+            Console.Write(@"
+-[任务列表]---------------------------------------
+
+");
+            for (var i = 0; i < parameters.Tasks.Length; i++)
+            {
+                IArkTask task = parameters.Tasks[i];
+                Console.WriteLine($@"[{i}]> {task}");
             }
 
-            using var levelRepeatTask = new Task(() =>
+            Console.Write(@"
+--------------------------------------------------
+
+");
+
+            for (var i = 0; i < parameters.Tasks.Length; i++)
             {
-                using Device device = new(_settings.Remote_AdbExecutable, _settings.Remote_Address);
-                new LevelRepeater(device, _mode, _repeatTimes)
+                IArkTask task = parameters.Tasks[i];
+
+                Log.Info($"任务[{i}]: 任务开始");
+                ExecuteResult executeResult = task.Execute();
+
+                var info = $"任务[{i}]: {executeResult.Message}";
+                if (executeResult.Succeed)
+                    Log.Info(info);
+                else
+                    Log.Error(info);
+            }
+
+            XConsole.AnyKey("所有任务完成");
+        }
+
+        private class Parameters
+        {
+            public Parameters(IArkTask[] tasks) => Tasks = tasks;
+            public IArkTask[] Tasks { get; }
+
+            public static Parameters Parse(string value)
+            {
+                var reader = new StringReader(value);
+
+                int modeValue = reader.Read() - '0';
+                var _mode = (FarmLevel.FarmMode) modeValue;
+                if (!Enum.IsDefined(_mode)) throw new ArgumentException("无效模式");
+
+                var tasks = new List<IArkTask>();
+
+                if (_mode == FarmLevel.FarmMode.SpecifiedTimes || _mode == FarmLevel.FarmMode.SpecTimesWithWait)
                 {
-                    LevelCompleteSleepTime = _settings.LevelCompleteSleepTime
-                }.Execute();
-            }, TaskCreationOptions.LongRunning);
-            levelRepeatTask.Start();
+                    var b = new StringBuilder();
+                    while (true)
+                    {
+                        int v = reader.Read();
+                        if (v == -1) break;
+                        var c = (char) v;
+                        if (char.IsDigit((char) v)) b.Append(c);
+                    }
 
-            // Discard further inputs
-            do
-            {
-                if (Console.KeyAvailable) Console.ReadKey(true);
-            } while (!levelRepeatTask.IsCompleted);
+                    if (b.Length == 0) throw new ArgumentException("无效的刷关次数值");
 
-            if (levelRepeatTask.IsFaulted)
-            {
-                Exception innerException = levelRepeatTask.Exception!.InnerExceptions[0];
-                throw innerException;
+                    int repeatTimes = int.Parse(b.ToString());
+
+                    var task = new FarmLevel(_mode, repeatTimes);
+                    tasks.Add(task);
+                }
+                else
+                {
+                    tasks.Add(new FarmLevel(_mode, -1));
+                }
+
+                if (reader.Peek() == -1)
+                    return new Parameters(tasks.ToArray()); // A mode value and maybe a repeat times number parsed
+
+                string postActions = reader.ReadToEnd();
+                IEnumerable<IArkTask> _postActions = postActions.Select<char, IArkTask>(c => c switch
+                {
+                    'c' => new Shutdown(),
+                    'r' => new Reboot(),
+                    's' => new Suspend(false) { Forced = Instance.Config.ForcedSuspend },
+                    'h' => new Suspend(true) { Forced = Instance.Config.ForcedSuspend },
+                    'e' => new ExecuteCommand(Instance.Config.Remote_ShutdownCommand ??
+                                              throw new Exception("需要有效的 Remote:ShutdownCommand 才能执行关闭远端操作")),
+                    _ => throw new ArgumentException($"无效的后续操作 \"{c}\"")
+                });
+                tasks.AddRange(_postActions);
+
+                return new Parameters(tasks.ToArray());
             }
-
-            if (_postActions.Length != 0)
-            {
-                foreach (PostAction postAction in _postActions) ExecutePostAction(postAction);
-            }
-            else
-            {
-                Console.Beep();
-                XConsole.AnyKey("所有任务完成");
-            }
-        }
-
-        private void ExecutePostAction(PostAction action)
-        {
-            bool forcedSuspend = _settings.ForcedSuspend;
-            switch (action)
-            {
-                case PostAction.Shutdown:
-                    Process.Start("shutdown.exe", "/p");
-                    break;
-                case PostAction.Reboot:
-                    Process.Start("shutdown.exe", "/r /t 0");
-                    break;
-                case PostAction.Sleep:
-                    Native.SetSuspendState(false, forcedSuspend, forcedSuspend);
-                    break;
-                case PostAction.Hibernate:
-                    Native.SetSuspendState(true, forcedSuspend, forcedSuspend);
-                    break;
-                case PostAction.ShutdownEmulator:
-                    Process.Start(
-                        new ProcessStartInfo("cmd.exe", "/c " + _settings.Remote_ShutdownCommand)
-                        {
-                            CreateNoWindow = true
-                        });
-                    break;
-                default: throw new ArgumentOutOfRangeException(nameof(action), action, null);
-            }
-        }
-
-        private void ParseParameters(string parameters)
-        {
-            int modeValue = int.Parse(parameters[..1]);
-
-            _mode = (LevelRepeater.Mode) modeValue;
-            if (!Enum.IsDefined(_mode)) throw new Exception("输入的模式超出范围");
-
-            var index = 1;
-            if (_mode == LevelRepeater.Mode.SpecifiedTimes || _mode == LevelRepeater.Mode.SpecTimesWithWait)
-            {
-                while (index < parameters.Length && char.IsDigit(parameters, index)) index++;
-
-                if (index == 1) throw new Exception("在模式 SpecifiedTimes 或 SpecTimesWithWait 下，你应该输入一个有效的刷关次数值");
-
-                _repeatTimes = int.Parse(parameters[1..index]);
-            }
-
-            if (index == parameters.Length) return; // A mode value and maybe a repeat times number parsed
-
-            string postActions = parameters[index..];
-            _postActions = postActions.Select(c =>
-            {
-                if (!char.IsLetter(c)) throw new Exception($"无效的后续操作值 \"{c}\"");
-
-                var postAction = (PostAction) char.ToLowerInvariant(c);
-                if (!Enum.IsDefined(postAction)) throw new Exception("无效的后续操作");
-
-                return postAction;
-            }).ToArray();
-        }
-
-        private enum PostAction : ushort
-        {
-            Shutdown = 'c',
-            Reboot = 'r',
-            Sleep = 's',
-            Hibernate = 'h',
-            ShutdownEmulator = 'e'
         }
     }
 }
