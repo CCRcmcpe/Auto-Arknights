@@ -6,7 +6,8 @@ namespace REVUnit.AutoArknights.Core.CV
     {
         public override RegisterResult Register(Mat model, Mat observed)
         {
-
+            NormalizeScale(observed);
+            
         }
     }
 }

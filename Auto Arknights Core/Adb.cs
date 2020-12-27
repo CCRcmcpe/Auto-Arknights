@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using OpenCvSharp;
 using Polly;
+using Serilog;
 using Point = System.Drawing.Point;
 
 namespace REVUnit.AutoArknights.Core
@@ -15,10 +16,14 @@ namespace REVUnit.AutoArknights.Core
         public AdbException(string? message) : base(message) { }
     }
 
-    public sealed class Adb
+    public class Adb
     {
+        private readonly ILogger _logger;
+
         public Adb(string executable, string targetSerial)
         {
+            _logger = Log.ForContext<Adb>();
+
             Executable = executable;
             TargetSerial = targetSerial;
 
@@ -31,7 +36,7 @@ namespace REVUnit.AutoArknights.Core
 
         private void StartServer()
         {
-            Log.That("正在启动服务器", Log.Level.Debug, "ADB");
+            _logger.Information("正在启动服务器");
             ExecuteCore("start-server", out _);
 
             var job = new ProcessTerminator();
@@ -43,7 +48,7 @@ namespace REVUnit.AutoArknights.Core
             Connect();
             string result = ExecuteOut("shell wm size");
             Match match = Regex.Match(result, @"Physical size: (\d+)x(\d+)");
-            if (!match.Success) throw new AdbException("无法获取远端分辨率信息");
+            if (!match.Success) throw new AdbException("无法获取设备分辨率信息");
 
             return new Size(int.Parse(match.Groups[1].Value), int.Parse(match.Groups[2].Value));
         }
@@ -56,18 +61,16 @@ namespace REVUnit.AutoArknights.Core
 
         public Mat GetScreenshot()
         {
-            Policy.HandleResult<Mat>(mat => mat.Empty()).Retry(3, (ret, i) => Log.Warning($"截图失败，正在重试，次数={i}")).ExecuteAndCapture(() => Cv2.ImDecode(ExecuteOutBytes("exec-out screencap -p", 5 * 1024 * 1024),
-                                   ImreadModes.Color));
-            Mat result = ;
-            if (result.Empty()) throw new AdbException("未接收到有效数据");
-
-            return result;
+            return Policy.HandleResult<Mat>(mat => mat.Empty()).Retry(3, (_, i) => Log.Warning($"截图失败，正在重试，次数={i}"))
+                         .Execute(() => Cv2.ImDecode(
+                                                ExecuteOutBytes("exec-out screencap -p", 5 * 1024 * 1024),
+                                                ImreadModes.Color)) ?? throw new AdbException("截图最终失败");
         }
 
         public void Execute(string parameter)
         {
             ExecuteCore(parameter, out string stdErr);
-            if (!string.IsNullOrWhiteSpace(stdErr)) throw new AdbException($"ADB错误 StdErr: {stdErr}");
+            if (!string.IsNullOrWhiteSpace(stdErr)) throw new AdbException($"错误 StdErr: {stdErr}");
         }
 
         public string ExecuteOut(string parameter, int bufferSize = 1024) =>
@@ -75,11 +78,11 @@ namespace REVUnit.AutoArknights.Core
 
         public byte[] ExecuteOutBytes(string parameter, int bufferSize)
         {
-            Log.That(parameter, Log.Level.Debug, "ADB");
+            _logger.Verbose("正在执行 {$param}", parameter);
 
             Connect();
             ExecuteCore(parameter, out byte[] stdOutBytes, bufferSize, out string stdErr);
-            if (!string.IsNullOrWhiteSpace(stdErr)) throw new AdbException($"ADB错误 StdErr: {stdErr}");
+            if (!string.IsNullOrWhiteSpace(stdErr)) throw new AdbException($"错误 StdErr: {stdErr}");
 
             return stdOutBytes;
         }
@@ -87,6 +90,7 @@ namespace REVUnit.AutoArknights.Core
         private bool GetIfDeviceOnline()
         {
             ExecuteCore("get-state", out string state, out _);
+            _logger.Debug("检测到设备状态: \"{state}\"", state);
             return state == "device";
         }
 
@@ -97,21 +101,26 @@ namespace REVUnit.AutoArknights.Core
 
         private void Connect()
         {
-            var tryedTimes = 0;
-            while (!GetIfDeviceOnline())
+            if (GetIfDeviceOnline())
             {
-                switch (tryedTimes)
-                {
-                    case 1:
-                        RestartServer();
-                        break;
-                    case 2: throw new AdbException($"无法连接到 {TargetSerial}");
-                }
-
-                Log.That($"正在连接到 {TargetSerial}", Log.Level.Debug, "ADB");
-                ExecuteCore($"connect {TargetSerial}", out _);
-                tryedTimes++;
+                return;
             }
+            bool succeed = Policy.HandleResult<bool>(b => !b).Retry(2, (_, _) =>
+            {
+                _logger.Error("连接失败，重新启动ADB服务器后重试");
+                RestartServer();
+            }).Execute(() =>
+            {
+                _logger.Debug("正在连接到 {target}", TargetSerial);
+                ExecuteCore($"connect {TargetSerial}", out _);
+                return GetIfDeviceOnline();
+            });
+            if (!succeed)
+            {
+                throw new AdbException("重试失败，无法连接");
+            }
+
+            _logger.Debug("连接成功");
         }
 
         private void RestartServer()

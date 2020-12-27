@@ -5,9 +5,35 @@ using System.Text;
 
 namespace REVUnit.AutoArknights.Core.Tasks
 {
-    public class Shutdown : IArkTask
+    public abstract class PostAction : IArkTask
     {
-        public ExecuteResult Execute()
+        public abstract ExecuteResult Execute();
+
+        public PostAction Parse(char c, ParseSettings parseSettings)
+        {
+            return c switch
+            {
+                'c' => new Shutdown(),
+                'r' => new Reboot(),
+                's' => new Suspend(false) { Forced = parseSettings.ForcedSuspend },
+                'h' => new Suspend(true) { Forced = parseSettings.ForcedSuspend },
+                'e' => new ExecuteCommand(parseSettings.Command ?? throw new ArgumentNullException(nameof(
+                                                  parseSettings.Command),
+                                              "需要有效的 Remote:ShutdownCommand 才能执行\"执行命令\"后续操作")),
+                _ => throw new FormatException($"无效的后续操作标识符 \"{c}\"")
+            };
+        }
+
+        public class ParseSettings
+        {
+            public bool ForcedSuspend { get; init; }
+            public string? Command { get; init; }
+        }
+    }
+
+    public class Shutdown : PostAction
+    {
+        public override ExecuteResult Execute()
         {
             Process.Start("shutdown.exe", "/p");
             return ExecuteResult.Success();
@@ -16,9 +42,9 @@ namespace REVUnit.AutoArknights.Core.Tasks
         public override string ToString() => "关机";
     }
 
-    public class Reboot : IArkTask
+    public class Reboot : PostAction
     {
-        public ExecuteResult Execute()
+        public override ExecuteResult Execute()
         {
             Process.Start("shutdown.exe", "/r /t 0");
             return ExecuteResult.Success();
@@ -27,7 +53,7 @@ namespace REVUnit.AutoArknights.Core.Tasks
         public override string ToString() => "重启";
     }
 
-    public class Suspend : IArkTask
+    public class Suspend : PostAction
     {
         public Suspend(bool hibernate)
         {
@@ -38,7 +64,7 @@ namespace REVUnit.AutoArknights.Core.Tasks
         public bool Hibernate { get; set; }
         public bool Forced { get; set; }
 
-        public ExecuteResult Execute()
+        public override ExecuteResult Execute()
         {
             SetSuspendState(Hibernate, Forced, Forced);
             return ExecuteResult.Success();
@@ -53,28 +79,20 @@ namespace REVUnit.AutoArknights.Core.Tasks
         public override string ToString()
         {
             var b = new StringBuilder();
-            if (Forced)
-            {
-                b.Append("强制");
-            }
+            if (Forced) b.Append("强制");
 
             b.Append(!Hibernate ? "睡眠" : "休眠");
             return b.ToString();
         }
     }
 
-    public class ExecuteCommand : IArkTask
+    public class ExecuteCommand : PostAction
     {
-        public ExecuteCommand(string command)
-        {
-            if (string.IsNullOrWhiteSpace(command)) throw new ArgumentException("命令不能为空", nameof(command));
-            Command = command;
-        }
-
+        public ExecuteCommand(string command) => Command = command;
         public string Command { get; set; }
         public int Timeout { get; set; } = 2000;
 
-        public ExecuteResult Execute()
+        public override ExecuteResult Execute()
         {
             Process? process =
                 Process.Start(new ProcessStartInfo("cmd.exe", "/c " + Command) { CreateNoWindow = true });

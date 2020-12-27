@@ -1,6 +1,8 @@
-﻿#if RELEASE
-using System;
-using REVUnit.AutoArknights.Core;
+﻿using System;
+using Serilog;
+using Serilog.Sinks.SystemConsole.Themes;
+
+#if RELEASE
 using REVUnit.Crlib.Extension;
 #endif
 
@@ -10,13 +12,14 @@ namespace REVUnit.AutoArknights.CLI
     {
         public static void Main()
         {
+            var app = App.Instance;
+            Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(app.Config.Inner).WriteTo.Console(theme: AnsiConsoleTheme.Code).WriteTo.Debug().WriteTo
+                                                  .File($@"Log\{DateTime.Now}.log").CreateLogger();
 #if DEBUG
-            var app = new App();
             app.Run();
 #elif RELEASE
             try
             {
-                var app = new App();
                 app.Run();
             }
             catch (Exception e)

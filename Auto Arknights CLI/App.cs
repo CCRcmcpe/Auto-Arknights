@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -7,6 +8,8 @@ using REVUnit.AutoArknights.Core;
 using REVUnit.AutoArknights.Core.Tasks;
 using REVUnit.Crlib.Extension;
 using REVUnit.Crlib.Input;
+using Serilog;
+using Serilog.Events;
 
 namespace REVUnit.AutoArknights.CLI
 {
@@ -38,12 +41,11 @@ namespace REVUnit.AutoArknights.CLI
 
 ";
 
-        private static readonly Lazy<App> _lazyInitializer = new();
+        private static readonly Lazy<App> _lazyInitializer = new(new App());
 
-        public App()
+        private App()
         {
-            if (!Library.CheckIfSupported()) throw new NotSupportedException("你当前的CPU不支持AVX2指令集，无法运行本程序");
-            Log.LogLevel = Config.Log_Level;
+            
         }
 
         public static App Instance => _lazyInitializer.Value;
@@ -51,13 +53,13 @@ namespace REVUnit.AutoArknights.CLI
 
         public void Run()
         {
-            Console.CursorVisible = false;
+            if (!Library.CheckIfSupported()) throw new NotSupportedException("你当前的CPU不支持AVX2指令集，无法运行本程序");
             var cin = new Cin { AutoTrim = true };
 
             Console.Write(Logo);
-            Log.Info("正在初始化设备抽象层");
+            Log.Information("正在初始化设备抽象层");
             UserInterface.Initialize(Config.Remote_AdbExecutable, Config.Remote_Address);
-            Log.Info("启动成功");
+            Log.Information("启动成功");
             Console.Clear();
 
             Parameters parameters = cin.Get(@"<\d: 模式>[\d+: 刷关次数][\w+: 后续操作]", Parameters.Parse) ??
@@ -77,17 +79,20 @@ namespace REVUnit.AutoArknights.CLI
 --------------------------------------------------
 
 ");
+            
+            XConsole.AnyKey();
+            Log.Information("即将执行{tasks}",parameters.Tasks);
 
             for (var i = 0; i < parameters.Tasks.Length; i++)
             {
                 IArkTask task = parameters.Tasks[i];
 
-                Log.Info($"任务[{i}]: 任务开始");
+                Log.Information("任务[{number}]: 任务开始", i);
                 ExecuteResult executeResult = task.Execute();
 
-                var info = $"任务[{i}]: {executeResult.Message}";
+                const string info = "任务[{number}]: {executeResult.Message}";
                 if (executeResult.Succeed)
-                    Log.Info(info);
+                    Log.Information(info);
                 else
                     Log.Error(info);
             }
@@ -137,20 +142,13 @@ namespace REVUnit.AutoArknights.CLI
                     return new Parameters(tasks.ToArray()); // A mode value and maybe a repeat times number parsed
 
                 string postActions = reader.ReadToEnd();
-                IEnumerable<IArkTask> _postActions = postActions.Select<char, IArkTask>(c => c switch
-                {
-                    'c' => new Shutdown(),
-                    'r' => new Reboot(),
-                    's' => new Suspend(false) { Forced = Instance.Config.ForcedSuspend },
-                    'h' => new Suspend(true) { Forced = Instance.Config.ForcedSuspend },
-                    'e' => new ExecuteCommand(Instance.Config.Remote_ShutdownCommand ??
-                                              throw new Exception("需要有效的 Remote:ShutdownCommand 才能执行关闭远端操作")),
-                    _ => throw new ArgumentException($"无效的后续操作 \"{c}\"")
-                });
+                IEnumerable<IArkTask> _postActions = postActions.Select<char, IArkTask>();
                 tasks.AddRange(_postActions);
 
                 return new Parameters(tasks.ToArray());
             }
+            
+            private static 
         }
     }
 }

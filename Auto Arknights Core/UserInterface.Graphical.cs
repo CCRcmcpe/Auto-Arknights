@@ -9,7 +9,7 @@ namespace REVUnit.AutoArknights.Core
     {
         public class GraphicalInterface
         {
-            private readonly Assets _assets = new();
+            private readonly ImageAssets _assets = new();
             private readonly UserInterface _userInterface;
             private readonly FeatureBasedImageRegister _register = new("Assets/Cache");
 
