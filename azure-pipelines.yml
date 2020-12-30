@@ -12,26 +12,18 @@ pool:
 steps:
 - checkout: self
   name: "Checkout"
-  clean: true
-  fetchDepth: 1
-  submodules: recursive
 - task: UseDotNet@2
   name: "Init"
-  displayName: "Initialize Environment"
   inputs:
     packageType: 'sdk'
     version: '5.x'
-    includePreviewVersions: true
-    performMultiLevelLookup: true
 - task: PowerShell@2
   name: "Build"
-  displayName: "Build Artifact"
   inputs:
     filePath: 'Auto Arknights CLI/build-winx64.ps1'
     workingDirectory: 'Auto Arknights CLI'
 - task: PublishPipelineArtifact@1
-  name: "Pack"
-  displayName: "Pack And Publish Artifact"
+  name: "Publish"
   inputs:
     targetPath: 'Auto Arknights CLI/artifact'
     artifactName: 'Auto-Arknights-CLI'
