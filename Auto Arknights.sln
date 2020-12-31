@@ -14,18 +14,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auto Arknights CLI", "Auto 
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x64 = Debug|x64
-		Release|x64 = Release|x64
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}.Debug|x64.ActiveCfg = Debug|x64
-		{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}.Debug|x64.Build.0 = Debug|x64
-		{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}.Release|x64.ActiveCfg = Release|x64
-		{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}.Release|x64.Build.0 = Release|x64
-		{0C76DBB2-8CCF-4860-8C28-C542E74666BE}.Debug|x64.ActiveCfg = Debug|x64
-		{0C76DBB2-8CCF-4860-8C28-C542E74666BE}.Debug|x64.Build.0 = Debug|x64
-		{0C76DBB2-8CCF-4860-8C28-C542E74666BE}.Release|x64.ActiveCfg = Release|x64
-		{0C76DBB2-8CCF-4860-8C28-C542E74666BE}.Release|x64.Build.0 = Release|x64
+		{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C76DBB2-8CCF-4860-8C28-C542E74666BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C76DBB2-8CCF-4860-8C28-C542E74666BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C76DBB2-8CCF-4860-8C28-C542E74666BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C76DBB2-8CCF-4860-8C28-C542E74666BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
