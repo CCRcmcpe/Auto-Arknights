@@ -1,12 +1,12 @@
 # Auto Arknights [![Build Status](https://rev-unit.visualstudio.com/Auto-Arknights/_apis/build/status/CCRcmcpe.Auto-Arknights?branchName=main)](https://rev-unit.visualstudio.com/Auto-Arknights/_build/latest?definitionId=1&branchName=main) [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FCCRcmcpe%2FAuto-Arknights.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FCCRcmcpe%2FAuto-Arknights?ref=badge_shield)
 
-![刷关演示图片](Docs/Sample.png "刷关演示")
+![刷关演示图片](Docs/RunSample.png "刷关演示")
 *用于自动化明日方舟刷关的程序。*  
 
 ## 入门
 
 > [主程序下载](../../releases/latest)  
-[使用手册](../../wiki/Home)
+> [使用手册](../../wiki/Home)
 
 ### 必须运行要求
 
@@ -25,4 +25,5 @@
 
 ### 鸣谢
 
-[Jetbrains](https://www.jetbrains.com/) 为本项目提供了免费的开源项目开发用许可证，这对本项目的开发有很大的帮助。
+<a href="https://www.jetbrains.com/"><img src="Docs/Jetbrains.svg" alt="JetBrains" height="100"/></a>  
+JetBrains 为本项目提供了免费的开源项目开发用许可证，这对本项目的开发有很大的帮助。
