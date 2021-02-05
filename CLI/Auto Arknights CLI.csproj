@@ -18,6 +18,7 @@
   <PropertyGroup Condition="'$(Configuration)'=='Publish'">
     <SelfContained>false</SelfContained>
     <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
