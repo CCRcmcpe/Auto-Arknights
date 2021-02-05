@@ -8,13 +8,16 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <Platforms>x64</Platforms>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <NeutralLanguage>zh-CN</NeutralLanguage>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)'=='Publish'">
-    <Platforms>x64</Platforms>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>false</SelfContained>
     <PublishReadyToRun>true</PublishReadyToRun>
     <DebugType>none</DebugType>
@@ -31,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Auto Arknights Core\Auto Arknights Core.csproj" />
+    <ProjectReference Include="..\Core\Auto Arknights Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

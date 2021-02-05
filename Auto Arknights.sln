@@ -3,29 +3,29 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29519.161
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auto Arknights Core", "Auto Arknights Core\Auto Arknights Core.csproj", "{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auto Arknights Core", "Core\Auto Arknights Core.csproj", "{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6968A583-55D4-446F-9F73-EB91ACE1FB74}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auto Arknights CLI", "Auto Arknights CLI\Auto Arknights CLI.csproj", "{0C76DBB2-8CCF-4860-8C28-C542E74666BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auto Arknights CLI", "CLI\Auto Arknights CLI.csproj", "{0C76DBB2-8CCF-4860-8C28-C542E74666BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0C76DBB2-8CCF-4860-8C28-C542E74666BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0C76DBB2-8CCF-4860-8C28-C542E74666BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0C76DBB2-8CCF-4860-8C28-C542E74666BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0C76DBB2-8CCF-4860-8C28-C542E74666BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}.Debug|x64.ActiveCfg = Debug|x64
+		{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}.Debug|x64.Build.0 = Debug|x64
+		{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}.Release|x64.ActiveCfg = Release|x64
+		{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}.Release|x64.Build.0 = Release|x64
+		{0C76DBB2-8CCF-4860-8C28-C542E74666BE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0C76DBB2-8CCF-4860-8C28-C542E74666BE}.Debug|x64.Build.0 = Debug|Any CPU
+		{0C76DBB2-8CCF-4860-8C28-C542E74666BE}.Release|x64.ActiveCfg = Release|x64
+		{0C76DBB2-8CCF-4860-8C28-C542E74666BE}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
