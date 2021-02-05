@@ -10,7 +10,10 @@ namespace REVUnit.AutoArknights.Core
     {
         private static readonly Random Random = new();
 
-        private static UserInterface? _instance;
+        private static readonly Lazy<UserInterface> LazyInitializer = new(() => new UserInterface(
+                                                                              Library.Settings.Remote.AdbExecutable,
+                                                                              Library.Settings.Remote.Serial));
+
         private readonly Adb _adb;
 
         private readonly Size _resolution;
@@ -26,12 +29,7 @@ namespace REVUnit.AutoArknights.Core
         public GraphicalInterface Graphical { get; }
         public TextualInterface Textual { get; }
 
-        public static UserInterface I => _instance ?? throw new InvalidOperationException("未初始化");
-
-        public static void Initialize(string exePath, string targetSerial)
-        {
-            _instance = new UserInterface(exePath, targetSerial);
-        }
+        public static UserInterface I => LazyInitializer.Value;
 
         private static Point Randomize(Point point) =>
             new(Math.Abs(Random.Next(-5, 5) + point.X), Math.Abs(Random.Next(-5, 5) + point.Y));

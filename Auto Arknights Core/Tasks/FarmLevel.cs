@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using OpenCvSharp;
-using REVUnit.AutoArknights.Core.CV;
 using Serilog;
 using static REVUnit.AutoArknights.Core.UserInterface;
 
@@ -39,7 +37,7 @@ namespace REVUnit.AutoArknights.Core.Tasks
                 FarmMode.SpecTimesWithWait => SpecTimesWithWait(),
                 FarmMode.UntilNoSanity     => UntilNoSanity(),
                 FarmMode.WaitWhileNoSanity => WaitWhileNoSanity(),
-                _                      => throw new ArgumentOutOfRangeException(nameof(Mode), Mode, null)
+                _                          => throw new ArgumentOutOfRangeException(nameof(Mode), Mode, null)
             };
             return ExecuteResult.Success($"成功刷关{repeatedTimes}次");
         }
@@ -75,19 +73,18 @@ namespace REVUnit.AutoArknights.Core.Tasks
 
         private static void RunOnce()
         {
-            I.Graphical.DeformationLevel = DeformationLevel.Fast;
             I.Graphical.Click("作战/开始");
             I.Graphical.Click("作战/确认");
-            Utils.Sleep(10);
+            Utils.Sleep(Library.Settings.Intervals.BeforeVerifyInLevel);
             if (!I.Graphical.TestAppear("作战/接管作战"))
             {
                 Log.Warning("未检测到代理指挥正常运行迹象！");
+                Log.Warning("请检查是否在正常代理作战，如果是的话请增加检测代理正常前等待的时间，以避免假警告出现");
             }
+
             Utils.Sleep(50);
-            while (I.Graphical.TestAppear("作战/接管作战"))
-            {
-                
-            }
+            while (I.Graphical.TestAppear("作战/接管作战")) { }
+
             Utils.Sleep(5);
             while (true)
             {

@@ -44,6 +44,7 @@ namespace REVUnit.AutoArknights.Core
 
         public static readonly RelativeArea CurrentSanity = Ref1080P(1672, 23, 1919, 97);
         public static readonly RelativeArea RequiredSanity = Ref1080P(1763, 1014, 1841, 1053);
+
         public static readonly RelativeArea LevelCompletedScreenCloseClick = Ref1080P(0, 0, 1920, 700);
         //public static readonly RelativeArea LevelCompletedText = Ref1080P(23, 860, 637, 1026);
 

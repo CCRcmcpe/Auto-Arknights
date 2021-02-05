@@ -49,6 +49,7 @@ namespace REVUnit.AutoArknights.Core
     }
 
     // ReSharper disable FieldCanBeMadeReadOnly.Global
+    // ReSharper disable InconsistentNaming
 
     [StructLayout(LayoutKind.Sequential)]
     internal struct IO_COUNTERS

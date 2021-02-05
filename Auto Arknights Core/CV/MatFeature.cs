@@ -9,10 +9,10 @@ namespace REVUnit.AutoArknights.Core.CV
         public readonly KeyPoint[] KeyPoints;
         public readonly int MatHeight;
         public readonly int MatWidth;
-        public readonly DeformationLevel Type;
+        public readonly Feature2DType Type;
 
         public MatFeature(KeyPoint[] keyPoints, Mat descriptors, int matWidth,
-                          int matHeight, DeformationLevel type)
+                          int matHeight, Feature2DType type)
         {
             KeyPoints = keyPoints;
             Descriptors = descriptors;

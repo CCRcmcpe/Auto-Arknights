@@ -3,11 +3,11 @@ using OpenCvSharp;
 
 namespace REVUnit.AutoArknights.Core.CV
 {
-    public class FeatureBasedImageRegister : ImageRegister, IDisposable
+    public class FeatureRegister : ImageRegister, IDisposable
     {
         private readonly bool _useCache;
 
-        public FeatureBasedImageRegister(string? cacheDirPath = null)
+        public FeatureRegister(string? cacheDirPath = null)
         {
             _useCache = cacheDirPath != null;
             FeatureDetector = new FeatureDetector(cacheDirPath);
@@ -25,16 +25,23 @@ namespace REVUnit.AutoArknights.Core.CV
             FeatureMatcher.Dispose();
         }
 
-        public override RegisterResult Register(Mat model, Mat observed)
+        protected override RegisterResult[] RegisterInternal(Mat model, Mat observed, int minMatchCount)
+        {
+            return new[] { Register(model, observed, Feature2DType.FastFreak) };
+        }
+
+        public RegisterResult Register(Mat model, Mat observed, Feature2DType type)
         {
             MatFeature? observedFeature = null;
             MatFeature? modelFeature = null;
             try
             {
-                modelFeature = FeatureDetector.DetectCached(model, deformationLevel);
-                observedFeature = FeatureDetector.Detect(observed, deformationLevel);
+                modelFeature = FeatureDetector.DetectCached(model, type);
+                observedFeature = FeatureDetector.Detect(observed, type);
                 (double confidence, Rect circumRect) = FeatureMatcher.Match(modelFeature, observedFeature);
-                return confidence > SuccessThreshold ? RegisterResult.Succeed(circumRect) : RegisterResult.Failed();
+                return confidence > SuccessThreshold
+                    ? RegisterResult.Succeed(circumRect, confidence)
+                    : RegisterResult.Failed();
             }
             finally
             {

@@ -1,14 +1,14 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Microsoft.Extensions.Configuration;
+using REVUnit.AutoArknights.Core;
 using REVUnit.Crlib.Extension;
 
 namespace REVUnit.AutoArknights.CLI
 {
-    public class Config
+    public partial class Config : ISettings
     {
-        public IConfiguration Inner { get; }
-        
         public Config(string jsonFilePath)
         {
             if (!File.Exists(jsonFilePath)) File.Create(jsonFilePath);
@@ -21,15 +21,19 @@ namespace REVUnit.AutoArknights.CLI
             {
                 throw new FormatException("配置文件无效，请检查语法", e);
             }
+
+            Remote = new RemoteConfigImpl(this);
+            Intervals = new IntervalsConfigImpl(this);
         }
 
-        public bool ForcedSuspend => Optional("ForcedSuspend", bool.Parse);
-        public int? LevelCompleteSleepTime => Optional<int?>("LevelCompleteSleepTime", s => int.Parse(s));
-        public string Remote_AdbExecutable => Required("Remote:AdbExecutable");
-        public string Remote_Address => Required("Remote:Address");
-        public string? Remote_ShutdownCommand => Optional("Remote:ShutdownCommand")?.Trim();
+        public IConfiguration Inner { get; }
 
-        public string Required(string key) => Inner[key] ?? throw new Exception($"配置文件需填写 {key}");
+        public bool ForcedSuspend => Optional("ForcedSuspend", bool.Parse);
+
+        public string Required(params string[] keys)
+        {
+            return keys.Select(key => Inner[key]).FirstOrDefault() ?? throw new Exception($"配置文件需填写 {keys[0]}");
+        }
 
         public T Required<T>(string key, Func<string?, T>? parser = null, Predicate<T>? validator = null)
         {
@@ -59,7 +63,10 @@ namespace REVUnit.AutoArknights.CLI
             return value;
         }
 
-        public string? Optional(string key) => Inner[key];
+        public string? Optional(params string[] keys)
+        {
+            return keys.Select(key => Inner[key]).FirstOrDefault();
+        }
 
         public T? Optional<T>(string key, Func<string, T>? parser = null, T? defaultValue = default,
                               Predicate<T?>? validator = null)

@@ -9,25 +9,19 @@ namespace REVUnit.AutoArknights.Core.Tasks
     {
         public abstract ExecuteResult Execute();
 
-        public PostAction Parse(char c, ParseSettings parseSettings)
+        public static PostAction Parse(char c, ISettings settings)
         {
             return c switch
             {
                 'c' => new Shutdown(),
                 'r' => new Reboot(),
-                's' => new Suspend(false) { Forced = parseSettings.ForcedSuspend },
-                'h' => new Suspend(true) { Forced = parseSettings.ForcedSuspend },
-                'e' => new ExecuteCommand(parseSettings.Command ?? throw new ArgumentNullException(nameof(
-                                                  parseSettings.Command),
-                                              "需要有效的 Remote:ShutdownCommand 才能执行\"执行命令\"后续操作")),
+                's' => new Suspend(false) { Forced = settings.ForcedSuspend },
+                'h' => new Suspend(true) { Forced = settings.ForcedSuspend },
+                'e' => new ExecuteCommand(settings.Remote.ShutdownCommand ?? throw new ArgumentNullException(nameof(
+                                                  settings.Remote.ShutdownCommand),
+                                              "需要有效的 Remote:ShutdownCommand 才能执行\"执行指令\"后续操作")),
                 _ => throw new FormatException($"无效的后续操作标识符 \"{c}\"")
             };
-        }
-
-        public class ParseSettings
-        {
-            public bool ForcedSuspend { get; init; }
-            public string? Command { get; init; }
         }
     }
 
@@ -98,9 +92,9 @@ namespace REVUnit.AutoArknights.Core.Tasks
                 Process.Start(new ProcessStartInfo("cmd.exe", "/c " + Command) { CreateNoWindow = true });
             if (process == null) return new ExecuteResult(false, "无法启动cmd");
 
-            return process.WaitForExit(Timeout) ? new ExecuteResult(false, "命令超时") : new ExecuteResult(true, "命令已执行");
+            return process.WaitForExit(Timeout) ? new ExecuteResult(false, "指令超时") : new ExecuteResult(true, "指令已执行");
         }
 
-        public override string ToString() => $"执行命令：{Command[..Command.IndexOf(' ')]}...";
+        public override string ToString() => $"执行指令：{Command[..Command.IndexOf(' ')]}...";
     }
 }

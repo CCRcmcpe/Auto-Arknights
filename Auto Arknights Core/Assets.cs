@@ -13,7 +13,7 @@ namespace REVUnit.AutoArknights.Core
     public class ImageAssets : IDisposable
     {
         private readonly Dictionary<string, Mat> _cache = new();
-        public static Size TargetSize { get; } = new (1920, 1080);
+        public static Size TargetSize { get; } = new(1920, 1080);
 
         public void Dispose()
         {

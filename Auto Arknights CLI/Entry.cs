@@ -13,8 +13,10 @@ namespace REVUnit.AutoArknights.CLI
         public static void Main()
         {
             var app = App.Instance;
-            Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(app.Config.Inner).WriteTo.Console(theme: AnsiConsoleTheme.Code).WriteTo.Debug().WriteTo
-                                                  .File($@"Log\{DateTime.Now}.log").CreateLogger();
+            Log.Logger = new LoggerConfiguration()
+                        .ReadFrom.Configuration(app.Config.Inner).WriteTo.Console(theme: AnsiConsoleTheme.Code).WriteTo
+                        .Debug().WriteTo
+                        .File($@"Log\{DateTime.Now}.log").CreateLogger();
 #if DEBUG
             app.Run();
 #elif RELEASE

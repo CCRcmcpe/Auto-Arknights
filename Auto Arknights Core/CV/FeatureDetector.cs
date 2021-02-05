@@ -7,16 +7,10 @@ namespace REVUnit.AutoArknights.Core.CV
 {
     public partial class FeatureDetector : IDisposable
     {
-        public enum FeatureType
-        {
-            USurf,
-            Surf,
-            Sift
-        }
-
         private readonly Cache? _cache;
-        private readonly SIFT _sift = SIFT.Create();
-        private readonly SURF _surf = SURF.Create(400, 2);
+        private readonly Feature2D _fast = FastFeatureDetector.Create();
+        private readonly Feature2D _freak = FREAK.Create();
+        private readonly Feature2D _sift = SIFT.Create();
 
         public FeatureDetector(string? cacheDirPath = null)
         {
@@ -25,11 +19,13 @@ namespace REVUnit.AutoArknights.Core.CV
 
         public void Dispose()
         {
+            _cache?.Dispose();
+            _fast.Dispose();
+            _freak.Dispose();
             _sift.Dispose();
-            _surf.Dispose();
         }
 
-        public MatFeature DetectCached(Mat mat, DeformationLevel deformationLevel)
+        public MatFeature DetectCached(Mat mat, Feature2DType type)
         {
             if (_cache == null)
                 throw new InvalidOperationException("Cannot use cached detect when cache directory is not set");
@@ -37,34 +33,32 @@ namespace REVUnit.AutoArknights.Core.CV
             MatFeature? result = _cache[mat];
             if (result != null) return result;
 
-            result = Detect(mat, deformationLevel);
+            result = Detect(mat, type);
             _cache[mat] = result;
 
             return result;
         }
 
-        public MatFeature Detect(Mat mat, DeformationLevel deformationLevel)
+        public MatFeature Detect(Mat mat, Feature2DType type)
         {
-            Feature2D feature2D;
-            switch (deformationLevel)
-            {
-                case DeformationLevel.Fast:
-                    feature2D = _surf;
-                    _surf.Upright = true;
-                    break;
-                case DeformationLevel.Medium:
-                    feature2D = _surf;
-                    _surf.Upright = false;
-                    break;
-                case DeformationLevel.Slow:
-                    feature2D = _sift;
-                    break;
-                default: throw new ArgumentOutOfRangeException(nameof(deformationLevel), deformationLevel, null);
-            }
+            var (detector, descriptor) = GetFeature2D(type);
 
-            var des = new Mat();
-            feature2D.DetectAndCompute(mat, null, out KeyPoint[] kps, des);
-            return new MatFeature(kps, des, mat.Width, mat.Height, deformationLevel);
+            KeyPoint[] keyPoints = detector.Detect(mat);
+
+            var descriptors = new Mat();
+            descriptor.Compute(mat, ref keyPoints, descriptors);
+
+            return new MatFeature(keyPoints, descriptors, mat.Width, mat.Height, type);
+        }
+
+        private (Feature2D detector, Feature2D descriptor) GetFeature2D(Feature2DType feature2DType)
+        {
+            return feature2DType switch
+            {
+                Feature2DType.FastFreak => (_fast, _freak),
+                Feature2DType.Sift => (_sift, _sift),
+                _ => throw new ArgumentOutOfRangeException(nameof(feature2DType), feature2DType, null)
+            };
         }
     }
 }

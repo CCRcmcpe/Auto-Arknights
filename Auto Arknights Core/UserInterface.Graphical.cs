@@ -10,17 +10,17 @@ namespace REVUnit.AutoArknights.Core
         public class GraphicalInterface
         {
             private readonly ImageAssets _assets = new();
+            private readonly TemplateRegister _register = new();
             private readonly UserInterface _userInterface;
-            private readonly FeatureBasedImageRegister _register = new("Assets/Cache");
 
             public GraphicalInterface(UserInterface userInterface) => _userInterface = userInterface;
+            public double ConfidenceThreshold { get; set; } = 0.75;
 
-            public DeformationLevel DeformationLevel { get; set; }
+            private bool IsSuccessful(RegisterResult result) => result.Confidence > ConfidenceThreshold;
 
             public void Dispose()
             {
                 _assets.Dispose();
-                _register.Dispose();
             }
 
             public void Click(string assetExpr)
@@ -30,8 +30,8 @@ namespace REVUnit.AutoArknights.Core
 
             public void Click(Mat model)
             {
-                _userInterface.Click(X.While(() => Locate(model), result => result.IsSucceed,
-                                      TimeSpan.FromSeconds(2))!.CircumRect);
+                _userInterface.Click(X.While(() => Locate(model), IsSuccessful,
+                                             TimeSpan.FromSeconds(2))!.CircumRect);
             }
 
             public RegisterResult Locate(string assetExpr)
@@ -43,16 +43,21 @@ namespace REVUnit.AutoArknights.Core
             public RegisterResult Locate(Mat model)
             {
                 using Mat scrn = _userInterface.GetScreenshot();
-                RegisterResult result = _register.Locate(model, scrn, DeformationLevel);
+                RegisterResult result = _register.Register(model, scrn, 1)[0];
                 return result;
             }
 
-            public bool TestAppear(string assetExpr) => Locate(assetExpr).IsSucceed;
-
-            public void WaitAppear(string assetExpr, double waitSec = 5)
+            public RegisterResult[] LocateMulti(Mat model, int minMatchCount = 1)
             {
-                X.While(() => Locate(assetExpr), result => result.IsSucceed, TimeSpan.FromSeconds(waitSec));
+                using Mat scrn = _userInterface.GetScreenshot();
+                RegisterResult[] result = _register.Register(model, scrn, minMatchCount);
+                return result;
             }
+
+            public bool TestAppear(string assetExpr) => IsSuccessful(Locate(assetExpr));
+
+            public void WaitAppear(string assetExpr, double waitSec = 5) =>
+                X.While(() => Locate(assetExpr), IsSuccessful, TimeSpan.FromSeconds(waitSec));
 
             private Mat Asset(string assetExpr) => _assets.Get(assetExpr);
         }

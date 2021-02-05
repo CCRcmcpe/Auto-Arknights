@@ -36,11 +36,12 @@ namespace REVUnit.AutoArknights.Core
 
         private void StartServer()
         {
-            _logger.Information("正在启动服务器");
+            _logger.Information("正在启动 ADB 服务器");
             ExecuteCore("start-server", out _);
 
             var job = new ProcessTerminator();
-            job.Track(Process.GetProcessesByName("adb").ElementAtOrDefault(0) ?? throw new AdbException("服务器未能正常启动"));
+            job.Track(
+                Process.GetProcessesByName("adb").ElementAtOrDefault(0) ?? throw new AdbException("ADB 服务器未能正常启动"));
         }
 
         public Size GetResolution()
@@ -61,16 +62,17 @@ namespace REVUnit.AutoArknights.Core
 
         public Mat GetScreenshot()
         {
-            return Policy.HandleResult<Mat>(mat => mat.Empty()).Retry(3, (_, i) => Log.Warning($"截图失败，正在重试，次数={i}"))
-                         .Execute(() => Cv2.ImDecode(
-                                                ExecuteOutBytes("exec-out screencap -p", 5 * 1024 * 1024),
-                                                ImreadModes.Color)) ?? throw new AdbException("截图最终失败");
+            const int retryCount = 3;
+            return Policy.HandleResult<Mat>(mat => mat.Empty())
+                         .Retry(retryCount, (_, i) => Log.Warning($"截图失败，正在重试（第 {i}/{retryCount} 次）"))
+                         .Execute(() => Cv2.ImDecode(ExecuteOutBytes("exec-out screencap -p", 5 * 1024 * 1024),
+                                                     ImreadModes.Color)) ?? throw new AdbException("截图失败");
         }
 
         public void Execute(string parameter)
         {
             ExecuteCore(parameter, out string stdErr);
-            if (!string.IsNullOrWhiteSpace(stdErr)) throw new AdbException($"错误 StdErr: {stdErr}");
+            if (!string.IsNullOrWhiteSpace(stdErr)) throw new AdbException($"发生错误，标准错误流输出：{stdErr}");
         }
 
         public string ExecuteOut(string parameter, int bufferSize = 1024) =>
@@ -78,11 +80,11 @@ namespace REVUnit.AutoArknights.Core
 
         public byte[] ExecuteOutBytes(string parameter, int bufferSize)
         {
-            _logger.Verbose("正在执行 {$param}", parameter);
+            _logger.Verbose("正在执行 ADB 指令：{$param}", parameter);
 
             Connect();
             ExecuteCore(parameter, out byte[] stdOutBytes, bufferSize, out string stdErr);
-            if (!string.IsNullOrWhiteSpace(stdErr)) throw new AdbException($"错误 StdErr: {stdErr}");
+            if (!string.IsNullOrWhiteSpace(stdErr)) throw new AdbException($"发生错误，标准错误流输出：{stdErr}");
 
             return stdOutBytes;
         }
@@ -101,26 +103,21 @@ namespace REVUnit.AutoArknights.Core
 
         private void Connect()
         {
-            if (GetIfDeviceOnline())
+            if (GetIfDeviceOnline()) return;
+            const int retryCount = 3;
+            bool succeed = Policy.HandleResult<bool>(b => !b).Retry(retryCount, (_, i) =>
             {
-                return;
-            }
-            bool succeed = Policy.HandleResult<bool>(b => !b).Retry(2, (_, _) =>
-            {
-                _logger.Error("连接失败，重新启动ADB服务器后重试");
+                _logger.Error($"连接失败，重新启动 ADB 服务器后重试（第 {i}/{retryCount} 次）");
                 RestartServer();
             }).Execute(() =>
             {
-                _logger.Debug("正在连接到 {target}", TargetSerial);
+                _logger.Debug("正在连接到 ADB 设备 {target}", TargetSerial);
                 ExecuteCore($"connect {TargetSerial}", out _);
                 return GetIfDeviceOnline();
             });
-            if (!succeed)
-            {
-                throw new AdbException("重试失败，无法连接");
-            }
+            if (!succeed) throw new AdbException("重试失败，无法连接");
 
-            _logger.Debug("连接成功");
+            _logger.Debug("连接设备成功");
         }
 
         private void RestartServer()

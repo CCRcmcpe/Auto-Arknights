@@ -4,7 +4,7 @@ namespace REVUnit.AutoArknights.Core.CV
 {
     public abstract class ImageRegister
     {
-        protected static void NormalizeScale(Mat mat)
+        private static void NormalizeScale(Mat mat)
         {
             Size s1 = mat.Size();
             Size s2 = ImageAssets.TargetSize;
@@ -16,6 +16,12 @@ namespace REVUnit.AutoArknights.Core.CV
                            : InterpolationFlags.Area);
         }
 
-        public abstract RegisterResult Register(Mat model, Mat observed);
+        public RegisterResult[] Register(Mat model, Mat observed, int minMatchCount)
+        {
+            NormalizeScale(observed);
+            return RegisterInternal(model, observed, minMatchCount);
+        }
+
+        protected abstract RegisterResult[] RegisterInternal(Mat model, Mat observed, int minMatchCount);
     }
 }

@@ -28,7 +28,8 @@ namespace REVUnit.AutoArknights.Core
 
         public interface ITxOcr
         {
-            [Headers("User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4321.0 Safari/537.36 Edg/88.0.702.0")]
+            [Headers(
+                "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4321.0 Safari/537.36 Edg/88.0.702.0")]
             [Post("/cgi-bin/appdemo_generalocr")]
             [Multipart("------WebKitFormBoundary")]
             Task<string> Ocr([AliasAs("image_file")] StreamPart stream);

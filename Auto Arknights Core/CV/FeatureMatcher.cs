@@ -8,6 +8,7 @@ namespace REVUnit.AutoArknights.Core.CV
     public class FeatureMatcher : IDisposable
     {
         private readonly BFMatcher _matcher = new();
+        public float NearestNeighborThreshold { get; set; } = 0.75f;
 
         public void Dispose()
         {
@@ -16,7 +17,7 @@ namespace REVUnit.AutoArknights.Core.CV
 
         public (double confidence, Rect circumRect) Match(MatFeature mf, MatFeature of)
         {
-            if (mf.Type != of.Type) throw new ArgumentException($"{nameof(mf)}和{nameof(of)}的Type不匹配");
+            if (mf.Type != of.Type) throw new ArgumentException($"{nameof(mf)}和{nameof(of)}的类型不匹配");
             if (mf.KeyPoints.Length == 0 || mf.Descriptors.Empty() || of.KeyPoints.Length == 0 ||
                 of.Descriptors.Empty())
                 return default;
@@ -32,7 +33,7 @@ namespace REVUnit.AutoArknights.Core.CV
                 DMatch[] dim = matches[i];
                 DMatch matchA = dim[0];
                 DMatch matchB = dim[1];
-                if (matchA.Distance < 0.6f * matchB.Distance)
+                if (matchA.Distance < NearestNeighborThreshold * matchB.Distance)
                 {
                     modelPoints.Add(mf.KeyPoints[matchA.QueryIdx].Pt);
                     observedPoints.Add(of.KeyPoints[matchA.TrainIdx].Pt);
@@ -44,9 +45,8 @@ namespace REVUnit.AutoArknights.Core.CV
                 }
             }
 
-            int nonZero = mf.Type != DeformationLevel.Fast
-                ? VoteForSizeAndOrientation(mf.KeyPoints, of.KeyPoints, matches, mask, 1.5f, 20)
-                : mask.CountNonZero();
+            int nonZero = VoteForSizeAndOrientation(mf.KeyPoints, of.KeyPoints, matches, mask, 1.5f, 20);
+            //mask.CountNonZero();
 
             double confidence = (double) nonZero / matches.Length;
             if (confidence < 0.1) return (confidence, Rect.Empty);

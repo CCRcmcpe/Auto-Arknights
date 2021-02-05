@@ -19,11 +19,11 @@ namespace REVUnit.AutoArknights.Core.CV
     {
         private class Cache : IDisposable
         {
-            private static readonly string _coreAssemblySerial =
+            private static readonly string CoreAssemblySerial =
                 GetMd5(File.ReadAllBytes(Assembly.GetCallingAssembly().Location));
 
             private readonly string _cacheDirPath;
-            private readonly Dictionary<string, MatFeature> _md5map = new();
+            private readonly Dictionary<string, MatFeature> _md5Map = new();
             private readonly string _serialFilePath;
 
             public Cache(string cacheDirPath)
@@ -39,7 +39,7 @@ namespace REVUnit.AutoArknights.Core.CV
                 if (File.Exists(_serialFilePath))
                 {
                     string serial = File.ReadAllText(_serialFilePath);
-                    rebuildCache = _coreAssemblySerial != serial;
+                    rebuildCache = CoreAssemblySerial != serial;
                 }
 
                 if (rebuildCache)
@@ -67,9 +67,9 @@ namespace REVUnit.AutoArknights.Core.CV
                         Mat descriptors = Read("Descriptors", it => it.ReadMat());
                         int originWidth = Read("MatWidth", it => it.ReadInt());
                         int originHeight = Read("MatHeight", it => it.ReadInt());
-                        DeformationLevel type = Read("Type", it => Enum.Parse<DeformationLevel>(it.ReadString()));
+                        Feature2DType type = Read("Type", it => Enum.Parse<Feature2DType>(it.ReadString()));
 
-                        _md5map.Add(Path.GetFileNameWithoutExtension(cacheFile),
+                        _md5Map.Add(Path.GetFileNameWithoutExtension(cacheFile),
                                     new MatFeature(keyPoints, descriptors, originWidth, originHeight, type));
                     }
             }
@@ -82,7 +82,7 @@ namespace REVUnit.AutoArknights.Core.CV
 
             public void Dispose()
             {
-                foreach (MatFeature matFeature in _md5map.Values) matFeature.Dispose();
+                foreach (MatFeature matFeature in _md5Map.Values) matFeature.Dispose();
             }
 
             private static string[] GetCacheFiles(string cacheDirPath) => Directory.GetFiles(cacheDirPath, "*.json.gz");
@@ -108,7 +108,7 @@ namespace REVUnit.AutoArknights.Core.CV
 
             private MatFeature? GetCache(Mat mat)
             {
-                _md5map.TryGetValue(GetMd5(mat), out MatFeature? result);
+                _md5Map.TryGetValue(GetMd5(mat), out MatFeature? result);
                 return result;
             }
 
@@ -116,7 +116,7 @@ namespace REVUnit.AutoArknights.Core.CV
             {
                 string md5 = GetMd5(mat);
 
-                _md5map.Add(md5, feature);
+                _md5Map.Add(md5, feature);
 
                 using var storage =
                     new FileStorage(Path.Combine(_cacheDirPath, $"{md5}.json.gz"), FileStorage.Mode.Write);
@@ -126,7 +126,7 @@ namespace REVUnit.AutoArknights.Core.CV
                 storage.Write("MatHeight", mat.Height);
                 storage.Write("Type", feature.Type.ToString());
 
-                File.WriteAllText(_serialFilePath, _coreAssemblySerial);
+                File.WriteAllText(_serialFilePath, CoreAssemblySerial);
             }
         }
     }

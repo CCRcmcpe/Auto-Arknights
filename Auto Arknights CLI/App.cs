@@ -25,12 +25,15 @@ namespace REVUnit.AutoArknights.CLI
 
         public void Run()
         {
-            if (!Library.CheckIfSupported()) throw new NotSupportedException("CPU不支持AVX2指令集，无法运行本程序");
             var cin = new Cin { AutoTrim = true };
+
+            if (!Library.CheckIfSupported()) throw new NotSupportedException("CPU不支持AVX2指令集，无法运行本程序");
+
+            Library.Settings = Config;
 
             Console.WriteLine(Resources.StartupLogo);
             Log.Information("正在初始化设备抽象层");
-            UserInterface.Initialize(Config.RemoteAdbExecutable, Config.RemoteAddress);
+            _ = UserInterface.I;
             Log.Information("启动成功");
             Console.Clear();
 
@@ -73,13 +76,7 @@ namespace REVUnit.AutoArknights.CLI
 
         private Parameters ParseParameters(string s)
         {
-            if (s != "help")
-                return Parameters.Parse(s,
-                                        new PostAction.ParseSettings
-                                        {
-                                            Command = Config.RemoteShutdownCommand,
-                                            ForcedSuspend = Config.ForcedSuspend
-                                        });
+            if (s != "help") return Parameters.Parse(s, Config);
 
             Console.WriteLine(Resources.QuickHelpMessage);
             throw new Exception();
@@ -90,7 +87,7 @@ namespace REVUnit.AutoArknights.CLI
             public Parameters(IArkTask[] tasks) => Tasks = tasks;
             public IArkTask[] Tasks { get; }
 
-            public static Parameters Parse(string value, PostAction.ParseSettings parseSettings)
+            public static Parameters Parse(string value, ISettings parseSettings)
             {
                 var reader = new StringReader(value);
 

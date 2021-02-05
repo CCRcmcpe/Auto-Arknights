@@ -11,9 +11,10 @@ namespace REVUnit.AutoArknights.Core.CV
 
         public static RegisterResult Failed() => new();
 
-        public static RegisterResult Succeed(Rect rect) =>
+        public static RegisterResult Succeed(Rect rect, double confidence) =>
             new()
             {
+                Confidence = confidence,
                 CircumRect = rect,
                 CenterPoint = new Point(rect.Left + rect.Width / 2, rect.Top + rect.Height / 2)
             };
