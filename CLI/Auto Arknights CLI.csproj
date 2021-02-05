@@ -5,18 +5,16 @@
     <RootNamespace>REVUnit.AutoArknights.CLI</RootNamespace>
     <nullable>enable</nullable>
     <OutputType>Exe</OutputType>
-  </PropertyGroup>
-
-  <PropertyGroup>
     <Platforms>x64</Platforms>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <NoWarn>1073</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <NeutralLanguage>zh-CN</NeutralLanguage>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition="'$(Configuration)'=='Publish'">
     <SelfContained>false</SelfContained>
     <PublishReadyToRun>true</PublishReadyToRun>
