@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using OpenCvSharp;
+using REVUnit.AutoArknights.Core.Properties;
 
 namespace REVUnit.AutoArknights.Core.CV
 {
@@ -15,28 +16,30 @@ namespace REVUnit.AutoArknights.Core.CV
             _matcher.Dispose();
         }
 
-        public (double confidence, Rect circumRect) Match(MatFeature mf, MatFeature of)
+        public (double confidence, Rect circumRect) Match(MatFeature modelF, MatFeature sceneF)
         {
-            if (mf.Type != of.Type) throw new ArgumentException($"{nameof(mf)}和{nameof(of)}的类型不匹配");
-            if (mf.KeyPoints.Length == 0 || mf.Descriptors.Empty() || of.KeyPoints.Length == 0 ||
-                of.Descriptors.Empty())
+            if (modelF.Type != sceneF.Type)
+                throw new ArgumentException(string.Format(Resources.FeatureMatcher_Exception_FeatureTypesMismatch,
+                                                          nameof(modelF), nameof(sceneF)));
+            if (modelF.KeyPoints.Length == 0 || modelF.Descriptors.Empty() || sceneF.KeyPoints.Length == 0 ||
+                sceneF.Descriptors.Empty())
                 return default;
 
-            DMatch[][] matches = _matcher.KnnMatch(mf.Descriptors, of.Descriptors, 2);
+            DMatch[][] matches = _matcher.KnnMatch(modelF.Descriptors, sceneF.Descriptors, 2);
 
             using var mask = new Mat(matches.Length, 1, MatType.CV_8U);
-            var modelPoints = new List<Point2f>();
-            var observedPoints = new List<Point2f>();
+            var mPoints = new List<Point2f>();
+            var sPoints = new List<Point2f>();
 
             for (var i = 0; i < matches.Length; i++)
             {
                 DMatch[] dim = matches[i];
-                DMatch matchA = dim[0];
-                DMatch matchB = dim[1];
-                if (matchA.Distance < NearestNeighborThreshold * matchB.Distance)
+                DMatch a = dim[0];
+                DMatch b = dim[1];
+                if (a.Distance < NearestNeighborThreshold * b.Distance)
                 {
-                    modelPoints.Add(mf.KeyPoints[matchA.QueryIdx].Pt);
-                    observedPoints.Add(of.KeyPoints[matchA.TrainIdx].Pt);
+                    mPoints.Add(modelF.KeyPoints[a.QueryIdx].Pt);
+                    sPoints.Add(sceneF.KeyPoints[a.TrainIdx].Pt);
                     mask.Set(i, true);
                 }
                 else
@@ -45,20 +48,20 @@ namespace REVUnit.AutoArknights.Core.CV
                 }
             }
 
-            int nonZero = VoteForSizeAndOrientation(mf.KeyPoints, of.KeyPoints, matches, mask, 1.5f, 20);
+            int nonZero = VoteForSizeAndOrientation(modelF.KeyPoints, sceneF.KeyPoints, matches, mask, 1.5f, 20);
             //mask.CountNonZero();
 
             double confidence = (double) nonZero / matches.Length;
             if (confidence < 0.1) return (confidence, Rect.Empty);
 
-            using Mat homography = Cv2.FindHomography(InputArray.Create(modelPoints), InputArray.Create(observedPoints),
+            using Mat homography = Cv2.FindHomography(InputArray.Create(mPoints), InputArray.Create(sPoints),
                                                       HomographyMethods.Ransac);
 
             if (homography.Empty()) return default;
 
             Point2f[] mCorners =
             {
-                new(0, 0), new(mf.MatWidth, 0), new(mf.MatWidth, mf.MatHeight), new(0, mf.MatHeight)
+                new(0, 0), new(modelF.MatWidth, 0), new(modelF.MatWidth, modelF.MatHeight), new(0, modelF.MatHeight)
             };
 
             Point2f[] mCornersFt = Cv2.PerspectiveTransform(mCorners, homography);
@@ -69,12 +72,12 @@ namespace REVUnit.AutoArknights.Core.CV
             Rect circumRect = Rect.FromLTRB(topLeft.X, topLeft.Y, bottomRight.X, bottomRight.Y);
 
             if (circumRect.Width < 10 || circumRect.Height < 10 || circumRect.X < 0 && circumRect.Y < 0 ||
-                circumRect.Height > of.MatHeight && circumRect.Width > of.MatWidth)
+                circumRect.Height > sceneF.MatHeight && circumRect.Width > sceneF.MatWidth)
                 return default;
             return (confidence, circumRect);
         }
 
-        private static int VoteForSizeAndOrientation(KeyPoint[] modelKeyPoints, KeyPoint[] observedKeyPoints,
+        private static int VoteForSizeAndOrientation(KeyPoint[] modelKeyPoints, KeyPoint[] sceneKeyPoints,
                                                      DMatch[][] matches, Mat mask, float scaleIncrement,
                                                      int rotationBins)
         {
@@ -88,13 +91,13 @@ namespace REVUnit.AutoArknights.Core.CV
                 if (!mask.At<bool>(i)) continue;
 
                 KeyPoint modelKeyPoint = modelKeyPoints[i];
-                KeyPoint observedKeyPoint = observedKeyPoints[matches[i][0].TrainIdx];
-                double s = Math.Log10(observedKeyPoint.Size / modelKeyPoint.Size);
+                KeyPoint sceneKeyPoint = sceneKeyPoints[matches[i][0].TrainIdx];
+                double s = Math.Log10(sceneKeyPoint.Size / modelKeyPoint.Size);
                 logScale.Add((float) s);
                 maxS = s > maxS ? s : maxS;
                 minS = s < minS ? s : minS;
 
-                double r = observedKeyPoint.Angle - modelKeyPoint.Angle;
+                double r = sceneKeyPoint.Angle - modelKeyPoint.Angle;
                 r = r < 0.0f ? r + 360.0f : r;
                 rotations.Add((float) r);
             }

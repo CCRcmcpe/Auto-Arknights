@@ -27,51 +27,46 @@ namespace REVUnit.AutoArknights.CLI
         {
             var cin = new Cin { AutoTrim = true };
 
-            if (!Library.CheckIfSupported()) throw new NotSupportedException("CPU不支持AVX2指令集，无法运行本程序");
+            if (!Library.CheckIfSupported()) throw new NotSupportedException(Resources.App_NotSupported);
 
             Library.Settings = Config;
 
             Console.WriteLine(Resources.StartupLogo);
-            Log.Information("正在初始化设备抽象层");
+            Log.Information(Resources.App_Starting);
             _ = UserInterface.I;
-            Log.Information("启动成功");
+            Log.Information(Resources.App_Started);
             Console.Clear();
 
-            Parameters? prms = cin.Get(@"<模式>[刷关次数][后续操作]", ParseParameters);
+            Parameters? prms = cin.Get(Resources.App_ParamsHint, ParseParameters);
 
             if (prms == null) return;
 
-            Console.Write(@"
--[任务列表]---------------------------------------
+            Console.Write(Resources.App_TaskListHeader);
 
-");
             for (var i = 0; i < prms.Tasks.Length; i++)
             {
                 IArkTask task = prms.Tasks[i];
                 Console.WriteLine($@"[{i}]> {task}");
             }
 
-            Console.Write(@"
---------------------------------------------------
-");
+            Console.Write(Resources.App_TaskListFooter);
 
-            Log.Information("即将执行：{tasks}", prms.Tasks);
-            XConsole.AnyKey();
+            XConsole.AnyKey(Resources.App_ReadyToExecute);
 
             for (var taskId = 0; taskId < prms.Tasks.Length; taskId++)
             {
                 IArkTask task = prms.Tasks[taskId];
 
-                Log.Information("任务[{taskId}]：任务开始", taskId);
+                Log.Information(Resources.App_TaskBegin, taskId);
                 ExecuteResult executeResult = task.Execute();
 
-                if (executeResult.Succeed)
-                    Log.Information("任务[{taskId}]完成，信息：{message}", taskId, executeResult.Message);
+                if (executeResult.Successful)
+                    Log.Information(Resources.App_TaskComplete, taskId, executeResult.Message);
                 else
-                    Log.Error("任务[{taskId}]出现错误：{message}", taskId, executeResult.Message);
+                    Log.Error(Resources.App_TaskFaulted, taskId, executeResult.Message);
             }
 
-            XConsole.AnyKey("所有任务完成");
+            XConsole.AnyKey(Resources.App_AllTasksCompleted);
         }
 
         private Parameters ParseParameters(string s)
@@ -92,12 +87,12 @@ namespace REVUnit.AutoArknights.CLI
                 var reader = new StringReader(value);
 
                 int modeValue = reader.Read() - '0';
-                var mode = (FarmLevel.FarmMode) modeValue;
-                if (!Enum.IsDefined(mode)) throw new ArgumentException("无效的模式，请输入 \"help\" 来获取快速帮助");
+                var mode = (LevelFarming.Mode) modeValue;
+                if (!Enum.IsDefined(mode)) throw new ArgumentException(Resources.Parameters_Exception_InvalidMode);
 
                 var tasks = new List<IArkTask>();
 
-                if (mode == FarmLevel.FarmMode.SpecifiedTimes || mode == FarmLevel.FarmMode.SpecTimesWithWait)
+                if (mode == LevelFarming.Mode.SpecifiedTimes || mode == LevelFarming.Mode.SpecTimesWithWait)
                 {
                     var b = new StringBuilder();
                     while (true)
@@ -108,16 +103,16 @@ namespace REVUnit.AutoArknights.CLI
                         if (char.IsDigit((char) v)) b.Append(c);
                     }
 
-                    if (b.Length == 0) throw new ArgumentException("无效的刷关次数值，请输入 \"help\" 来获取快速帮助");
+                    if (b.Length == 0) throw new ArgumentException(Resources.Parameters_Exception_InvalidTimes);
 
                     int repeatTimes = int.Parse(b.ToString());
 
-                    var task = new FarmLevel(mode, repeatTimes);
+                    var task = new LevelFarming(mode, repeatTimes);
                     tasks.Add(task);
                 }
                 else
                 {
-                    tasks.Add(new FarmLevel(mode, -1));
+                    tasks.Add(new LevelFarming(mode, -1));
                 }
 
                 if (reader.Peek() == -1)

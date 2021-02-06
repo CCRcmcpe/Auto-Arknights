@@ -16,12 +16,12 @@ namespace REVUnit.AutoArknights.Core.CV
                            : InterpolationFlags.Area);
         }
 
-        public RegisterResult[] Register(Mat model, Mat observed, int minMatchCount)
+        public RegisterResult[] Register(Mat model, Mat scene, int minMatchCount)
         {
-            NormalizeScale(observed);
-            return RegisterInternal(model, observed, minMatchCount);
+            NormalizeScale(scene);
+            return RegisterInternal(model, scene, minMatchCount);
         }
 
-        protected abstract RegisterResult[] RegisterInternal(Mat model, Mat observed, int minMatchCount);
+        protected abstract RegisterResult[] RegisterInternal(Mat model, Mat scene, int minMatchCount);
     }
 }

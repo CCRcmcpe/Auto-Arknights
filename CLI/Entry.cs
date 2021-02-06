@@ -1,7 +1,7 @@
 ﻿using System;
+using REVUnit.AutoArknights.CLI.Properties;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
-
 #if !DEBUG
 using REVUnit.Crlib.Extension;
 
@@ -17,7 +17,7 @@ namespace REVUnit.AutoArknights.CLI
             Log.Logger = new LoggerConfiguration()
                         .ReadFrom.Configuration(app.Config.Inner).WriteTo.Console(theme: AnsiConsoleTheme.Code).WriteTo
                         .Debug().WriteTo
-                        .File($@"Log\{DateTime.Now}.log").CreateLogger();
+                        .File($"Log/{DateTime.Now:yyMMdd-hh:mm:ss}.log").CreateLogger();
 #if DEBUG
             app.Run();
 #else
@@ -27,7 +27,7 @@ namespace REVUnit.AutoArknights.CLI
             }
             catch (Exception e)
             {
-                Log.Error($"出现异常：{e.GetType().Name}，异常信息：\"{e.Message}\"");
+                Log.Error(string.Format(Resources.Entry_Exception, e.GetType().Name, e.Message));
                 Log.Debug(e.StackTrace);
                 XConsole.AnyKey();
             }

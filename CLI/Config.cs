@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
+using REVUnit.AutoArknights.CLI.Properties;
 using REVUnit.AutoArknights.Core;
 using REVUnit.Crlib.Extension;
 
@@ -19,7 +20,7 @@ namespace REVUnit.AutoArknights.CLI
             }
             catch (FormatException e)
             {
-                throw new FormatException("配置文件无效，请检查语法", e);
+                throw new FormatException(Resources.Config_Exception_InvalidConfig, e);
             }
 
             Remote = new RemoteConfigImpl(this);
@@ -28,12 +29,10 @@ namespace REVUnit.AutoArknights.CLI
 
         public IConfiguration Inner { get; }
 
-        public bool ForcedSuspend => Optional("ForcedSuspend", bool.Parse);
-
         public string Required(params string[] keys)
         {
             return keys.Select(key => Inner[key]).FirstOrDefault(s => s != null) ??
-                   throw new Exception($"配置文件需填写 {keys[0]}");
+                   throw new Exception(string.Format(Resources.Config_Exception_RequirementsUnmet, keys[0]));
         }
 
         public T Required<T>(string key, Func<string?, T>? parser = null, Predicate<T>? validator = null)
@@ -45,7 +44,7 @@ namespace REVUnit.AutoArknights.CLI
                 if (raw.TryToType(out T? result))
                     value = result!;
                 else
-                    throw new Exception($"无法解析 {key} 的值");
+                    throw new Exception(string.Format(Resources.Config_Exception_InvalidKey, key));
             }
             else
             {
@@ -55,11 +54,12 @@ namespace REVUnit.AutoArknights.CLI
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"配置文件中 {key} 无效", e);
+                    throw new Exception(string.Format(Resources.Config_Exception_CannotParse, key), e);
                 }
             }
 
-            if (validator != null && !validator(value)) throw new Exception($"配置文件中 {key} 的值无效");
+            if (validator != null && !validator(value))
+                throw new Exception(string.Format(Resources.Config_Exception_InvalidKey, key));
 
             return value;
         }
@@ -79,7 +79,8 @@ namespace REVUnit.AutoArknights.CLI
 
             if (parser == null)
             {
-                if (!raw.TryToType(out value)) throw new Exception($"无法解析 {key} 的值");
+                if (!raw.TryToType(out value))
+                    throw new Exception(string.Format(Resources.Config_Exception_InvalidKey, key));
             }
             else
             {
@@ -89,11 +90,12 @@ namespace REVUnit.AutoArknights.CLI
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"配置文件中 {key} 无效", e);
+                    throw new Exception(string.Format(Resources.Config_Exception_CannotParse, key), e);
                 }
             }
 
-            if (validator != null && !validator(value)) throw new Exception($"配置文件中 {key} 的值无效");
+            if (validator != null && !validator(value))
+                throw new Exception(string.Format(Resources.Config_Exception_InvalidKey, key));
 
             return value;
         }

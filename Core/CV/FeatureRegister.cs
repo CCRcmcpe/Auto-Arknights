@@ -25,20 +25,20 @@ namespace REVUnit.AutoArknights.Core.CV
             FeatureMatcher.Dispose();
         }
 
-        protected override RegisterResult[] RegisterInternal(Mat model, Mat observed, int minMatchCount)
+        protected override RegisterResult[] RegisterInternal(Mat model, Mat scene, int minMatchCount)
         {
-            return new[] { Register(model, observed, Feature2DType.FastFreak) };
+            return new[] { Register(model, scene, Feature2DType.FastFreak) };
         }
 
-        public RegisterResult Register(Mat model, Mat observed, Feature2DType type)
+        public RegisterResult Register(Mat model, Mat scene, Feature2DType type)
         {
-            MatFeature? observedFeature = null;
+            MatFeature? sceneFeature = null;
             MatFeature? modelFeature = null;
             try
             {
                 modelFeature = FeatureDetector.DetectCached(model, type);
-                observedFeature = FeatureDetector.Detect(observed, type);
-                (double confidence, Rect circumRect) = FeatureMatcher.Match(modelFeature, observedFeature);
+                sceneFeature = FeatureDetector.Detect(scene, type);
+                (double confidence, Rect circumRect) = FeatureMatcher.Match(modelFeature, sceneFeature);
                 return confidence > SuccessThreshold
                     ? RegisterResult.Succeed(circumRect, confidence)
                     : RegisterResult.Failed();
@@ -46,7 +46,7 @@ namespace REVUnit.AutoArknights.Core.CV
             finally
             {
                 if (!_useCache) modelFeature?.Dispose();
-                observedFeature?.Dispose();
+                sceneFeature?.Dispose();
             }
         }
     }

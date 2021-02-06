@@ -1,19 +1,22 @@
-﻿namespace REVUnit.AutoArknights.Core.Tasks
+﻿using REVUnit.AutoArknights.Core.Properties;
+
+namespace REVUnit.AutoArknights.Core.Tasks
 {
     public class ExecuteResult
     {
-        public ExecuteResult(bool succeed, string message = "任务结束")
+        public ExecuteResult(bool successful, string? message = null)
         {
-            Succeed = succeed;
-            Message = message;
+            Successful = successful;
+            Message = message ?? Resources.ExecuteResult_Ended;
         }
 
-        public bool Succeed { get; set; }
-        public string? Message { get; set; }
+        public bool Successful { get; set; }
+        public string Message { get; set; }
 
         public static ExecuteResult MaxRetryReached(string operation, int triedCount) =>
-            new(false, $"尝试了{triedCount}次也未能达成{operation}操作");
+            new(false, string.Format(Resources.ExecuteResult_MaxRetryReached, triedCount, operation));
 
-        public static ExecuteResult Success(string message = "任务完成") => new(true, message);
+        public static ExecuteResult Success(string? message = null) =>
+            new(true, message ?? Resources.ExecuteResult_Success);
     }
 }

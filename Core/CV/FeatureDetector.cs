@@ -2,6 +2,7 @@
 using OpenCvSharp;
 using OpenCvSharp.Features2D;
 using OpenCvSharp.XFeatures2D;
+using REVUnit.AutoArknights.Core.Properties;
 
 namespace REVUnit.AutoArknights.Core.CV
 {
@@ -27,8 +28,7 @@ namespace REVUnit.AutoArknights.Core.CV
 
         public MatFeature DetectCached(Mat mat, Feature2DType type)
         {
-            if (_cache == null)
-                throw new InvalidOperationException("Cannot use cached detect when cache directory is not set");
+            if (_cache == null) throw new InvalidOperationException(Resources.FeatureDetector_Exception_NoCachePath);
 
             MatFeature? result = _cache[mat];
             if (result != null) return result;

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using REVUnit.AutoArknights.Core.Properties;
 
 namespace REVUnit.AutoArknights.Core.Tasks
 {
@@ -17,10 +18,10 @@ namespace REVUnit.AutoArknights.Core.Tasks
                 'r' => new Reboot(),
                 's' => new Suspend(false) { Forced = settings.ForcedSuspend },
                 'h' => new Suspend(true) { Forced = settings.ForcedSuspend },
-                'e' => new ExecuteCommand(settings.Remote.ShutdownCommand ?? throw new ArgumentNullException(nameof(
-                                                  settings.Remote.ShutdownCommand),
-                                              "需要有效的 Remote:ShutdownCommand 才能执行\"执行指令\"后续操作")),
-                _ => throw new FormatException($"无效的后续操作标识符 \"{c}\"")
+                'e' => new ExecuteCommand(settings.Remote.ShutdownCommand ??
+                                          throw new Exception(
+                                              Resources.PostActions_ExecuteCommand_Exception_EmptyCommand)),
+                _ => throw new FormatException(string.Format(Resources.PostAction_Exception_ParseFailed, c))
             };
         }
     }
@@ -33,7 +34,7 @@ namespace REVUnit.AutoArknights.Core.Tasks
             return ExecuteResult.Success();
         }
 
-        public override string ToString() => "关机";
+        public override string ToString() => Resources.PostAction_Shutdown;
     }
 
     public class Reboot : PostAction
@@ -44,14 +45,15 @@ namespace REVUnit.AutoArknights.Core.Tasks
             return ExecuteResult.Success();
         }
 
-        public override string ToString() => "重启";
+        public override string ToString() => Resources.PostAction_Reboot;
     }
 
     public class Suspend : PostAction
     {
         public Suspend(bool hibernate)
         {
-            if (hibernate && !IsPwrHibernateAllowed()) throw new NotSupportedException("系统未开启或不支持休眠");
+            if (hibernate && !IsPwrHibernateAllowed())
+                throw new NotSupportedException(Resources.PostAction_Suspend_Exception_HibernateNotSupported);
             Hibernate = hibernate;
         }
 
@@ -73,9 +75,9 @@ namespace REVUnit.AutoArknights.Core.Tasks
         public override string ToString()
         {
             var b = new StringBuilder();
-            if (Forced) b.Append("强制");
+            if (Forced) b.Append(Resources.PostAction_Suspend_Forced);
 
-            b.Append(!Hibernate ? "睡眠" : "休眠");
+            b.Append(!Hibernate ? Resources.PostAction_Suspend_Sleep : Resources.PostAction_Suspend_Hibernate);
             return b.ToString();
         }
     }
@@ -90,11 +92,14 @@ namespace REVUnit.AutoArknights.Core.Tasks
         {
             Process? process =
                 Process.Start(new ProcessStartInfo("cmd.exe", "/c " + Command) { CreateNoWindow = true });
-            if (process == null) return new ExecuteResult(false, "无法启动cmd");
+            if (process == null) return new ExecuteResult(false, Resources.PostAction_ExecuteCommand_CannotStartCmd);
 
-            return process.WaitForExit(Timeout) ? new ExecuteResult(false, "指令超时") : new ExecuteResult(true, "指令已执行");
+            return process.WaitForExit(Timeout)
+                ? new ExecuteResult(false, Resources.PostAction_ExecuteCommand_Exception_Timeout)
+                : new ExecuteResult(true, Resources.PostAction_ExecuteCommand_Completed);
         }
 
-        public override string ToString() => $"执行指令：{Command[..Command.IndexOf(' ')]}...";
+        public override string ToString() =>
+            string.Format(Resources.PostAction_ExecuteCommand, Command[..Command.IndexOf(' ')]);
     }
 }

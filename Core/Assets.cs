@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using OpenCvSharp;
+using REVUnit.AutoArknights.Core.Properties;
 
 namespace REVUnit.AutoArknights.Core
 {
     public class AssetLoadException : Exception
     {
-        public AssetLoadException(string key) : base($"无法载入资源: {key}") { }
+        public AssetLoadException(string key) : base(string.Format(Resources.AssetsLoadException, key)) { }
     }
 
     public class ImageAssets : IDisposable

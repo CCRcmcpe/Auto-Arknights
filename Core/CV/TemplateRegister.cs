@@ -8,9 +8,9 @@ namespace REVUnit.AutoArknights.Core.CV
     {
         public float Threshold { get; set; } = 0.85f;
 
-        protected override RegisterResult[] RegisterInternal(Mat model, Mat observed, int minMatchCount)
+        protected override RegisterResult[] RegisterInternal(Mat model, Mat scene, int minMatchCount)
         {
-            Mat diff = observed.MatchTemplate(model, TemplateMatchModes.CCoeffNormed);
+            Mat diff = scene.MatchTemplate(model, TemplateMatchModes.CCoeffNormed);
             var matches = new List<(Rect rect, double confidence)>();
             for (var i = 0; i < minMatchCount; i++)
             {
