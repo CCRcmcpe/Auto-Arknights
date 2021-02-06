@@ -49,26 +49,26 @@ namespace REVUnit.AutoArknights.Core.Tasks
 
         private bool HaveEnoughSanity()
         {
-            Sanity nowSanity = I.GetCurrentSanity();
+            Sanity currentSanity = I.GetCurrentSanity();
             // 防止OCR抽风
             if (_previousSanity != null)
             {
-                int dSanity = _previousSanity.Value - nowSanity.Value; // 理智变动
-                if (Math.Abs(nowSanity.Max - _previousSanity.Max) > 1  // 理智上限变动大于1
+                int dSanity = _previousSanity.Value - currentSanity.Value; // 理智变动
+                if (Math.Abs(currentSanity.Max - _previousSanity.Max) > 1  // 理智上限变动大于1
                  || dSanity > 0 && _requiredSanity - dSanity > 10)     // 没有嗑药，且理智对于一般情况下的刷关后理智差大于10
-                    nowSanity = I.GetCurrentSanity();
+                    currentSanity = I.GetCurrentSanity();
             }
 
-            _previousSanity = nowSanity;
+            _previousSanity = currentSanity;
 
-            Log.Information($"当前理智[{nowSanity}]，需要理智[{_requiredSanity}]");
-            return nowSanity.Value >= _requiredSanity;
+            Log.Information("当前理智[{CurrentSanity}]，需要理智[{RequiredSanity}]", currentSanity, _requiredSanity);
+            return currentSanity.Value >= _requiredSanity;
         }
 
         private void InitRequiredSanity()
         {
             _requiredSanity = I.GetRequiredSanity();
-            Log.Information($"检测到此关卡需要[{_requiredSanity}]理智");
+            Log.Information("检测到此关卡需要[{RequiredSanity}]理智", _requiredSanity);
         }
 
         private static void RunOnce()
@@ -80,7 +80,7 @@ namespace REVUnit.AutoArknights.Core.Tasks
             if (!I.Graphical.TestAppear("作战/接管作战"))
             {
                 Log.Warning("未检测到代理指挥正常运行迹象！");
-                Log.Warning("请检查是否在正常代理作战，如果是的话请增加检测代理正常前等待的时间，以避免假警告出现");
+                Log.Warning("请检查是否在正常代理作战，如果是的话请增加检测代理正常前等待的时间（现在为{WaitTime}s），以避免假警告出现", Library.Settings.Intervals.BeforeVerifyInLevel);
             }
 
             Utils.Sleep(50);
@@ -100,9 +100,9 @@ namespace REVUnit.AutoArknights.Core.Tasks
             var currentTime = 0;
             while (currentTime != Times)
             {
-                Log.Information($"开始第{currentTime + 1}次刷关");
+                Log.Information("开始第 [{CurrentTimes}/{times}] 次刷关", currentTime + 1, Times);
                 RunOnce();
-                Log.Information($"关卡完成，目前已刷关{++currentTime}次");
+                Log.Information("关卡完成，目前已刷关 [{currentTimes}/{Times}]次", ++currentTime, Times);
             }
 
             return currentTime;
@@ -114,10 +114,10 @@ namespace REVUnit.AutoArknights.Core.Tasks
             var currentTime = 0;
             while (currentTime != Times)
             {
-                Log.Information($"开始第{currentTime + 1}次刷关");
+                Log.Information("开始第 [{CurrentTimes}/{times}] 次刷关", currentTime + 1, Times);
                 EnsureSanityEnough();
                 RunOnce();
-                Log.Information($"关卡完成，目前已刷关{++currentTime}次");
+                Log.Information("关卡完成，目前已刷关 [{currentTimes}/{Times}]次", ++currentTime, Times);
             }
 
             return currentTime;
@@ -126,14 +126,14 @@ namespace REVUnit.AutoArknights.Core.Tasks
         private int UntilNoSanity()
         {
             InitRequiredSanity();
-            var currentTime = 0;
+            var currentTimes = 0;
             while (true)
             {
                 if (HaveEnoughSanity())
                 {
-                    Log.Information($"开始第{currentTime + 1}次刷关");
+                    Log.Information("开始第{CurrentTimes}次刷关", currentTimes + 1);
                     RunOnce();
-                    Log.Information($"关卡完成，目前已刷关{++currentTime}次");
+                    Log.Information("关卡完成，目前已刷关{CurrentTimes}次", ++currentTimes);
                 }
                 else
                 {
@@ -141,7 +141,7 @@ namespace REVUnit.AutoArknights.Core.Tasks
                 }
             }
 
-            return currentTime;
+            return currentTimes;
         }
 
         private void WaitForSanityRecovery()
@@ -162,10 +162,9 @@ namespace REVUnit.AutoArknights.Core.Tasks
             {
                 if (HaveEnoughSanity())
                 {
-                    currentTimes++;
-                    Log.Information("开始第{times}次刷关", currentTimes);
+                    Log.Information("开始第{CurrentTimes}次刷关", currentTimes + 1);
                     RunOnce();
-                    Log.Information("关卡完成，目前已刷关{times}次", currentTimes);
+                    Log.Information("关卡完成，目前已刷关{CurrentTimes}次", ++currentTimes);
                 }
                 else
                 {
