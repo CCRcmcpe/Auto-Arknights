@@ -22,9 +22,9 @@ steps:
   name: "Build"
   inputs:
     filePath: 'CLI/build.ps1'
-    workingDirectory: 'Auto Arknights CLI'
+    workingDirectory: 'CLI'
 - task: PublishPipelineArtifact@1
   name: "Pack"
   inputs:
     targetPath: 'CLI/artifact'
-    artifactName: 'Auto-Arknights-CLI'
+    artifactName: 'Auto Arknights CLI'
