@@ -4,13 +4,16 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <RootNamespace>REVUnit.AutoArknights.Core</RootNamespace>
     <nullable>enable</nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <Platforms>x64</Platforms>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Colorful.Console" Version="1.2.15" />
-    <PackageReference Include="OpenCvSharp4.Windows" Version="4.5.1.20210123" />
+    <PackageReference Include="OpenCvSharp4.Windows" Version="4.5.1.20210206" />
     <PackageReference Include="Refit" Version="5.2.4" />
     <PackageReference Include="Polly" Version="7.2.1" />
     <PackageReference Include="Serilog" Version="2.10.0" />
