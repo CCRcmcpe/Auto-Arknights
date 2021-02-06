@@ -12,8 +12,8 @@ namespace REVUnit.AutoArknights.CLI
 
             public IntervalsConfigImpl(Config config) => _config = config;
 
-            public double BeforeVerifyInLevel => _config.Optional("Intervals:BeforeVerifyInLevel", double.Parse);
-            public int AfterLevelComplete => _config.Optional("Intervals:BeforeVerifyInLevel", int.Parse);
+            public double BeforeVerifyInLevel => _config.Optional("Intervals:BeforeVerifyInLevel", double.Parse, 20);
+            public double AfterLevelComplete => _config.Optional("Intervals:BeforeVerifyInLevel", double.Parse, 8);
         }
     }
 }

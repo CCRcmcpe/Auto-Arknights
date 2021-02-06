@@ -32,7 +32,8 @@ namespace REVUnit.AutoArknights.CLI
 
         public string Required(params string[] keys)
         {
-            return keys.Select(key => Inner[key]).FirstOrDefault() ?? throw new Exception($"配置文件需填写 {keys[0]}");
+            return keys.Select(key => Inner[key]).FirstOrDefault(s => s != null) ??
+                   throw new Exception($"配置文件需填写 {keys[0]}");
         }
 
         public T Required<T>(string key, Func<string?, T>? parser = null, Predicate<T>? validator = null)
@@ -65,7 +66,7 @@ namespace REVUnit.AutoArknights.CLI
 
         public string? Optional(params string[] keys)
         {
-            return keys.Select(key => Inner[key]).FirstOrDefault();
+            return keys.Select(key => Inner[key]).FirstOrDefault(s => s != null);
         }
 
         public T? Optional<T>(string key, Func<string, T>? parser = null, T? defaultValue = default,

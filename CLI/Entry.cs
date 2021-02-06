@@ -2,8 +2,9 @@
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 
-#if RELEASE
+#if !DEBUG
 using REVUnit.Crlib.Extension;
+
 #endif
 
 namespace REVUnit.AutoArknights.CLI
@@ -19,7 +20,7 @@ namespace REVUnit.AutoArknights.CLI
                         .File($@"Log\{DateTime.Now}.log").CreateLogger();
 #if DEBUG
             app.Run();
-#elif RELEASE
+#else
             try
             {
                 app.Run();

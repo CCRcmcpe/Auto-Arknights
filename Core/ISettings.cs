@@ -17,7 +17,7 @@
         public interface IIntervals
         {
             public double BeforeVerifyInLevel { get; }
-            public int AfterLevelComplete { get; }
+            public double AfterLevelComplete { get; }
         }
     }
 }

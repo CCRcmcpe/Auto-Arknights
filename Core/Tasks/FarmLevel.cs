@@ -75,6 +75,7 @@ namespace REVUnit.AutoArknights.Core.Tasks
         {
             I.Graphical.Click("作战/开始");
             I.Graphical.Click("作战/确认");
+
             Utils.Sleep(Library.Settings.Intervals.BeforeVerifyInLevel);
             if (!I.Graphical.TestAppear("作战/接管作战"))
             {
@@ -85,7 +86,7 @@ namespace REVUnit.AutoArknights.Core.Tasks
             Utils.Sleep(50);
             while (I.Graphical.TestAppear("作战/接管作战")) { }
 
-            Utils.Sleep(5);
+            Utils.Sleep(Library.Settings.Intervals.AfterLevelComplete);
             while (true)
             {
                 I.Click(RelativeArea.LevelCompletedScreenCloseClick);

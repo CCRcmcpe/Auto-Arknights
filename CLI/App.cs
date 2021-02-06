@@ -55,18 +55,18 @@ namespace REVUnit.AutoArknights.CLI
 --------------------------------------------------
 ");
 
-            Log.Information("即将执行 {tasks}", prms.Tasks);
+            Log.Information("即将执行：{tasks}", prms.Tasks);
             XConsole.AnyKey();
 
             for (var taskId = 0; taskId < prms.Tasks.Length; taskId++)
             {
                 IArkTask task = prms.Tasks[taskId];
 
-                Log.Information("任务[{taskId}]: 任务开始", taskId);
+                Log.Information("任务[{taskId}]：任务开始", taskId);
                 ExecuteResult executeResult = task.Execute();
 
                 if (executeResult.Succeed)
-                    Log.Information("任务[{taskId}]完成：{message}", taskId, executeResult.Message);
+                    Log.Information("任务[{taskId}]完成，信息：{message}", taskId, executeResult.Message);
                 else
                     Log.Error("任务[{taskId}]出现错误：{message}", taskId, executeResult.Message);
             }
