@@ -358,6 +358,15 @@ namespace REVUnit.AutoArknights.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 关闭远端.
+        /// </summary>
+        internal static string PostAction_CloseRemote {
+            get {
+                return ResourceManager.GetString("PostAction_CloseRemote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 无效的后续动作标识符 &quot;{0}&quot;.
         /// </summary>
         internal static string PostAction_Exception_ParseFailed {
@@ -367,7 +376,7 @@ namespace REVUnit.AutoArknights.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 执行指令：{0}....
+        ///   Looks up a localized string similar to 执行指令.
         /// </summary>
         internal static string PostAction_ExecuteCommand {
             get {
@@ -459,9 +468,9 @@ namespace REVUnit.AutoArknights.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to 指令不能为空.
         /// </summary>
-        internal static string PostActions_ExecuteCommand_Exception_EmptyCommand {
+        internal static string PostActions_CloseRemote_Exception_EmptyCommand {
             get {
-                return ResourceManager.GetString("PostActions_ExecuteCommand_Exception_EmptyCommand", resourceCulture);
+                return ResourceManager.GetString("PostActions_CloseRemote_Exception_EmptyCommand", resourceCulture);
             }
         }
     }

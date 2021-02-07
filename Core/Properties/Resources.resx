@@ -158,7 +158,7 @@
   <data name="FeatureMatcher_Exception_FeatureTypesMismatch" xml:space="preserve">
     <value>{0}和{1}的类型不匹配</value>
   </data>
-  <data name="PostActions_ExecuteCommand_Exception_EmptyCommand" xml:space="preserve">
+  <data name="PostActions_CloseRemote_Exception_EmptyCommand" xml:space="preserve">
     <value>指令不能为空</value>
   </data>
   <data name="PostAction_Exception_ParseFailed" xml:space="preserve">
@@ -192,7 +192,7 @@
     <value>指令已执行</value>
   </data>
   <data name="PostAction_ExecuteCommand" xml:space="preserve">
-    <value>执行指令：{0}...</value>
+    <value>执行指令</value>
   </data>
   <data name="Adb_StartingServer" xml:space="preserve">
     <value>正在启动 ADB 服务器</value>
@@ -232,5 +232,8 @@
   </data>
   <data name="AssetsLoadException" xml:space="preserve">
     <value>无法载入资源: {0}</value>
+  </data>
+  <data name="PostAction_CloseRemote" xml:space="preserve">
+    <value>关闭远端</value>
   </data>
 </root>

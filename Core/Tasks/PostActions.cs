@@ -18,9 +18,8 @@ namespace REVUnit.AutoArknights.Core.Tasks
                 'r' => new Reboot(),
                 's' => new Suspend(false) { Forced = settings.ForcedSuspend },
                 'h' => new Suspend(true) { Forced = settings.ForcedSuspend },
-                'e' => new ExecuteCommand(settings.Remote.ShutdownCommand ??
-                                          throw new Exception(
-                                              Resources.PostActions_ExecuteCommand_Exception_EmptyCommand)),
+                'e' => new CloseRemote(settings.Remote.ShutdownCommand ??
+                                       throw new Exception(Resources.PostActions_CloseRemote_Exception_EmptyCommand)),
                 _ => throw new FormatException(string.Format(Resources.PostAction_Exception_ParseFailed, c))
             };
         }
@@ -99,7 +98,12 @@ namespace REVUnit.AutoArknights.Core.Tasks
                 : new ExecuteResult(true, Resources.PostAction_ExecuteCommand_Completed);
         }
 
-        public override string ToString() =>
-            string.Format(Resources.PostAction_ExecuteCommand, Command[..Command.IndexOf(' ')]);
+        public override string ToString() => string.Format(Resources.PostAction_ExecuteCommand);
+    }
+
+    public class CloseRemote : ExecuteCommand
+    {
+        public CloseRemote(string command) : base(command) { }
+        public override string ToString() => Resources.PostAction_CloseRemote;
     }
 }

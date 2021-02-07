@@ -94,7 +94,7 @@ namespace REVUnit.AutoArknights.CLI
 
             public static Parameters Parse(string value, ISettings parseSettings)
             {
-                var reader = new StringReader(value);
+                using var reader = new StringReader(value);
 
                 int modeValue = reader.Read() - '0';
                 var mode = (LevelFarming.Mode) modeValue;
@@ -107,10 +107,16 @@ namespace REVUnit.AutoArknights.CLI
                     var b = new StringBuilder();
                     while (true)
                     {
-                        int v = reader.Read();
+                        int v = reader.Peek();
                         if (v == -1) break;
+
                         var c = (char) v;
-                        if (char.IsDigit((char) v)) b.Append(c);
+                        if (char.IsDigit((char) v))
+                            b.Append(c);
+                        else
+                            break;
+
+                        _ = reader.Read();
                     }
 
                     if (b.Length == 0) throw new ArgumentException(Resources.Parameters_Exception_InvalidTimes);
@@ -121,7 +127,9 @@ namespace REVUnit.AutoArknights.CLI
                     tasks.Add(task);
                 }
                 else
+                {
                     tasks.Add(new LevelFarming(mode, -1));
+                }
 
                 if (reader.Peek() == -1)
                     return new Parameters(tasks.ToArray()); // A mode value and maybe a repeat times number parsed
