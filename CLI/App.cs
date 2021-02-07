@@ -37,7 +37,12 @@ namespace REVUnit.AutoArknights.CLI
             Log.Information(Resources.App_Started);
             Console.Clear();
 
-            Parameters? prms = cin.Get(Resources.App_ParamsHint, ParseParameters);
+            Parameters? prms;
+
+            do
+            {
+                prms = cin.Get(Resources.App_ParamsHint, (Cin.Parser<Parameters>) ParseParams);
+            } while (cin.LastException != null);
 
             if (prms == null) return;
 
@@ -69,12 +74,17 @@ namespace REVUnit.AutoArknights.CLI
             XConsole.AnyKey(Resources.App_AllTasksCompleted);
         }
 
-        private Parameters ParseParameters(string s)
+        private Exception? ParseParams(string value, out Parameters? result)
         {
-            if (s != "help") return Parameters.Parse(s, Config);
+            if (value != "help")
+            {
+                result = Parameters.Parse(value, Config);
+                return null;
+            }
 
             Console.WriteLine(Resources.QuickHelpMessage);
-            throw new Exception();
+            result = null;
+            return new Exception();
         }
 
         private class Parameters
@@ -111,9 +121,7 @@ namespace REVUnit.AutoArknights.CLI
                     tasks.Add(task);
                 }
                 else
-                {
                     tasks.Add(new LevelFarming(mode, -1));
-                }
 
                 if (reader.Peek() == -1)
                     return new Parameters(tasks.ToArray()); // A mode value and maybe a repeat times number parsed

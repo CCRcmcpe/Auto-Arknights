@@ -162,7 +162,7 @@
     <value>指令不能为空</value>
   </data>
   <data name="PostAction_Exception_ParseFailed" xml:space="preserve">
-    <value>无效的后续操作标识符 "{0}"</value>
+    <value>无效的后续动作标识符 "{0}"</value>
   </data>
   <data name="PostAction_Shutdown" xml:space="preserve">
     <value>关机</value>

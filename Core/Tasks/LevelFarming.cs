@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using Polly;
 using REVUnit.AutoArknights.Core.Properties;
 using Serilog;
 using static REVUnit.AutoArknights.Core.UserInterface;
@@ -44,19 +45,32 @@ namespace REVUnit.AutoArknights.Core.Tasks
 
         private void EnsureSanityEnough()
         {
-            if (!HaveEnoughSanity()) WaitForSanityRecovery();
+            if (!GetHaveEnoughSanity()) WaitForSanityRecovery();
         }
 
-        private bool HaveEnoughSanity()
+        private bool GetHaveEnoughSanity()
         {
-            Sanity currentSanity = I.GetCurrentSanity();
             // 防止OCR抽风
-            if (_previousSanity != null)
+            PolicyResult<Sanity> result = Policy.HandleResult<Sanity>(sanity =>
             {
-                int dSanity = _previousSanity.Value - currentSanity.Value; // 理智变动
-                if (Math.Abs(currentSanity.Max - _previousSanity.Max) > 1  // 理智上限变动大于1
-                 || dSanity > 0 && _requiredSanity - dSanity > 10)         // 没有嗑药，且理智对于一般情况下的刷关后理智差大于10
-                    currentSanity = I.GetCurrentSanity();
+                if (_previousSanity == null) return false;
+                int dSanity = _previousSanity.Value - sanity.Value;
+
+                return Math.Abs(sanity.Max - _previousSanity.Max) > 1 // 理智上限变动大于1
+                    || dSanity > 0                                    // 没有嗑药
+                    && Math.Abs(_requiredSanity - dSanity) > 10;      // 且理智对于一般情况下的刷关后理智差大于10
+            }).WaitAndRetry(2, _ => TimeSpan.FromSeconds(2)).ExecuteAndCapture(() => I.GetCurrentSanity());
+
+            Sanity currentSanity;
+
+            if (result.Result != null)
+            {
+                currentSanity = result.Result;
+            }
+            else
+            {
+                Log.Warning("OCR识别结果似乎有误");
+                currentSanity = result.FinalHandledResult;
             }
 
             _previousSanity = currentSanity;
@@ -129,18 +143,14 @@ namespace REVUnit.AutoArknights.Core.Tasks
             InitRequiredSanity();
             var currentTimes = 0;
             while (true)
-            {
-                if (HaveEnoughSanity())
+                if (GetHaveEnoughSanity())
                 {
                     Log.Information(Resources.LevelFarming_Unlimited_Begin, currentTimes + 1);
                     RunOnce();
                     Log.Information(Resources.LevelFarming_Unlimited_Complete, ++currentTimes);
                 }
                 else
-                {
                     break;
-                }
-            }
 
             return currentTimes;
         }
@@ -160,18 +170,14 @@ namespace REVUnit.AutoArknights.Core.Tasks
             InitRequiredSanity();
             var currentTimes = 0;
             while (true)
-            {
-                if (HaveEnoughSanity())
+                if (GetHaveEnoughSanity())
                 {
                     Log.Information(Resources.LevelFarming_Unlimited_Begin, currentTimes + 1);
                     RunOnce();
                     Log.Information(Resources.LevelFarming_Unlimited_Complete, ++currentTimes);
                 }
                 else
-                {
                     WaitForSanityRecovery();
-                }
-            }
         }
 
         public override string ToString()

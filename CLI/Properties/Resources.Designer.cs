@@ -79,7 +79,7 @@ namespace REVUnit.AutoArknights.CLI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;模式&gt;[刷关次数][后续操作].
+        ///   Looks up a localized string similar to &lt;模式&gt;[次数][后续动作].
         /// </summary>
         internal static string App_ParamsHint {
             get {
@@ -201,16 +201,16 @@ namespace REVUnit.AutoArknights.CLI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 出现致命错误：{0}，&quot;{1}&quot;.
+        ///   Looks up a localized string similar to 出现致命错误.
         /// </summary>
-        internal static string Entry_Exception {
+        internal static string Entry_FatalException {
             get {
-                return ResourceManager.GetString("Entry_Exception", resourceCulture);
+                return ResourceManager.GetString("Entry_FatalException", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 无效的模式，请输入 &quot;help&quot; 来获取快速帮助.
+        ///   Looks up a localized string similar to 无效的计划，请输入 &quot;help&quot; 来获取快速帮助.
         /// </summary>
         internal static string Parameters_Exception_InvalidMode {
             get {
@@ -228,7 +228,7 @@ namespace REVUnit.AutoArknights.CLI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 无效的模式，请输入 &quot;help&quot; 来获取快速帮助.
+        ///   Looks up a localized string similar to 无效的计划，请输入 &quot;help&quot; 来获取快速帮助.
         /// </summary>
         internal static string Parameters_HelpHint {
             get {
@@ -245,7 +245,7 @@ namespace REVUnit.AutoArknights.CLI.Properties {
         ///2es    刷关到理智耗尽，随后关闭模拟器，使计算机睡眠
         ///3    刷关到理智耗尽，无限等待恢复继续刷关
         ///
-        ///后续操作 [c]关机 [r]重启 [s]睡眠 [h]休眠 [e]关闭远端
+        ///后续动作 [c]关机 [r]重启 [s]睡眠 [h]休眠 [e]关闭远端
         ///.
         /// </summary>
         internal static string QuickHelpMessage {

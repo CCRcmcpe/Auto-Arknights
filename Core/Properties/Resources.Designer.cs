@@ -358,7 +358,7 @@ namespace REVUnit.AutoArknights.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 无效的后续操作标识符 &quot;{0}&quot;.
+        ///   Looks up a localized string similar to 无效的后续动作标识符 &quot;{0}&quot;.
         /// </summary>
         internal static string PostAction_Exception_ParseFailed {
             get {

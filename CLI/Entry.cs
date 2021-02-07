@@ -29,8 +29,7 @@ namespace REVUnit.AutoArknights.CLI
             }
             catch (Exception e)
             {
-                Log.Error(string.Format(Resources.Entry_Exception, e.GetType().Name, e.Message));
-                Log.Debug(e.StackTrace);
+                Log.Fatal(e, Resources.Entry_FatalException);
                 XConsole.AnyKey();
             }
 #endif

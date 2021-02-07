@@ -147,7 +147,7 @@
 2es    刷关到理智耗尽，随后关闭模拟器，使计算机睡眠
 3    刷关到理智耗尽，无限等待恢复继续刷关
 
-后续操作 [c]关机 [r]重启 [s]睡眠 [h]休眠 [e]关闭远端
+后续动作 [c]关机 [r]重启 [s]睡眠 [h]休眠 [e]关闭远端
 </value>
   </data>
   <data name="App_NotSupported" xml:space="preserve">
@@ -160,7 +160,7 @@
     <value>启动成功</value>
   </data>
   <data name="App_ParamsHint" xml:space="preserve">
-    <value>&lt;模式&gt;[刷关次数][后续操作]</value>
+    <value>&lt;模式&gt;[次数][后续动作]</value>
   </data>
   <data name="App_TaskListHeader" xml:space="preserve">
     <value>
@@ -189,10 +189,10 @@
     <value>所有任务已结束</value>
   </data>
   <data name="Parameters_HelpHint" xml:space="preserve">
-    <value>无效的模式，请输入 "help" 来获取快速帮助</value>
+    <value>无效的计划，请输入 "help" 来获取快速帮助</value>
   </data>
   <data name="Parameters_Exception_InvalidMode" xml:space="preserve">
-    <value>无效的模式，请输入 "help" 来获取快速帮助</value>
+    <value>无效的计划，请输入 "help" 来获取快速帮助</value>
   </data>
   <data name="Parameters_Exception_InvalidTimes" xml:space="preserve">
     <value>无效的刷关次数值，请输入 "help" 来获取快速帮助</value>
@@ -209,7 +209,7 @@
   <data name="Config_Exception_CannotParse" xml:space="preserve">
     <value>无法解析配置值 {0}</value>
   </data>
-  <data name="Entry_Exception" xml:space="preserve">
-    <value>出现致命错误：{0}，"{1}"</value>
+  <data name="Entry_FatalException" xml:space="preserve">
+    <value>出现致命错误</value>
   </data>
 </root>
