@@ -49,7 +49,7 @@ namespace REVUnit.AutoArknights.CLI
 
             private static LevelFarming ParseMainTask(Group modeGroup, Group timesGroup)
             {
-                var mode = (LevelFarming.Mode) modeGroup.Value[0];
+                var mode = (LevelFarming.Mode) int.Parse(modeGroup.Value);
                 if (!Enum.IsDefined(mode)) throw new ArgumentException(Resources.Plan_Exception_InvalidMode);
 
                 if (mode != LevelFarming.Mode.SpecifiedTimes && mode != LevelFarming.Mode.SpecTimesWithWait)
