@@ -15,7 +15,6 @@ namespace REVUnit.AutoArknights.Core
                                                                               Library.Settings.Remote.Serial));
 
         private readonly Adb _adb;
-
         private readonly Size _resolution;
 
         private UserInterface(string exePath, string targetSerial)
@@ -41,25 +40,13 @@ namespace REVUnit.AutoArknights.Core
             return new Point(randX, randY);
         }
 
-        public void Click(int x, int y)
-        {
-            Click(new Point(x, y));
-        }
+        public void Click(int x, int y) => Click(new Point(x, y));
 
-        public void Click(RelativeArea area)
-        {
-            Click(area.For(_resolution));
-        }
+        public void Click(RelativeArea area) => Click(area.For(_resolution));
 
-        public void Click(Rect rect)
-        {
-            Click(Randomize(rect));
-        }
+        public void Click(Rect rect) => Click(Randomize(rect));
 
-        public void Click(Point point)
-        {
-            _adb.Click(Randomize(point));
-        }
+        public void Click(Point point) => _adb.Click(Randomize(point));
 
         public Sanity GetCurrentSanity()
         {
@@ -72,10 +59,8 @@ namespace REVUnit.AutoArknights.Core
             })!;
         }
 
-        public int GetRequiredSanity()
-        {
-            return Textual.Ocr(RelativeArea.RequiredSanity, @"\d+", matches => int.Parse(matches[0]));
-        }
+        public int GetRequiredSanity() =>
+            Textual.Ocr(RelativeArea.RequiredSanity, @"\d+", matches => int.Parse(matches[0]));
 
         public Mat GetScreenshot() => _adb.GetScreenshot();
     }

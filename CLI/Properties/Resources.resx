@@ -188,13 +188,13 @@
   <data name="App_AllTasksCompleted" xml:space="preserve">
     <value>所有任务已结束</value>
   </data>
-  <data name="Parameters_HelpHint" xml:space="preserve">
+  <data name="Plan_Exception_Parsing" xml:space="preserve">
     <value>无效的计划，请输入 "help" 来获取快速帮助</value>
   </data>
-  <data name="Parameters_Exception_InvalidMode" xml:space="preserve">
-    <value>无效的计划，请输入 "help" 来获取快速帮助</value>
+  <data name="Plan_Exception_InvalidMode" xml:space="preserve">
+    <value>无效的模式，请输入 "help" 来获取快速帮助</value>
   </data>
-  <data name="Parameters_Exception_InvalidTimes" xml:space="preserve">
+  <data name="Plan_Exception_InvalidTimes" xml:space="preserve">
     <value>无效的刷关次数值，请输入 "help" 来获取快速帮助</value>
   </data>
   <data name="Config_Exception_InvalidConfig" xml:space="preserve">

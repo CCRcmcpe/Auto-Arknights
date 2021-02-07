@@ -47,6 +47,7 @@ namespace REVUnit.AutoArknights.CLI
                     throw new Exception(string.Format(Resources.Config_Exception_InvalidKey, key));
             }
             else
+            {
                 try
                 {
                     value = parser(raw);
@@ -55,9 +56,12 @@ namespace REVUnit.AutoArknights.CLI
                 {
                     throw new Exception(string.Format(Resources.Config_Exception_CannotParse, key), e);
                 }
+            }
 
             if (validator != null && !validator(value))
+            {
                 throw new Exception(string.Format(Resources.Config_Exception_InvalidKey, key));
+            }
 
             return value;
         }
@@ -78,9 +82,12 @@ namespace REVUnit.AutoArknights.CLI
             if (parser == null)
             {
                 if (!raw.TryToType(out value))
+                {
                     throw new Exception(string.Format(Resources.Config_Exception_InvalidKey, key));
+                }
             }
             else
+            {
                 try
                 {
                     value = parser(raw);
@@ -89,9 +96,12 @@ namespace REVUnit.AutoArknights.CLI
                 {
                     throw new Exception(string.Format(Resources.Config_Exception_CannotParse, key), e);
                 }
+            }
 
             if (validator != null && !validator(value))
+            {
                 throw new Exception(string.Format(Resources.Config_Exception_InvalidKey, key));
+            }
 
             return value;
         }

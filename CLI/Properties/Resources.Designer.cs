@@ -210,29 +210,29 @@ namespace REVUnit.AutoArknights.CLI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 无效的计划，请输入 &quot;help&quot; 来获取快速帮助.
+        ///   Looks up a localized string similar to 无效的模式，请输入 &quot;help&quot; 来获取快速帮助.
         /// </summary>
-        internal static string Parameters_Exception_InvalidMode {
+        internal static string Plan_Exception_InvalidMode {
             get {
-                return ResourceManager.GetString("Parameters_Exception_InvalidMode", resourceCulture);
+                return ResourceManager.GetString("Plan_Exception_InvalidMode", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to 无效的刷关次数值，请输入 &quot;help&quot; 来获取快速帮助.
         /// </summary>
-        internal static string Parameters_Exception_InvalidTimes {
+        internal static string Plan_Exception_InvalidTimes {
             get {
-                return ResourceManager.GetString("Parameters_Exception_InvalidTimes", resourceCulture);
+                return ResourceManager.GetString("Plan_Exception_InvalidTimes", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to 无效的计划，请输入 &quot;help&quot; 来获取快速帮助.
         /// </summary>
-        internal static string Parameters_HelpHint {
+        internal static string Plan_Exception_Parsing {
             get {
-                return ResourceManager.GetString("Parameters_HelpHint", resourceCulture);
+                return ResourceManager.GetString("Plan_Exception_Parsing", resourceCulture);
             }
         }
         
