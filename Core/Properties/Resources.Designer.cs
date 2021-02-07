@@ -473,5 +473,23 @@ namespace REVUnit.AutoArknights.Core.Properties {
                 return ResourceManager.GetString("PostActions_CloseRemote_Exception_EmptyCommand", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OCR调用失败[{RetryTimes}/{MaxRetryTimes}]：{Message}，等待{WaitSeconds}秒后重试.
+        /// </summary>
+        internal static string TxOcr_Exception_Ocr {
+            get {
+                return ResourceManager.GetString("TxOcr_Exception_Ocr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OCR调用失败过多.
+        /// </summary>
+        internal static string TxOcr_Exception_OcrFailed {
+            get {
+                return ResourceManager.GetString("TxOcr_Exception_OcrFailed", resourceCulture);
+            }
+        }
     }
 }

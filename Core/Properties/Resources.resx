@@ -236,4 +236,10 @@
   <data name="PostAction_CloseRemote" xml:space="preserve">
     <value>关闭远端</value>
   </data>
+  <data name="TxOcr_Exception_Ocr" xml:space="preserve">
+    <value>OCR调用失败[{RetryTimes}/{MaxRetryTimes}]：{Message}，等待{WaitSeconds}秒后重试</value>
+  </data>
+  <data name="TxOcr_Exception_OcrFailed" xml:space="preserve">
+    <value>OCR调用失败过多</value>
+  </data>
 </root>

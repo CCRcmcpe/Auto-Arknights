@@ -1,8 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using OpenCvSharp;
+using Polly;
 using Refit;
+using REVUnit.AutoArknights.Core.Properties;
+using Serilog;
 
 namespace REVUnit.AutoArknights.Core
 {
@@ -20,10 +24,34 @@ namespace REVUnit.AutoArknights.Core
 
         public static string[] OcrMulti(Mat image)
         {
-            using var ms = image.ToMemoryStream(".png", new ImageEncodingParam(ImwriteFlags.PngCompression, 8));
-            string json = Api.Ocr(new StreamPart(ms, "file.png", "image/png")).Result;
-            return JsonDocument.Parse(json).RootElement.GetProperty("data").GetProperty("item_list").EnumerateArray()
-                               .Select(it => it.GetProperty("itemstring").GetString()!).ToArray();
+            const int maxRetryTimes = 3;
+            PolicyResult<JsonElement> result = Policy
+                                              .HandleResult<JsonElement>(
+                                                   root => root.GetProperty("ret").GetInt32() != 0)
+                                              .WaitAndRetry(maxRetryTimes, i => TimeSpan.FromSeconds(3 * i),
+                                                            (falutedResult, waitSpan, i, _) =>
+                                                            {
+                                                                Log.Error(Resources.TxOcr_Exception_Ocr,
+                                                                            i, maxRetryTimes,
+                                                                            falutedResult.Result.GetProperty("msg")
+                                                                               .GetString(), waitSpan.Seconds);
+                                                            })
+                                              .ExecuteAndCapture(() =>
+                                               {
+                                                   using var ms = image.ToMemoryStream(
+                                                       ".jpg", new ImageEncodingParam(ImwriteFlags.JpegQuality, 90));
+                                                   string json = Api.Ocr(new StreamPart(ms, "file.png", "image/png"))
+                                                                    .Result;
+                                                   return JsonDocument.Parse(json).RootElement;
+                                               });
+
+            if (result.FaultType != null)
+            {
+                throw new Exception(Resources.TxOcr_Exception_OcrFailed);
+            }
+
+            return result.Result.GetProperty("data").GetProperty("item_list").EnumerateArray()
+                         .Select(fields => fields.GetProperty("itemstring").GetString()!).ToArray();
         }
 
         public interface ITxOcr
