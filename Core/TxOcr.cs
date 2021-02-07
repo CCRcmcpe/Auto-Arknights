@@ -32,9 +32,9 @@ namespace REVUnit.AutoArknights.Core
                                                             (falutedResult, waitSpan, i, _) =>
                                                             {
                                                                 Log.Error(Resources.TxOcr_Exception_Ocr,
-                                                                            i, maxRetryTimes,
-                                                                            falutedResult.Result.GetProperty("msg")
-                                                                               .GetString(), waitSpan.Seconds);
+                                                                          i, maxRetryTimes,
+                                                                          falutedResult.Result.GetProperty("msg")
+                                                                             .GetString(), waitSpan.Seconds);
                                                             })
                                               .ExecuteAndCapture(() =>
                                                {
