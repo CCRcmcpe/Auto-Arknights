@@ -2,9 +2,9 @@
 using REVUnit.AutoArknights.CLI.Properties;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
-
 #if !DEBUG
 using REVUnit.Crlib.Extension;
+
 #endif
 
 namespace REVUnit.AutoArknights.CLI
@@ -20,7 +20,7 @@ namespace REVUnit.AutoArknights.CLI
             Log.Logger = new LoggerConfiguration()
                         .ReadFrom.Configuration(App.Config.Inner).WriteTo.Console(theme: AnsiConsoleTheme.Code).WriteTo
                         .Debug().WriteTo
-                        .File($"Log/{DateTime.Now:yyMMdd-hh:mm:ss}.log").CreateLogger();
+                        .File($"Log/{DateTime.Now:yyyy-MM-dd hh.mm.ss}.log").CreateLogger();
 
             Log.Information(Resources.App_Starting);
 
