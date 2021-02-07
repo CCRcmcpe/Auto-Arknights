@@ -1,12 +1,10 @@
 ﻿using System;
-using System.IO;
-using System.Reflection;
-using REVUnit.AutoArknights.CLI.Properties;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
-#if !DEBUG
-using REVUnit.Crlib.Extension;
 
+#if !DEBUG
+using REVUnit.AutoArknights.CLI.Properties;
+using REVUnit.Crlib.Extension;
 #endif
 
 namespace REVUnit.AutoArknights.CLI
@@ -15,7 +13,7 @@ namespace REVUnit.AutoArknights.CLI
     {
         public static void Main()
         {
-            Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
+            Environment.CurrentDirectory = AppContext.BaseDirectory;
 
             var app = App.Instance;
             Log.Logger = new LoggerConfiguration()
