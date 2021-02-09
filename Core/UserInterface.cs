@@ -6,7 +6,7 @@ using Point = System.Drawing.Point;
 
 namespace REVUnit.AutoArknights.Core
 {
-    public partial class UserInterface
+    public partial class UserInterface : IDisposable
     {
         private static readonly Random Random = new();
 
@@ -23,6 +23,11 @@ namespace REVUnit.AutoArknights.Core
             _resolution = _adb.GetResolution();
             Graphical = new GraphicalInterface(this);
             Textual = new TextualInterface(this);
+        }
+
+        public void Dispose()
+        {
+            Graphical.Dispose();
         }
 
         public GraphicalInterface Graphical { get; }

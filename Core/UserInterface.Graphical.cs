@@ -7,7 +7,7 @@ namespace REVUnit.AutoArknights.Core
 {
     public partial class UserInterface
     {
-        public class GraphicalInterface
+        public class GraphicalInterface : IDisposable
         {
             private readonly ImageAssets _assets = new();
             private readonly TemplateRegister _register = new();

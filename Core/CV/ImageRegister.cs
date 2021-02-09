@@ -6,12 +6,12 @@ namespace REVUnit.AutoArknights.Core.CV
     {
         private static void NormalizeScale(Mat mat)
         {
-            Size s1 = mat.Size();
-            Size s2 = ImageAssets.TargetSize;
-            if (s1 == s2) return;
+            Size size = mat.Size();
+            Size targetSize = ImageAssets.TargetSize;
+            if (size == targetSize) return;
 
-            bool smallerThanNormal = s2.Width > s1.Width || s1.Height > s2.Height;
-            Cv2.Resize(mat, mat, s2, interpolation: smallerThanNormal
+            bool upscale = size.Width < targetSize.Width || size.Height < targetSize.Height;
+            Cv2.Resize(mat, mat, targetSize, interpolation: upscale
                            ? InterpolationFlags.Cubic
                            : InterpolationFlags.Area);
         }
