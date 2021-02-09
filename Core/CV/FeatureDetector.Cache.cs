@@ -23,7 +23,7 @@ namespace REVUnit.AutoArknights.Core.CV
                 GetMd5(File.ReadAllBytes(Assembly.GetCallingAssembly().Location));
 
             private readonly string _cacheDirPath;
-            private readonly Dictionary<string, MatFeature> _md5map = new();
+            private readonly Dictionary<string, MatFeature> _md5Map = new();
             private readonly string _serialFilePath;
 
             public Cache(string cacheDirPath)
@@ -134,7 +134,7 @@ namespace REVUnit.AutoArknights.Core.CV
                 storage.Write("OriginWidth", mat.Width);
                 storage.Write("OriginHeight", mat.Height);
 
-                File.WriteAllText(_serialFilePath, _coreAssemblySerial);
+                File.WriteAllText(_serialFilePath, CoreAssemblySerial);
             }
         }
     }
