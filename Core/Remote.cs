@@ -6,34 +6,33 @@ using Point = System.Drawing.Point;
 
 namespace REVUnit.AutoArknights.Core
 {
-    public partial class UserInterface : IDisposable
+    public partial class Remote : IDisposable
     {
         private static readonly Random Random = new();
 
-        private static readonly Lazy<UserInterface> LazyInitializer = new(() => new UserInterface(
-                                                                              Library.Settings.Remote.AdbExecutable,
-                                                                              Library.Settings.Remote.Serial));
+        private static readonly Lazy<Remote> LazyInitializer =
+            new(() => new Remote(Library.Settings.Remote.AdbExecutable, Library.Settings.Remote.Serial));
 
         private readonly Adb _adb;
         private readonly Size _resolution;
 
-        private UserInterface(string exePath, string targetSerial)
+        private Remote(string adbPath, string serial)
         {
-            _adb = new Adb(exePath, targetSerial);
+            _adb = new Adb(adbPath, serial);
             _resolution = _adb.GetResolution();
-            Graphical = new GraphicalInterface(this);
-            Textual = new TextualInterface(this);
+            Graphical = new Graphic(this);
+            Textual = new Text(this);
         }
+
+        public Graphic Graphical { get; }
+        public Text Textual { get; }
+
+        public static Remote I => LazyInitializer.Value;
 
         public void Dispose()
         {
             Graphical.Dispose();
         }
-
-        public GraphicalInterface Graphical { get; }
-        public TextualInterface Textual { get; }
-
-        public static UserInterface I => LazyInitializer.Value;
 
         private static Point Randomize(Point point) =>
             new(Math.Abs(Random.Next(-5, 5) + point.X), Math.Abs(Random.Next(-5, 5) + point.Y));

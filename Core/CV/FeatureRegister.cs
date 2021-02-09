@@ -16,7 +16,6 @@ namespace REVUnit.AutoArknights.Core.CV
 
         public FeatureDetector FeatureDetector { get; }
         public FeatureMatcher FeatureMatcher { get; }
-        public float SuccessThreshold { get; set; } = 1f / 3f;
 
 
         public void Dispose()
@@ -25,8 +24,9 @@ namespace REVUnit.AutoArknights.Core.CV
             FeatureMatcher.Dispose();
         }
 
-        protected override RegisterResult[] RegisterInternal(Mat model, Mat scene, int minMatchCount)
+        public override RegisterResult[] Register(Mat model, Mat scene, int minMatchCount)
         {
+            // TODO implement minMatchCount
             return new[] { Register(model, scene, Feature2DType.FastFreak) };
         }
 
@@ -39,9 +39,7 @@ namespace REVUnit.AutoArknights.Core.CV
                 modelFeature = FeatureDetector.DetectCached(model, type);
                 sceneFeature = FeatureDetector.Detect(scene, type);
                 (double confidence, Rect circumRect) = FeatureMatcher.Match(modelFeature, sceneFeature);
-                return confidence > SuccessThreshold
-                    ? RegisterResult.Succeed(circumRect, confidence)
-                    : RegisterResult.Failed();
+                return new RegisterResult(circumRect, confidence);
             }
             finally
             {

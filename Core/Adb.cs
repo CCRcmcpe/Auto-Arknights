@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using OpenCvSharp;
 using Polly;
 using REVUnit.AutoArknights.Core.Properties;
+using REVUnit.Crlib.Extension;
 using Serilog;
 using Point = System.Drawing.Point;
 
@@ -21,19 +22,19 @@ namespace REVUnit.AutoArknights.Core
     {
         private readonly ILogger _logger;
 
-        public Adb(string executable, string targetSerial)
+        public Adb(string executable, string serial)
         {
             _logger = Log.ForContext<Adb>();
 
             Executable = executable;
-            TargetSerial = targetSerial;
+            Serial = serial;
 
             RestartServer();
             Connect();
         }
 
         public string Executable { get; set; }
-        public string TargetSerial { get; set; }
+        public string Serial { get; set; }
 
         private void StartServer()
         {
@@ -52,7 +53,9 @@ namespace REVUnit.AutoArknights.Core
             Match match = Regex.Match(result, @"Physical size: (\d+)x(\d+)");
             if (!match.Success) throw new AdbException(Resources.Adb_Exception_GetResolution);
 
-            return new Size(int.Parse(match.Groups[1].Value), int.Parse(match.Groups[2].Value));
+            int a = int.Parse(match.Groups[1].Value);
+            int b = int.Parse(match.Groups[2].Value);
+            return new Size(a > b ? a : b, a > b ? b : a);
         }
 
         public void Click(Point point)
@@ -69,7 +72,8 @@ namespace REVUnit.AutoArknights.Core
                                 (_, i) => Log.Warning(
                                     string.Format(Resources.Adb_Exception_GetScreenshot, i, retryCount)))
                          .Execute(() => Cv2.ImDecode(ExecuteOutBytes("exec-out screencap -p", 5 * 1024 * 1024),
-                                                     ImreadModes.Color)) ??
+                                                     ImreadModes.Color))
+                         .Also(it => it.SaveImage(@"C:\Users\Rcmcpe\Desktop\shit.png")) ??
                    throw new AdbException(Resources.Adb_Exception_GetScreenshotFailed);
         }
 
@@ -117,8 +121,8 @@ namespace REVUnit.AutoArknights.Core
                 RestartServer();
             }).Execute(() =>
             {
-                _logger.Debug(Resources.Adb_Connecting, TargetSerial);
-                ExecuteCore($"connect {TargetSerial}", out _);
+                _logger.Debug(Resources.Adb_Connecting, Serial);
+                ExecuteCore($"connect {Serial}", out _);
                 return GetIfDeviceOnline();
             });
             if (!succeed) throw new AdbException(Resources.Adb_Exception_ConnectFailed);

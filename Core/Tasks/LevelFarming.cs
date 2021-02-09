@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using Polly;
 using REVUnit.AutoArknights.Core.Properties;
 using Serilog;
-using static REVUnit.AutoArknights.Core.UserInterface;
+using static REVUnit.AutoArknights.Core.Remote;
 
 namespace REVUnit.AutoArknights.Core.Tasks
 {

@@ -5,18 +5,15 @@ namespace REVUnit.AutoArknights.Core.CV
 {
     public class RegisterResult
     {
-        public double Confidence { get; init; }
-        public Rect CircumRect { get; init; }
-        public Point CenterPoint { get; init; }
+        public RegisterResult(Rect circumRect, double confidence)
+        {
+            CircumRect = circumRect;
+            CenterPoint = new Point(circumRect.Left + circumRect.Width / 2, circumRect.Top + circumRect.Height / 2);
+            Confidence = confidence;
+        }
 
-        public static RegisterResult Failed() => new();
-
-        public static RegisterResult Succeed(Rect rect, double confidence) =>
-            new()
-            {
-                Confidence = confidence,
-                CircumRect = rect,
-                CenterPoint = new Point(rect.Left + rect.Width / 2, rect.Top + rect.Height / 2)
-            };
+        public Rect CircumRect { get; }
+        public Point CenterPoint { get; }
+        public double Confidence { get; }
     }
 }

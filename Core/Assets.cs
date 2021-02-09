@@ -14,26 +14,59 @@ namespace REVUnit.AutoArknights.Core
     public class ImageAssets : IDisposable
     {
         private readonly Dictionary<string, Mat> _cache = new();
-        public static Size TargetSize { get; } = new(1920, 1080);
+        private readonly bool _needNormalizeScale;
+        private readonly double _resizeHeightRatio;
+        private readonly double _resizeWidthRatio;
+
+        public ImageAssets(Size actualResolution)
+        {
+            _needNormalizeScale = actualResolution != TargetedResolution;
+            _resizeWidthRatio = (double) actualResolution.Width / TargetedResolution.Width;
+            _resizeHeightRatio = (double) actualResolution.Height / TargetedResolution.Height;
+        }
+
+        public static Size TargetedResolution { get; } = new(1920, 1080);
 
         public void Dispose()
         {
-            foreach (Mat mat in _cache.Values) mat.Dispose();
+            foreach (Mat asset in _cache.Values) asset.Dispose();
         }
 
         public Mat Get(string key)
         {
             key = key.Trim();
-            if (_cache.TryGetValue(key, out Mat? mat)) return mat;
+            if (_cache.TryGetValue(key, out Mat? asset)) return asset;
 
-            string fileName = GetFilePath(key);
-            if (!File.Exists(fileName)) throw new AssetLoadException(key);
+            string assetFilePath = GetFilePath(key);
+            if (!File.Exists(assetFilePath)) throw new AssetLoadException(key);
 
-            mat = Utils.Imread(fileName);
-            if (mat.Empty()) throw new AssetLoadException(key);
+            asset = Utils.Imread(assetFilePath);
+            if (asset.Empty()) throw new AssetLoadException(key);
 
-            _cache.Add(key, mat);
-            return mat;
+            if (_needNormalizeScale)
+            {
+                NormalizeScale(asset);
+            }
+
+            _cache.Add(key, asset);
+            return asset;
+        }
+
+        private void NormalizeScale(Mat model)
+        {
+            Size size = model.Size();
+            var normalizedModelSize = new Size(size.Width * _resizeWidthRatio, size.Height * _resizeHeightRatio);
+
+            Resize(model, normalizedModelSize);
+        }
+
+        private static void Resize(Mat mat, Size targetSize)
+        {
+            Size size = mat.Size();
+            bool upscale = size.Width < targetSize.Width || size.Height < targetSize.Height;
+            Cv2.Resize(mat, mat, targetSize, interpolation: upscale
+                           ? InterpolationFlags.Cubic
+                           : InterpolationFlags.Area);
         }
 
         private static string GetFilePath(string key) => Path.Combine("Assets", key) + ".png";

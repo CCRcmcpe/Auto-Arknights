@@ -18,7 +18,7 @@ namespace REVUnit.AutoArknights.CLI
         private App()
         {
             Library.Settings = Config;
-            _ = UserInterface.I;
+            _ = Remote.I;
             _input = new Cin { AutoTrim = true };
         }
 

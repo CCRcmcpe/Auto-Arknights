@@ -5,23 +5,27 @@ using REVUnit.Crlib.Extension;
 
 namespace REVUnit.AutoArknights.Core
 {
-    public partial class UserInterface
+    public partial class Remote
     {
-        public class GraphicalInterface : IDisposable
+        public class Graphic : IDisposable
         {
-            private readonly ImageAssets _assets = new();
+            private const double ConfidenceThreshold = 0.8;
+            private readonly ImageAssets _assets;
             private readonly TemplateRegister _register = new();
-            private readonly UserInterface _userInterface;
+            private readonly Remote _remote;
 
-            public GraphicalInterface(UserInterface userInterface) => _userInterface = userInterface;
-            public double ConfidenceThreshold { get; set; } = 0.75;
-
-            private bool IsSuccessful(RegisterResult result) => result.Confidence > ConfidenceThreshold;
+            public Graphic(Remote remote)
+            {
+                _remote = remote;
+                _assets = new ImageAssets(remote._resolution);
+            }
 
             public void Dispose()
             {
                 _assets.Dispose();
             }
+
+            private static bool IsSuccessful(RegisterResult result) => result.Confidence > ConfidenceThreshold;
 
             public void Click(string assetExpr)
             {
@@ -30,8 +34,8 @@ namespace REVUnit.AutoArknights.Core
 
             public void Click(Mat model)
             {
-                _userInterface.Click(X.While(() => Locate(model), IsSuccessful,
-                                             TimeSpan.FromSeconds(2))!.CircumRect);
+                _remote.Click(X.While(() => Locate(model), IsSuccessful,
+                                      TimeSpan.FromSeconds(2))!.CircumRect);
             }
 
             public RegisterResult Locate(string assetExpr)
@@ -42,14 +46,14 @@ namespace REVUnit.AutoArknights.Core
 
             public RegisterResult Locate(Mat model)
             {
-                using Mat scrn = _userInterface.GetScreenshot();
+                using Mat scrn = _remote.GetScreenshot();
                 RegisterResult result = _register.Register(model, scrn, 1)[0];
                 return result;
             }
 
             public RegisterResult[] LocateMulti(Mat model, int minMatchCount = 1)
             {
-                using Mat scrn = _userInterface.GetScreenshot();
+                using Mat scrn = _remote.GetScreenshot();
                 RegisterResult[] result = _register.Register(model, scrn, minMatchCount);
                 return result;
             }

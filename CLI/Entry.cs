@@ -2,6 +2,7 @@
 using REVUnit.AutoArknights.CLI.Properties;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
+
 #if !DEBUG
 using REVUnit.Crlib.Extension;
 

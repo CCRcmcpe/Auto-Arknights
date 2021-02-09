@@ -6,13 +6,13 @@ using REVUnit.Crlib;
 
 namespace REVUnit.AutoArknights.Core
 {
-    public partial class UserInterface
+    public partial class Remote
     {
-        public class TextualInterface
+        public class Text
         {
-            private readonly UserInterface _userInterface;
+            private readonly Remote _remote;
 
-            public TextualInterface(UserInterface userInterface) => _userInterface = userInterface;
+            public Text(Remote remote) => _remote = remote;
 
             public bool TestAppear(string text)
             {
@@ -33,13 +33,13 @@ namespace REVUnit.AutoArknights.Core
 
             public string[] Ocr()
             {
-                using Mat scrn = _userInterface.GetScreenshot();
+                using Mat scrn = _remote.GetScreenshot();
                 return TxOcr.OcrMulti(scrn);
             }
 
             public string Ocr(RelativeArea area)
             {
-                using Mat scrn = _userInterface.GetScreenshot();
+                using Mat scrn = _remote.GetScreenshot();
                 using Mat sub = area.Reduce(scrn);
                 return TxOcr.Ocr(sub);
             }
