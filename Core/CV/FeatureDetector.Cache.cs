@@ -23,7 +23,7 @@ namespace REVUnit.AutoArknights.Core.CV
                 GetMd5(File.ReadAllBytes(Assembly.GetCallingAssembly().Location));
 
             private readonly string _cacheDirPath;
-            private readonly Dictionary<string, MatFeature> _md5Map = new();
+            private readonly Dictionary<string, MatFeature> _md5map = new();
             private readonly string _serialFilePath;
 
             public Cache(string cacheDirPath)
@@ -43,12 +43,17 @@ namespace REVUnit.AutoArknights.Core.CV
                 }
 
                 if (rebuildCache)
-                    foreach (string cacheFile in GetCacheFiles(cacheDirPath))
-                        File.Delete(cacheFile);
-                else
+                {
                     foreach (string cacheFile in GetCacheFiles(cacheDirPath))
                     {
-                        using var storage = new FileStorage(cacheFile, FileStorage.Mode.Read);
+                        File.Delete(cacheFile);
+                    }
+                }
+                else
+                {
+                    foreach (string cacheFile in GetCacheFiles(cacheDirPath))
+                    {
+                        using var storage = new FileStorage(cacheFile, FileStorage.Modes.Read);
 
                         T Read<T>(string node, Func<FileNode, T> reader)
                         {
@@ -72,6 +77,7 @@ namespace REVUnit.AutoArknights.Core.CV
                         _md5Map.Add(Path.GetFileNameWithoutExtension(cacheFile),
                                     new MatFeature(keyPoints, descriptors, originWidth, originHeight, type));
                     }
+                }
             }
 
             public MatFeature? this[Mat mat]
@@ -92,7 +98,10 @@ namespace REVUnit.AutoArknights.Core.CV
                 byte[] hash = MD5.HashData(data);
 
                 var hashStr = new StringBuilder();
-                foreach (byte @byte in hash) hashStr.Append(@byte.ToString("x2"));
+                foreach (byte @byte in hash)
+                {
+                    hashStr.Append(@byte.ToString("x2"));
+                }
 
                 return hashStr.ToString();
             }
@@ -119,14 +128,13 @@ namespace REVUnit.AutoArknights.Core.CV
                 _md5Map.Add(md5, feature);
 
                 using var storage =
-                    new FileStorage(Path.Combine(_cacheDirPath, $"{md5}.json.gz"), FileStorage.Mode.Write);
+                    new FileStorage(Path.Combine(_cacheDirPath, $"{md5}.json.gz"), FileStorage.Modes.Write);
                 storage.Write("Keypoints", feature.KeyPoints);
                 storage.Write("Descriptors", feature.Descriptors);
-                storage.Write("MatWidth", mat.Width);
-                storage.Write("MatHeight", mat.Height);
-                storage.Write("Type", feature.Type.ToString());
+                storage.Write("OriginWidth", mat.Width);
+                storage.Write("OriginHeight", mat.Height);
 
-                File.WriteAllText(_serialFilePath, CoreAssemblySerial);
+                File.WriteAllText(_serialFilePath, _coreAssemblySerial);
             }
         }
     }

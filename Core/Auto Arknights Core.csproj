@@ -4,22 +4,21 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <RootNamespace>REVUnit.AutoArknights.Core</RootNamespace>
     <nullable>enable</nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <Platforms>x64</Platforms>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <NeutralLanguage>zh-CN</NeutralLanguage>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Colorful.Console" Version="1.2.15" />
-    <PackageReference Include="OpenCvSharp4.Windows" Version="4.5.1.20210206" />
-    <PackageReference Include="Refit" Version="5.2.4" />
+    <PackageReference Include="OpenCvSharp4.Windows" Version="4.5.1.20210208" />
+    <PackageReference Include="Refit" Version="6.0.1" />
     <PackageReference Include="Polly" Version="7.2.1" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.1" />
     <PackageReference Include="Crlib-Windows" Version="0.2.1" />
   </ItemGroup>
 
@@ -30,21 +29,6 @@
     <None Include="Assets\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
