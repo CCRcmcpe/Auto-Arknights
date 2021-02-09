@@ -13,11 +13,11 @@ namespace REVUnit.AutoArknights.Core.CV
     {
         private class Cache : IDisposable
         {
-            private static readonly string _coreAssemblySerial =
+            private static readonly string CoreAssemblySerial =
                 GetMd5(File.ReadAllBytes(Assembly.GetCallingAssembly().Location));
 
             private readonly string _cacheDirPath;
-            private readonly Dictionary<string, MatFeature> _md5map = new();
+            private readonly Dictionary<string, MatFeature> _md5Map = new();
             private readonly string _serialFilePath;
 
             public Cache(string cacheDirPath)
@@ -33,16 +33,21 @@ namespace REVUnit.AutoArknights.Core.CV
                 if (File.Exists(_serialFilePath))
                 {
                     string serial = File.ReadAllText(_serialFilePath);
-                    rebuildCache = _coreAssemblySerial != serial;
+                    rebuildCache = CoreAssemblySerial != serial;
                 }
 
                 if (rebuildCache)
-                    foreach (string cacheFile in GetCacheFiles(cacheDirPath))
-                        File.Delete(cacheFile);
-                else
+                {
                     foreach (string cacheFile in GetCacheFiles(cacheDirPath))
                     {
-                        using var storage = new FileStorage(cacheFile, FileStorage.Mode.Read);
+                        File.Delete(cacheFile);
+                    }
+                }
+                else
+                {
+                    foreach (string cacheFile in GetCacheFiles(cacheDirPath))
+                    {
+                        using var storage = new FileStorage(cacheFile, FileStorage.Modes.Read);
 
                         FileNode GetNode(string node) => storage[node] ?? throw new CacheLoadException(cacheFile, node);
 
@@ -51,9 +56,10 @@ namespace REVUnit.AutoArknights.Core.CV
                         int originWidth = GetNode("OriginWidth").ReadInt();
                         int originHeight = GetNode("OriginHeight").ReadInt();
 
-                        _md5map.Add(Path.GetFileNameWithoutExtension(cacheFile),
+                        _md5Map.Add(Path.GetFileNameWithoutExtension(cacheFile),
                                     new MatFeature(keyPoints, descriptors, originWidth, originHeight));
                     }
+                }
             }
 
             public MatFeature? this[Mat mat]
@@ -64,7 +70,7 @@ namespace REVUnit.AutoArknights.Core.CV
 
             public void Dispose()
             {
-                foreach (MatFeature matFeature in _md5map.Values) matFeature.Dispose();
+                foreach (MatFeature matFeature in _md5Map.Values) matFeature.Dispose();
             }
 
             private static string[] GetCacheFiles(string cacheDirPath) => Directory.GetFiles(cacheDirPath, "*.json.gz");
@@ -74,7 +80,10 @@ namespace REVUnit.AutoArknights.Core.CV
                 byte[] hash = MD5.HashData(data);
 
                 var hashStr = new StringBuilder();
-                foreach (byte @byte in hash) hashStr.Append(@byte.ToString("x2"));
+                foreach (byte @byte in hash)
+                {
+                    hashStr.Append(@byte.ToString("x2"));
+                }
 
                 return hashStr.ToString();
             }
@@ -90,7 +99,7 @@ namespace REVUnit.AutoArknights.Core.CV
 
             private MatFeature? GetCache(Mat mat)
             {
-                _md5map.TryGetValue(GetMd5(mat), out MatFeature? result);
+                _md5Map.TryGetValue(GetMd5(mat), out MatFeature? result);
                 return result;
             }
 
@@ -98,16 +107,16 @@ namespace REVUnit.AutoArknights.Core.CV
             {
                 string md5 = GetMd5(mat);
 
-                _md5map.Add(md5, feature);
+                _md5Map.Add(md5, feature);
 
                 using var storage =
-                    new FileStorage(Path.Combine(_cacheDirPath, $"{md5}.json.gz"), FileStorage.Mode.Write);
+                    new FileStorage(Path.Combine(_cacheDirPath, $"{md5}.json.gz"), FileStorage.Modes.Write);
                 storage.Write("Keypoints", feature.KeyPoints);
                 storage.Write("Descriptors", feature.Descriptors);
                 storage.Write("OriginWidth", mat.Width);
                 storage.Write("OriginHeight", mat.Height);
 
-                File.WriteAllText(_serialFilePath, _coreAssemblySerial);
+                File.WriteAllText(_serialFilePath, CoreAssemblySerial);
             }
         }
     }
