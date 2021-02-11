@@ -8,7 +8,6 @@ using OpenCvSharp;
 using Polly;
 using REVUnit.AutoArknights.Core.Properties;
 using Serilog;
-using Point = System.Drawing.Point;
 
 namespace REVUnit.AutoArknights.Core
 {
@@ -19,6 +18,7 @@ namespace REVUnit.AutoArknights.Core
 
     public class Adb
     {
+        private const int DefaultBufferSize = 1024;
         private readonly ILogger _logger;
 
         public Adb(string executable, string serial)
@@ -82,7 +82,7 @@ namespace REVUnit.AutoArknights.Core
                 throw new AdbException(string.Format(Resources.Adb_Exception_Execute, stdErr));
         }
 
-        public string ExecuteOut(string parameter, int bufferSize = 1024) =>
+        public string ExecuteOut(string parameter, int bufferSize = DefaultBufferSize) =>
             Encoding.UTF8.GetString(ExecuteOutBytes(parameter, bufferSize));
 
         public byte[] ExecuteOutBytes(string parameter, int bufferSize)
@@ -163,7 +163,7 @@ namespace REVUnit.AutoArknights.Core
 
         private void ExecuteCore(string parameter, out string stdOut, out string stdErr)
         {
-            ExecuteCore(parameter, out byte[] stdOutBytes, 1024, out stdErr);
+            ExecuteCore(parameter, out byte[] stdOutBytes, DefaultBufferSize, out stdErr);
             stdOut = Encoding.UTF8.GetString(stdOutBytes).Trim();
         }
 

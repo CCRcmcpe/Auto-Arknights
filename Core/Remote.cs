@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using OpenCvSharp;
-using REVUnit.Crlib.Extension;
 
 namespace REVUnit.AutoArknights.Core
 {
@@ -55,11 +54,12 @@ namespace REVUnit.AutoArknights.Core
         {
             return Textual.Ocr(RelativeArea.CurrentSanity, @"(\d+)\s*\/\s*(\d+)", matches =>
             {
-                int[] numbers = matches.SelectCanParse<string, int>(int.TryParse).ToArray();
-                if (numbers.Length != 2) throw new Exception();
+                int[] nums = matches.Select(s => (success: int.TryParse(s, out int i), i))
+                                    .Where(result => result.success).Select(result => result.i)
+                                    .ToArray();
 
-                return new Sanity(numbers[0], numbers[1]);
-            })!;
+                return new Sanity(nums[0], nums[1]);
+            });
         }
 
         public int GetRequiredSanity() =>
