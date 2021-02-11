@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using OpenCvSharp;
 using Polly;
 using REVUnit.AutoArknights.Core.Properties;
-using REVUnit.Crlib.Extension;
 using Serilog;
 using Point = System.Drawing.Point;
 
@@ -72,8 +71,7 @@ namespace REVUnit.AutoArknights.Core
                                 (_, i) => Log.Warning(
                                     string.Format(Resources.Adb_Exception_GetScreenshot, i, retryCount)))
                          .Execute(() => Cv2.ImDecode(ExecuteOutBytes("exec-out screencap -p", 5 * 1024 * 1024),
-                                                     ImreadModes.Color))
-                         .Also(it => it.SaveImage(@"C:\Users\Rcmcpe\Desktop\shit.png")) ??
+                                                     ImreadModes.Color)) ??
                    throw new AdbException(Resources.Adb_Exception_GetScreenshotFailed);
         }
 

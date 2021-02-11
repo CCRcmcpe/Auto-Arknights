@@ -2,7 +2,6 @@
 using System.Linq;
 using OpenCvSharp;
 using REVUnit.Crlib.Extension;
-using Point = System.Drawing.Point;
 
 namespace REVUnit.AutoArknights.Core
 {
