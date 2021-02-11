@@ -69,7 +69,7 @@ namespace REVUnit.AutoArknights.Core.Tasks
             }
             else
             {
-                Log.Warning("OCR识别结果似乎有误");
+                Log.Warning(Resources.LevelFarming_PossiblyOcrError);
                 currentSanity = result.FinalHandledResult;
             }
 

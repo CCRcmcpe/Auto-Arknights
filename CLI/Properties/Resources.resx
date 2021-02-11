@@ -177,13 +177,13 @@
     <value>即将执行以上任务</value>
   </data>
   <data name="App_TaskBegin" xml:space="preserve">
-    <value>任务[{taskId}]：开始</value>
+    <value>任务[{TaskId}]：开始</value>
   </data>
   <data name="App_TaskComplete" xml:space="preserve">
-    <value>任务[{taskId}]完成：{message}</value>
+    <value>任务[{TaskId}]完成：{Message}</value>
   </data>
   <data name="App_TaskFaulted" xml:space="preserve">
-    <value>任务[{taskId}]出现错误：{message}</value>
+    <value>任务[{TaskId}]出现错误：{Message}</value>
   </data>
   <data name="App_AllTasksCompleted" xml:space="preserve">
     <value>所有任务已结束</value>
