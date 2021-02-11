@@ -143,6 +143,7 @@ namespace REVUnit.AutoArknights.Core.Tasks
             InitRequiredSanity();
             var currentTimes = 0;
             while (true)
+            {
                 if (GetHaveEnoughSanity())
                 {
                     Log.Information(Resources.LevelFarming_Unlimited_Begin, currentTimes + 1);
@@ -150,7 +151,10 @@ namespace REVUnit.AutoArknights.Core.Tasks
                     Log.Information(Resources.LevelFarming_Unlimited_Complete, ++currentTimes);
                 }
                 else
+                {
                     break;
+                }
+            }
 
             return currentTimes;
         }
@@ -170,6 +174,7 @@ namespace REVUnit.AutoArknights.Core.Tasks
             InitRequiredSanity();
             var currentTimes = 0;
             while (true)
+            {
                 if (GetHaveEnoughSanity())
                 {
                     Log.Information(Resources.LevelFarming_Unlimited_Begin, currentTimes + 1);
@@ -177,7 +182,10 @@ namespace REVUnit.AutoArknights.Core.Tasks
                     Log.Information(Resources.LevelFarming_Unlimited_Complete, ++currentTimes);
                 }
                 else
+                {
                     WaitForSanityRecovery();
+                }
+            }
         }
 
         public override string ToString()
