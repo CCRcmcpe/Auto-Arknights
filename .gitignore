@@ -1,5 +1,4 @@
 artifact/
-*.Designer.cs
 
 # JetBrains Rider
 .idea/
