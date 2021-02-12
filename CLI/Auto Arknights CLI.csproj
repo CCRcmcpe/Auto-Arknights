@@ -5,6 +5,7 @@
     <RootNamespace>REVUnit.AutoArknights.CLI</RootNamespace>
     <nullable>enable</nullable>
     <OutputType>Exe</OutputType>
+    <DisableWinExeOutputInference>true</DisableWinExeOutputInference>
     <Platforms>x64</Platforms>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <NoWarn>1073</NoWarn>
@@ -12,8 +13,10 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Company>REV Unit</Company>
+    <Version>1.5.0</Version>
     <NeutralLanguage>zh-CN</NeutralLanguage>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Publish'">
