@@ -1,12 +1,16 @@
-# Auto Arknights [![Build Status](https://rev-unit.visualstudio.com/Auto-Arknights/_apis/build/status/CCRcmcpe.Auto-Arknights?branchName=dev-1.5.0)](https://rev-unit.visualstudio.com/Auto-Arknights/_build/latest?definitionId=1&branchName=dev-1.5.0)
+# Auto Arknights
+
+![Framework](https://img.shields.io/badge/.NET%205.0---?logo=C%20Sharp)
+![Current Branch](https://img.shields.io/badge/Branch-dev--1.5.0-blue)
+![Build Status](https://rev-unit.visualstudio.com/Auto-Arknights/_apis/build/status/CCRcmcpe.Auto-Arknights?branchName=dev-1.5.0)
 
 ![刷关演示图片](Docs/RunSample.png "刷关演示")
 *用于自动化明日方舟刷关的程序。*  
 
 ## 入门
 
-> [主程序下载](../../releases/latest)  
-> [使用手册](../../wiki/Home)
+> [最新版本下载](../../releases/latest)  
+> [使用手册](../../wiki)
 
 ### 必须运行要求
 
@@ -16,8 +20,8 @@
 
 ### 注意事项
 
-* 本程序不支持外服（非大陆服务器），因为暂时没有相关素材。
-* 原理上，使用本程序没有被判定为作弊的风险，因为几乎是模拟的用户操作。但是，作者不对本程序的安全性作保证。
+* 本程序不支持国服以外的明日方舟区服。
+* 原理上，使用本程序没有被判定为作弊的风险；但是作者不对使用此程序造成的任何损失负责。
 
 ## 关于
 
