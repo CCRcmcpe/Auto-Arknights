@@ -1,7 +1,7 @@
 # Auto Arknights
 
 ![Framework](https://img.shields.io/badge/.NET%205.0---?logo=C%20Sharp)
-![Current Branch](https://img.shields.io/badge/Branch-dev--1.5.0-blue)
+![Base Branch](https://img.shields.io/badge/Base%20Branch-dev--1.5.0-blue)
 ![Build Status](https://rev-unit.visualstudio.com/Auto-Arknights/_apis/build/status/CCRcmcpe.Auto-Arknights?branchName=dev-1.5.0)
 
 ![刷关演示图片](Docs/RunSample.png "刷关演示")
