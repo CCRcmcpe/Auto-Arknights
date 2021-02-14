@@ -7,25 +7,35 @@ trigger:
     - '**/*.md'
 
 jobs:
-- job: Build Artifact
+- job: CI
+  displayName: CI Build
   timeoutInMinutes: 10
   pool:
     vmImage: windows-latest
   steps:
   - checkout: self
-    name: Checkout
+    displayName: Checkout
   - task: UseDotNet@2
-    name: Initialize .NET SDK
+    displayName: Initialize .NET SDK
     inputs:
       packageType: sdk
       version: 5.x
   - task: PowerShell@2
-    name: Build
+    displayName: Build
     inputs:
       filePath: Source/CLI/build.ps1
       workingDirectory: Source/CLI
-  - task: PublishPipelineArtifact@1
-    name: Publish Artifact
+  - task: ArchiveFiles@2
+    displayName: Archive Artifact
     inputs:
-      targetPath: Source/CLI/artifact
+      rootFolderOrFile: 'Source/CLI/artifact'
+      includeRootFolder: false
+      archiveType: '7z'
+      sevenZipCompression: 'ultra'
+      archiveFile: $(Build.ArtifactStagingDirectory)/Auto Arknights.7z
+      replaceExistingArchive: true
+  - task: PublishPipelineArtifact@1
+    displayName: Publish Artifact
+    inputs:
+      targetPath: $(Build.ArtifactStagingDirectory)/Auto Arknights.7z
       artifactName: Auto Arknights CLI
