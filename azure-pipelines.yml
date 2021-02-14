@@ -28,10 +28,10 @@ jobs:
   - task: ArchiveFiles@2
     displayName: Archive Artifact
     inputs:
-      rootFolderOrFile: 'Source/CLI/artifact'
+      rootFolderOrFile: Source/CLI/artifact
       includeRootFolder: false
-      archiveType: '7z'
-      sevenZipCompression: 'ultra'
+      archiveType: 7z
+      sevenZipCompression: ultra
       archiveFile: $(Build.ArtifactStagingDirectory)/Auto Arknights.7z
       replaceExistingArchive: true
   - task: PublishPipelineArtifact@1
