@@ -1,8 +1,8 @@
 # Auto Arknights
 
 ![Framework](https://img.shields.io/badge/.NET%205.0---?logo=C%20Sharp)
-![Base Branch](https://img.shields.io/badge/Base%20Branch-dev--1.5.0-blue?logo=git)
-[![Build Status](https://rev-unit.visualstudio.com/Auto-Arknights/_apis/build/status/CCRcmcpe.Auto-Arknights?branchName=dev-1.5.0)](https://rev-unit.visualstudio.com/Auto-Arknights/_build/latest?definitionId=1&branchName=dev-1.5.0)
+![Base Branch](https://img.shields.io/badge/Base%20Branch-dev--2.0.0-blue?logo=git)
+[![Build Status](https://rev-unit.visualstudio.com/Auto-Arknights/_apis/build/status/CCRcmcpe.Auto-Arknights?branchName=dev-2.0.0)](https://rev-unit.visualstudio.com/Auto-Arknights/_build/latest?definitionId=1&branchName=dev-2.0.0)
 
 ![刷关演示图片](Docs/RunSample.png "刷关演示")
 *用于自动化明日方舟刷关的程序。*  
