@@ -1,7 +1,6 @@
 trigger:
   branches:
     include:
-    - main
     - dev-1.5.0
   paths:
     exclude:
@@ -18,15 +17,15 @@ jobs:
   - task: UseDotNet@2
     name: Initialize .NET SDK
     inputs:
-      packageType: 'sdk'
-      version: '5.x'
+      packageType: sdk
+      version: 5.x
   - task: PowerShell@2
     name: Build
     inputs:
-      filePath: 'Source/CLI/build.ps1'
-      workingDirectory: 'Source/CLI'
+      filePath: Source/CLI/build.ps1
+      workingDirectory: Source/CLI
   - task: PublishPipelineArtifact@1
     name: Publish Artifact
     inputs:
-      targetPath: 'Source/CLI/artifact'
-      artifactName: 'Auto Arknights CLI'
+      targetPath: Source/CLI/artifact
+      artifactName: Auto Arknights CLI
