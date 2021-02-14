@@ -6,24 +6,26 @@ trigger:
     exclude:
     - '**/*.md'
 
-pool:
-  vmImage: windows-latest
-
-steps:
-- checkout: self
-  name: "Checkout"
-- task: UseDotNet@2
-  name: "Init"
-  inputs:
-    packageType: 'sdk'
-    version: '5.x'
-- task: PowerShell@2
-  name: "Build"
-  inputs:
-    filePath: 'Auto Arknights CLI/build-winx64.ps1'
-    workingDirectory: 'Auto Arknights CLI'
-- task: PublishPipelineArtifact@1
-  name: "Publish"
-  inputs:
-    targetPath: 'Auto Arknights CLI/artifact'
-    artifactName: 'Auto-Arknights-CLI'
+jobs:
+- job: Build Artifact
+  timeoutInMinutes: 10
+  pool:
+    vmImage: windows-latest
+  steps:
+  - checkout: self
+    name: Checkout
+  - task: UseDotNet@2
+    name: Initialize .NET SDK
+    inputs:
+      packageType: sdk
+      version: 5.x
+  - task: PowerShell@2
+    name: Build
+    inputs:
+      filePath: Auto Arknights CLI/build-winx64.ps1
+      workingDirectory: Auto Arknights CLI
+  - task: PublishPipelineArtifact@1
+    name: Publish Artifact
+    inputs:
+      targetPath: Auto Arknights CLI/artifact
+      artifactName: 'Auto Arknights CLI'
