@@ -1,14 +1,8 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29519.161
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auto Arknights Core", "Core\Auto Arknights Core.csproj", "{AF3D1DDF-8CC0-4A1C-A3D2-DB3875B8C3ED}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6968A583-55D4-446F-9F73-EB91ACE1FB74}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auto Arknights CLI", "CLI\Auto Arknights CLI.csproj", "{0C76DBB2-8CCF-4860-8C28-C542E74666BE}"
 EndProject
