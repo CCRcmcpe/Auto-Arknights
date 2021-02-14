@@ -21,10 +21,10 @@ steps:
 - task: PowerShell@2
   name: "Build"
   inputs:
-    filePath: 'CLI/build.ps1'
+    filePath: 'Soruce/CLI/build.ps1'
     workingDirectory: 'CLI'
 - task: PublishPipelineArtifact@1
   name: "Pack"
   inputs:
-    targetPath: 'CLI/artifact'
+    targetPath: 'Soruce/CLI/artifact'
     artifactName: 'Auto Arknights CLI'
