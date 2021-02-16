@@ -50,7 +50,7 @@ namespace REVUnit.AutoArknights.Core
                 while (true)
                 {
                     string result = Ocr(area);
-                    Match match = Regex.Match(result, regex);
+                    Match match = Regex.Match(result.Replace(" ", string.Empty), regex);
                     if (match.Success &&
                         new TryParser<string[], T>(parser).TryParse(
                             match.Groups.Values.Select(it => it.Value).ToArray(), out T? ret))
