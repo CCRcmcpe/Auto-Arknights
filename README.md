@@ -5,7 +5,8 @@
 [![Build Status](https://rev-unit.visualstudio.com/Auto-Arknights/_apis/build/status/CCRcmcpe.Auto-Arknights?branchName=dev-2.0.0)](https://rev-unit.visualstudio.com/Auto-Arknights/_build/latest?definitionId=1&branchName=dev-2.0.0)
 
 ![刷关演示](Docs/Resources/RunSample.png)
-*用于自动化明日方舟刷关的程序。*  
+*用于自动化明日方舟部分操作的程序。*  
+特色：相比连点，更加稳定，更不容易出错；相比同类自动化程序，更加快速轻量。
 
 ## 入门
 
@@ -14,7 +15,6 @@
 
 ### 运行最低要求
 
-* CPU 支持 AVX2 指令集。
 * Windows 7 x64 或更高版本的操作系统。
 * .NET 5.0 运行时，[官方下载](https://dotnet.microsoft.com/download/dotnet/current/runtime)。
 
