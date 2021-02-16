@@ -10,11 +10,11 @@ using Serilog;
 
 namespace REVUnit.AutoArknights.Core
 {
-    public static class TxOcr
+    public class TencentOcr
     {
         private static readonly ITxOcr Api;
 
-        static TxOcr() => Api = RestService.For<ITxOcr>("https://ai.qq.com");
+        static TencentOcr() => Api = RestService.For<ITxOcr>("https://ai.qq.com");
 
         public static string Ocr(Mat image)
         {

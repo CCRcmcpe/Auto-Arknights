@@ -34,14 +34,14 @@ namespace REVUnit.AutoArknights.Core
             public string[] Ocr()
             {
                 using Mat scrn = _remote.GetScreenshot();
-                return TxOcr.OcrMulti(scrn);
+                return TencentOcr.OcrMulti(scrn);
             }
 
             public string Ocr(RelativeArea area)
             {
                 using Mat scrn = _remote.GetScreenshot();
                 using Mat sub = area.Reduce(scrn);
-                return TxOcr.Ocr(sub);
+                return TencentOcr.Ocr(sub);
             }
 
             public T Ocr<T>(RelativeArea area, string regex, Func<string[], T> parser,

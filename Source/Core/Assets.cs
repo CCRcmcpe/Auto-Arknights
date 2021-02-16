@@ -15,14 +15,12 @@ namespace REVUnit.AutoArknights.Core
     {
         private readonly Dictionary<string, Mat> _cache = new();
         private readonly bool _needNormalizeScale;
-        private readonly double _resizeHeightRatio;
-        private readonly double _resizeWidthRatio;
+        private readonly double _resizeRatio;
 
         public ImageAssets(Size actualResolution)
         {
             _needNormalizeScale = actualResolution != TargetedResolution;
-            _resizeWidthRatio = (double) actualResolution.Width / TargetedResolution.Width;
-            _resizeHeightRatio = (double) actualResolution.Height / TargetedResolution.Height;
+            _resizeRatio = (double) actualResolution.Height / TargetedResolution.Height;
         }
 
         public static Size TargetedResolution { get; } = new(1920, 1080);
@@ -55,7 +53,7 @@ namespace REVUnit.AutoArknights.Core
         private void NormalizeScale(Mat model)
         {
             Size size = model.Size();
-            var normalizedModelSize = new Size(size.Width * _resizeWidthRatio, size.Height * _resizeHeightRatio);
+            var normalizedModelSize = new Size(size.Width * _resizeRatio, size.Height * _resizeRatio);
 
             Resize(model, normalizedModelSize);
         }
