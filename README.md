@@ -4,14 +4,14 @@
 ![Base Branch](https://img.shields.io/badge/Base%20Branch-dev--2.0.0-blue?logo=git)
 [![Build Status](https://rev-unit.visualstudio.com/Auto-Arknights/_apis/build/status/CCRcmcpe.Auto-Arknights?branchName=dev-2.0.0)](https://rev-unit.visualstudio.com/Auto-Arknights/_build/latest?definitionId=1&branchName=dev-2.0.0)
 
-![刷关演示](Docs/Resources/RunSample.png)
+![刷关演示](Docs/Resources/RunSample.png)  
 *用于自动化明日方舟部分操作的程序。*  
 特色：相比连点，更加稳定，更不容易出错；相比同类自动化程序，更加快速轻量。
 
 ## 入门
 
 > [程序下载](https://github.com/CCRcmcpe/Auto-Arknights/releases)  
-> [使用手册](Docs/zh-cn/使用手册.md)
+  [使用手册](Docs/zh-cn/使用手册.md)
 
 ### 运行最低要求
 
@@ -25,8 +25,8 @@
 
 ## 关于
 
-![Logo](Docs/Resources/Logo.png)
-这个项目是实验性的，仅供学习使用，在使用中如果有问题欢迎提出 issue。  
+![Logo](Docs/Resources/Logo.png)  
+这个项目是实验性的，仅供学习使用，在使用中如果有问题欢迎提出 issue。
 
 ### 鸣谢
 
