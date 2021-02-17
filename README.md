@@ -25,6 +25,7 @@
 
 ## 关于
 
+![Logo](Docs/Resources/Logo.png)
 这个项目是实验性的，仅供学习使用，在使用中如果有问题欢迎提出 issue。  
 
 ### 鸣谢
