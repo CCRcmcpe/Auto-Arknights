@@ -8,7 +8,6 @@
     <DisableWinExeOutputInference>true</DisableWinExeOutputInference>
     <Platforms>x64</Platforms>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <NoWarn>1073</NoWarn>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
