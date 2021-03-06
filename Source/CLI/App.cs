@@ -27,8 +27,6 @@ namespace REVUnit.AutoArknights.CLI
 
         public void Run()
         {
-            if (!Library.CheckIfSupported()) throw new NotSupportedException(Resources.App_NotSupported);
-
             Plan? plan;
             do
             {
