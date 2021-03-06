@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Intrinsics.X86;
 
 [assembly: SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Scope = "module")]
 
@@ -19,6 +18,5 @@ namespace REVUnit.AutoArknights.Core
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public static ISettings Settings { get; set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public static bool CheckIfSupported() => Avx2.IsSupported;
     }
 }
