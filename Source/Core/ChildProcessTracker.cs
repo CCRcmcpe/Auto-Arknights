@@ -3,17 +3,20 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
+// ReSharper disable InconsistentNaming
+
 namespace REVUnit.AutoArknights.Core
 {
-    public class ProcessTerminator
+    internal static class ChildProcessTracker
     {
-        private readonly IntPtr _handle;
+        private const int JobObjectExtendedLimitInformation = 9;
+        private const int JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x2000;
 
-        public ProcessTerminator()
+        public static void Track(Process process)
         {
-            _handle = CreateJobObject(IntPtr.Zero, $"AutoArknights ADB Tracker {Environment.ProcessId}");
+            IntPtr jobHandle = CreateJobObject(IntPtr.Zero, Guid.NewGuid().ToString());
 
-            var info = new JOBOBJECT_BASIC_LIMIT_INFORMATION { LimitFlags = 0x2000 };
+            var info = new JOBOBJECT_BASIC_LIMIT_INFORMATION { LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE };
             var extendedInfo = new JOBOBJECT_EXTENDED_LIMIT_INFORMATION { BasicLimitInformation = info };
 
             int length = Marshal.SizeOf(typeof(JOBOBJECT_EXTENDED_LIMIT_INFORMATION));
@@ -22,19 +25,18 @@ namespace REVUnit.AutoArknights.Core
             try
             {
                 Marshal.StructureToPtr(extendedInfo, extendedInfoPtr, false);
-                if (!SetInformationJobObject(_handle, 9, extendedInfoPtr,
+                if (!SetInformationJobObject(jobHandle, JobObjectExtendedLimitInformation, extendedInfoPtr,
                                              (uint) length))
+                {
                     throw new Win32Exception(Marshal.GetLastWin32Error());
+                }
             }
             finally
             {
                 Marshal.FreeHGlobal(extendedInfoPtr);
             }
-        }
 
-        public void Track(Process process)
-        {
-            AssignProcessToJobObject(_handle, process.Handle);
+            AssignProcessToJobObject(jobHandle, process.Handle);
         }
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
@@ -48,8 +50,7 @@ namespace REVUnit.AutoArknights.Core
         private static extern bool AssignProcessToJobObject(IntPtr job, IntPtr process);
     }
 
-    // ReSharper disable FieldCanBeMadeReadOnly.Global
-    // ReSharper disable InconsistentNaming
+    // ReSharper disable All
 
     [StructLayout(LayoutKind.Sequential)]
     internal struct IO_COUNTERS

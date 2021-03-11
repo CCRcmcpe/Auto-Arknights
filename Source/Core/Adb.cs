@@ -40,9 +40,8 @@ namespace REVUnit.AutoArknights.Core
             _logger.Information(Resources.Adb_StartingServer);
             ExecuteCore("start-server", out _);
 
-            var job = new ProcessTerminator();
-            job.Track(Process.GetProcessesByName("adb").ElementAtOrDefault(0) ??
-                      throw new AdbException(Resources.Adb_Exception_StartServer));
+            ChildProcessTracker.Track(Process.GetProcessesByName("adb").ElementAtOrDefault(0) ??
+                                      throw new AdbException(Resources.Adb_Exception_StartServer));
         }
 
         public Size GetResolution()
