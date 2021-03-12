@@ -174,7 +174,7 @@
 </value>
   </data>
   <data name="App_ReadyToExecute" xml:space="preserve">
-    <value>即将执行以上任务</value>
+    <value>即将执行以上任务，请按任意键继续. . . </value>
   </data>
   <data name="App_TaskBegin" xml:space="preserve">
     <value>任务[{TaskId}]：开始</value>
@@ -186,7 +186,7 @@
     <value>任务[{TaskId}]出现错误：{Message}</value>
   </data>
   <data name="App_AllTasksCompleted" xml:space="preserve">
-    <value>所有任务已结束</value>
+    <value>所有任务已结束，请按任意键退出程序. . . </value>
   </data>
   <data name="Plan_Exception_Parsing" xml:space="preserve">
     <value>无效的计划，请输入 "help" 来获取快速帮助</value>

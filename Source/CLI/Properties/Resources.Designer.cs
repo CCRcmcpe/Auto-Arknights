@@ -61,7 +61,7 @@ namespace REVUnit.AutoArknights.CLI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 所有任务已结束.
+        ///   Looks up a localized string similar to 所有任务已结束，请按任意键退出程序. . . .
         /// </summary>
         internal static string App_AllTasksCompleted {
             get {
@@ -88,7 +88,7 @@ namespace REVUnit.AutoArknights.CLI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 即将执行以上任务.
+        ///   Looks up a localized string similar to 即将执行以上任务，请按任意键继续. . . .
         /// </summary>
         internal static string App_ReadyToExecute {
             get {

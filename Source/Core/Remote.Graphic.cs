@@ -1,7 +1,8 @@
 ﻿using System;
 using OpenCvSharp;
+using Polly;
+using Polly.Retry;
 using REVUnit.AutoArknights.Core.CV;
-using REVUnit.Crlib.Extension;
 
 namespace REVUnit.AutoArknights.Core
 {
@@ -12,6 +13,10 @@ namespace REVUnit.AutoArknights.Core
             private const double ConfidenceThreshold = 0.8;
             private readonly ImageAssets _assets;
             private readonly TemplateRegister _register = new();
+
+            private readonly RetryPolicy<RegisterResult> _registerPolicy =
+                Policy.HandleResult<RegisterResult>(result => result.Confidence < ConfidenceThreshold).Retry(3);
+
             private readonly Remote _remote;
 
             public Graphic(Remote remote)
@@ -34,8 +39,7 @@ namespace REVUnit.AutoArknights.Core
 
             public void Click(Mat model)
             {
-                _remote.Click(X.While(() => Locate(model), IsSuccessful,
-                                      TimeSpan.FromSeconds(2))!.CircumRect);
+                _remote.Click(_registerPolicy.Execute(() => Locate(model)).CircumRect);
             }
 
             public RegisterResult Locate(string assetExpr)
@@ -59,9 +63,6 @@ namespace REVUnit.AutoArknights.Core
             }
 
             public bool TestAppear(string assetExpr) => IsSuccessful(Locate(assetExpr));
-
-            public void WaitAppear(string assetExpr, double waitSec = 5) =>
-                X.While(() => Locate(assetExpr), IsSuccessful, TimeSpan.FromSeconds(waitSec));
 
             private Mat Asset(string assetExpr) => _assets.Get(assetExpr);
         }

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using OpenCvSharp;
@@ -11,45 +12,73 @@ using Serilog;
 
 namespace REVUnit.AutoArknights.Core
 {
-    public class AdbException : Exception
-    {
-        public AdbException(string? message) : base(message) { }
-    }
-
     public class Adb
     {
         private const int DefaultBufferSize = 1024;
-        private readonly ILogger _logger;
+        private readonly ILogger _logger = Log.ForContext<Adb>();
 
-        public Adb(string executable, string serial)
+        private int _serverPort;
+        private bool _serverStarted;
+
+        public Adb(string executable, string targetSerial)
         {
-            _logger = Log.ForContext<Adb>();
-
             Executable = executable;
-            Serial = serial;
-
-            RestartServer();
-            Connect();
+            TargetSerial = targetSerial;
         }
 
         public string Executable { get; set; }
-        public string Serial { get; set; }
+        public string TargetSerial { get; set; }
 
-        private void StartServer()
+        private static int GetFreeTcpPort()
+        {
+            var listener = new TcpListener(IPAddress.Loopback, 0);
+            listener.Start();
+            int port = ((IPEndPoint) listener.LocalEndpoint).Port;
+            listener.Stop();
+            return port;
+        }
+
+        private void ThrowIfServiceUnavailable()
+        {
+            if (!_serverStarted || !GetDeviceOnline())
+            {
+                throw new Exception();
+            }
+        }
+
+        public void StartServer()
         {
             _logger.Information(Resources.Adb_StartingServer);
-            ExecuteCore("start-server", out _);
 
-            ChildProcessTracker.Track(Process.GetProcessesByName("adb").ElementAtOrDefault(0) ??
-                                      throw new AdbException(Resources.Adb_Exception_StartServer));
+            int port = GetFreeTcpPort();
+
+            var adbServerProcess = new Process
+            {
+                StartInfo =
+                    new ProcessStartInfo(Executable, $"nodaemon server -P {port}") { CreateNoWindow = true },
+                EnableRaisingEvents = true
+            };
+
+            if (!adbServerProcess.Start())
+            {
+                throw new Exception(Resources.Adb_Exception_StartServer);
+            }
+
+            _serverPort = port;
+            adbServerProcess.Exited += (_, _) => throw new Exception("ADB 服务器进程意外停止");
+            ChildProcessTracker.Track(adbServerProcess);
+
+            _logger.Information("已启动 ADB 服务器，端口：{Port}", _serverPort); //TODO
+
+            _serverStarted = true;
         }
 
         public Size GetResolution()
         {
-            Connect();
-            string result = ExecuteOut("shell wm size");
+            ThrowIfServiceUnavailable();
+            string result = Encoding.UTF8.GetString(Execute("shell wm size").stdOut);
             Match match = Regex.Match(result, @"Physical size: (\d+)x(\d+)");
-            if (!match.Success) throw new AdbException(Resources.Adb_Exception_GetResolution);
+            if (!match.Success) throw new Exception(Resources.Adb_Exception_GetResolution);
 
             int a = int.Parse(match.Groups[1].Value);
             int b = int.Parse(match.Groups[2].Value);
@@ -58,7 +87,7 @@ namespace REVUnit.AutoArknights.Core
 
         public void Click(Point point)
         {
-            Connect();
+            ThrowIfServiceUnavailable();
             Execute($"shell input tap {point.X} {point.Y}");
         }
 
@@ -69,68 +98,31 @@ namespace REVUnit.AutoArknights.Core
                          .Retry(retryCount,
                                 (_, i) => Log.Warning(
                                     string.Format(Resources.Adb_Exception_GetScreenshot, i, retryCount)))
-                         .Execute(() => Cv2.ImDecode(ExecuteOutBytes("exec-out screencap -p", 5 * 1024 * 1024),
-                                                     ImreadModes.Color)) ??
-                   throw new AdbException(Resources.Adb_Exception_GetScreenshotFailed);
+                         .Execute(() => Cv2.ImDecode(Execute("exec-out screencap -p", 5 * 1024 * 1024, 0).stdOut,
+                                                     ImreadModes.Unchanged)) ??
+                   throw new Exception(Resources.Adb_Exception_GetScreenshotFailed);
         }
 
-        public void Execute(string parameter)
+        private bool GetDeviceOnline()
         {
-            ExecuteCore(parameter, out string stdErr);
-            if (!string.IsNullOrWhiteSpace(stdErr))
-                throw new AdbException(string.Format(Resources.Adb_Exception_Execute, stdErr));
-        }
-
-        public string ExecuteOut(string parameter, int bufferSize = DefaultBufferSize) =>
-            Encoding.UTF8.GetString(ExecuteOutBytes(parameter, bufferSize));
-
-        public byte[] ExecuteOutBytes(string parameter, int bufferSize)
-        {
-            _logger.Verbose(Resources.Adb_ExecutingCommand, parameter);
-
-            Connect();
-            ExecuteCore(parameter, out byte[] stdOutBytes, bufferSize, out string stdErr);
-            if (!string.IsNullOrWhiteSpace(stdErr))
-                throw new AdbException(string.Format(Resources.Adb_Exception_Execute, stdErr));
-
-            return stdOutBytes;
-        }
-
-        private bool GetIfDeviceOnline()
-        {
-            ExecuteCore("get-state", out string state, out _);
+            string state = Encoding.UTF8.GetString(Execute("get-state").stdOut).Trim();
             _logger.Debug(Resources.Adb_DeviceState, state);
             return state == "device";
         }
 
-        private static void KillServer()
+        public void Connect(string targetSerial)
         {
-            foreach (Process process in Process.GetProcessesByName("adb")) process.Kill();
-        }
+            _logger.Debug(Resources.Adb_Connecting, TargetSerial);
 
-        private void Connect()
-        {
-            if (GetIfDeviceOnline()) return;
-            const int retryCount = 3;
-            bool succeed = Policy.HandleResult<bool>(b => !b).Retry(retryCount, (_, i) =>
+            Execute($"connect {targetSerial}", targeted: false);
+            if (!GetDeviceOnline())
             {
-                _logger.Error(string.Format(Resources.Adb_Exception_Connect, i, retryCount));
-                RestartServer();
-            }).Execute(() =>
-            {
-                _logger.Debug(Resources.Adb_Connecting, Serial);
-                ExecuteCore($"connect {Serial}", out _);
-                return GetIfDeviceOnline();
-            });
-            if (!succeed) throw new AdbException(Resources.Adb_Exception_ConnectFailed);
+                throw new Exception(Resources.Adb_Exception_ConnectFailed);
+            }
+
+            TargetSerial = targetSerial;
 
             _logger.Debug(Resources.Adb_Connected);
-        }
-
-        private void RestartServer()
-        {
-            KillServer();
-            StartServer();
         }
 
         private static byte[] ReadToEnd(Stream stream, int bufferSize)
@@ -145,41 +137,48 @@ namespace REVUnit.AutoArknights.Core
             return buffer;
         }
 
-        private void ExecuteCore(string parameter, out string stdErr)
+        private (byte[] stdOut, byte[] stdErr) Execute(string arguments, int stdOutBufferSize = DefaultBufferSize,
+                                                       int stdErrBufferSize = DefaultBufferSize,
+                                                       bool waitForExit = false, bool targeted = true)
         {
+            var sb = new StringBuilder(arguments);
+            sb.Insert(0, $"-P {_serverPort} ");
+            if (targeted)
+            {
+                sb.Insert(0, $"-s {TargetSerial} ");
+            }
+
+            arguments = sb.ToString();
+
             using var process = new Process
             {
-                StartInfo = new ProcessStartInfo(Executable, parameter)
+                StartInfo = new ProcessStartInfo(Executable, arguments)
                 {
-                    CreateNoWindow = true, RedirectStandardError = true
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                    StandardOutputEncoding = Encoding.UTF8,
+                    RedirectStandardError = true,
+                    StandardErrorEncoding = Encoding.UTF8
                 }
             };
 
             process.Start();
 
-            stdErr = process.StandardError.ReadToEnd().Trim();
-        }
+            byte[]? stdOut = null;
+            byte[]? stdErr = null;
 
-        private void ExecuteCore(string parameter, out string stdOut, out string stdErr)
-        {
-            ExecuteCore(parameter, out byte[] stdOutBytes, DefaultBufferSize, out stdErr);
-            stdOut = Encoding.UTF8.GetString(stdOutBytes).Trim();
-        }
+            if (stdOutBufferSize > 0)
+                stdOut = ReadToEnd(process.StandardOutput.BaseStream, stdOutBufferSize);
 
-        private void ExecuteCore(string parameter, out byte[] stdOut, int stdOutBufferSize, out string stdErr)
-        {
-            using var process = new Process
+            if (stdErrBufferSize > 0)
+                stdErr = ReadToEnd(process.StandardError.BaseStream, stdErrBufferSize);
+
+            if (waitForExit)
             {
-                StartInfo = new ProcessStartInfo(Executable, parameter)
-                {
-                    CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true
-                }
-            };
+                process.WaitForExit();
+            }
 
-            process.Start();
-
-            stdOut = ReadToEnd(process.StandardOutput.BaseStream, stdOutBufferSize);
-            stdErr = process.StandardError.ReadToEnd().Trim();
+            return (stdOut!, stdErr!);
         }
     }
 }

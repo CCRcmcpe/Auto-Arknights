@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Text.RegularExpressions;
 using OpenCvSharp;
 
 namespace REVUnit.AutoArknights.Core
@@ -12,24 +12,32 @@ namespace REVUnit.AutoArknights.Core
             new(() => new Remote(Library.Settings.Remote.AdbExecutable, Library.Settings.Remote.Serial));
 
         private readonly Adb _adb;
-        private readonly Size _resolution;
+        private readonly string _targetSerial;
+        private Size _resolution;
 
-        private Remote(string adbPath, string serial)
+        private Remote(string adbPath, string targetSerial)
         {
-            _adb = new Adb(adbPath, serial);
-            _resolution = _adb.GetResolution();
-            Graphical = new Graphic(this);
-            Textual = new Text(this);
+            _targetSerial = targetSerial;
+            _adb = new Adb(adbPath, targetSerial);
         }
 
-        public Graphic Graphical { get; }
-        public Text Textual { get; }
+        public Graphic? Graphical { get; private set; }
+        public Text? Textual { get; private set; }
 
         public static Remote I => LazyInitializer.Value;
 
         public void Dispose()
         {
-            Graphical.Dispose();
+            Graphical?.Dispose();
+        }
+
+        public void Initialize()
+        {
+            _adb.StartServer();
+            _adb.Connect(_targetSerial);
+            _resolution = _adb.GetResolution();
+            Graphical = new Graphic(this);
+            Textual = new Text(this);
         }
 
         private static Point Randomize(Point point) =>
@@ -52,18 +60,27 @@ namespace REVUnit.AutoArknights.Core
 
         public Sanity GetCurrentSanity()
         {
-            return Textual.Ocr(RelativeArea.CurrentSanity, @"(\d+)\s*\/\s*(\d+)", matches =>
+            string text = Textual.Ocr(RelativeArea.CurrentSanity);
+            Match match = Regex.Match(text, @"(?<current>\d+)\s*\/\s*(?<max>\d+)");
+            if (!(int.TryParse(match.Groups["current"].Value, out int current) &&
+                  int.TryParse(match.Groups["max"].Value, out int max)))
             {
-                int[] nums = matches.Select(s => (success: int.TryParse(s, out int i), i))
-                                    .Where(result => result.success).Select(result => result.i)
-                                    .ToArray();
+                throw new Exception();
+            }
 
-                return new Sanity(nums[0], nums[1]);
-            });
+            return new Sanity(current, max);
         }
 
-        public int GetRequiredSanity() =>
-            Textual.Ocr(RelativeArea.RequiredSanity, @"\d+", matches => int.Parse(matches[0]));
+        public int GetRequiredSanity()
+        {
+            string text = Textual.Ocr(RelativeArea.RequiredSanity);
+            if (!int.TryParse(text[1..], out int requiredSanity))
+            {
+                throw new Exception();
+            }
+
+            return requiredSanity;
+        }
 
         public Mat GetScreenshot() => _adb.GetScreenshot();
     }

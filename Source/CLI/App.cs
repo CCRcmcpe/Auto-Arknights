@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using REVUnit.AutoArknights.CLI.Properties;
 using REVUnit.AutoArknights.Core;
 using REVUnit.AutoArknights.Core.Tasks;
-using REVUnit.Crlib.Extension;
 using REVUnit.Crlib.Input;
 using Serilog;
 
@@ -18,12 +17,16 @@ namespace REVUnit.AutoArknights.CLI
         private App()
         {
             Library.Settings = Config;
-            _ = Remote.I;
-            _input = new Cin { AutoTrim = true };
+            _input = new Cin();
         }
 
         public static Config Config { get; } = new(ConfigFilePath);
         public static App Instance => LazyInitializer.Value;
+
+        public static void Initialize()
+        {
+            Remote.I.Initialize();
+        }
 
         public void Run()
         {
@@ -38,13 +41,17 @@ namespace REVUnit.AutoArknights.CLI
             IArkTask[] tasks = plan.Tasks;
 
             PrintTasksSummary(tasks);
-            XConsole.AnyKey(Resources.App_ReadyToExecute);
+
+            Console.WriteLine(Resources.App_ReadyToExecute);
+            Console.ReadKey(true);
 
             ExecuteTasks(tasks);
-            XConsole.AnyKey(Resources.App_AllTasksCompleted);
+
+            Console.WriteLine(Resources.App_AllTasksCompleted);
+            Console.ReadKey(true);
         }
 
-        private Exception? ParseParams(string value, out Plan? result)
+        private static Exception? ParseParams(string value, out Plan? result)
         {
             if (value != "help")
             {
@@ -64,7 +71,7 @@ namespace REVUnit.AutoArknights.CLI
             for (var i = 0; i < tasks.Count; i++)
             {
                 IArkTask task = tasks[i];
-                Console.WriteLine($@"[{i}]> {task}");
+                Console.WriteLine($@"[{i + 1}]> {task}");
             }
 
             Console.Write(Resources.App_TaskListFooter);
@@ -72,17 +79,17 @@ namespace REVUnit.AutoArknights.CLI
 
         private static void ExecuteTasks(IReadOnlyList<IArkTask> tasks)
         {
-            for (var taskId = 0; taskId < tasks.Count; taskId++)
+            for (var i = 0; i < tasks.Count; i++)
             {
-                IArkTask task = tasks[taskId];
+                IArkTask task = tasks[i];
 
-                Log.Information(Resources.App_TaskBegin, taskId);
+                Log.Information(Resources.App_TaskBegin, i + 1);
                 ExecuteResult executeResult = task.Execute();
 
                 if (executeResult.Successful)
-                    Log.Information(Resources.App_TaskComplete, taskId, executeResult.Message);
+                    Log.Information(Resources.App_TaskComplete, i, executeResult.Message);
                 else
-                    Log.Error(Resources.App_TaskFaulted, taskId, executeResult.Message);
+                    Log.Error(Resources.App_TaskFaulted, i, executeResult.Message);
             }
         }
     }

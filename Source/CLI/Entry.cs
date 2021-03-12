@@ -3,11 +3,6 @@ using REVUnit.AutoArknights.CLI.Properties;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 
-#if !DEBUG
-using REVUnit.Crlib.Extension;
-
-#endif
-
 namespace REVUnit.AutoArknights.CLI
 {
     public static class Entry
@@ -26,6 +21,7 @@ namespace REVUnit.AutoArknights.CLI
             Log.Information(Resources.App_Starting);
 
             var app = App.Instance;
+            App.Initialize();
 
             Log.Information(Resources.App_Started);
             Console.Clear();
@@ -39,9 +35,11 @@ namespace REVUnit.AutoArknights.CLI
             catch (Exception e)
             {
                 Log.Fatal(e, Resources.Entry_FatalException);
-                XConsole.AnyKey();
+                Console.ReadKey(true);
             }
 #endif
+
+            Log.CloseAndFlush();
         }
     }
 }

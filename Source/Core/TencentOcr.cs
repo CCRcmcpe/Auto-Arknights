@@ -12,9 +12,7 @@ namespace REVUnit.AutoArknights.Core
 {
     public class TencentOcr
     {
-        private static readonly ITxOcr Api;
-
-        static TencentOcr() => Api = RestService.For<ITxOcr>("https://ai.qq.com");
+        private static readonly ITxOcr Api = RestService.For<ITxOcr>("https://ai.qq.com");
 
         public static string Ocr(Mat image)
         {

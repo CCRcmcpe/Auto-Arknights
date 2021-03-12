@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.Extensions.Configuration;
 using REVUnit.AutoArknights.CLI.Properties;
 using REVUnit.AutoArknights.Core;
-using REVUnit.Crlib.Extension;
+using REVUnit.Crlib.Extensions;
 
 namespace REVUnit.AutoArknights.CLI
 {
