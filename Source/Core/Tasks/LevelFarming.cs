@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using Polly;
+using Polly.Retry;
 using REVUnit.AutoArknights.Core.Properties;
 using Serilog;
 using static REVUnit.AutoArknights.Core.Remote;
@@ -20,11 +21,21 @@ namespace REVUnit.AutoArknights.Core.Tasks
         private Sanity? _previousSanity;
 
         private int _requiredSanity;
+        private readonly RetryPolicy<Sanity> _getCurrentSanityPolicy;
 
         public LevelFarming(Mode farmMode, int times)
         {
             FarmMode = farmMode;
             Times = times;
+            _getCurrentSanityPolicy = Policy.HandleResult<Sanity>(sanity =>
+            {
+                if (_previousSanity == null) return false;
+                int dSanity = _previousSanity.Value - sanity.Value;
+
+                return Math.Abs(sanity.Max - _previousSanity.Max) > 1 // 理智上限变动大于1
+                       || dSanity > 0                                    // 没有嗑药
+                       && Math.Abs(_requiredSanity - dSanity) > 10;      // 且理智对于一般情况下的刷关后理智差大于10
+            }).WaitAndRetry(2, _ => TimeSpan.FromSeconds(2));
         }
 
         public Mode FarmMode { get; set; }
@@ -50,19 +61,9 @@ namespace REVUnit.AutoArknights.Core.Tasks
 
         private bool GetHaveEnoughSanity()
         {
-            // 防止OCR抽风
-            PolicyResult<Sanity> result = Policy.HandleResult<Sanity>(sanity =>
-            {
-                if (_previousSanity == null) return false;
-                int dSanity = _previousSanity.Value - sanity.Value;
-
-                return Math.Abs(sanity.Max - _previousSanity.Max) > 1 // 理智上限变动大于1
-                    || dSanity > 0                                    // 没有嗑药
-                    && Math.Abs(_requiredSanity - dSanity) > 10;      // 且理智对于一般情况下的刷关后理智差大于10
-            }).WaitAndRetry(2, _ => TimeSpan.FromSeconds(2)).ExecuteAndCapture(() => I.GetCurrentSanity());
+            PolicyResult<Sanity> result = _getCurrentSanityPolicy.ExecuteAndCapture(() => I.GetCurrentSanity());
 
             Sanity currentSanity;
-
             if (result.Result != null)
             {
                 currentSanity = result.Result;

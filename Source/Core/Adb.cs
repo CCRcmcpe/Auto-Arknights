@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using OpenCvSharp;
 using Polly;
+using Polly.Retry;
 using REVUnit.AutoArknights.Core.Properties;
 using Serilog;
 
@@ -15,6 +16,14 @@ namespace REVUnit.AutoArknights.Core
     public class Adb
     {
         private const int DefaultBufferSize = 1024;
+
+        private const int GetScreenshotRetryTimes = 3;
+
+        private readonly RetryPolicy<Mat> _getScreenshotPolicy = Policy.HandleResult<Mat>(mat => mat.Empty())
+            .Retry(GetScreenshotRetryTimes,
+                (_, i) => Log.Warning(string.Format(Resources.Adb_Exception_GetScreenshot, i,
+                    GetScreenshotRetryTimes)));
+
         private readonly ILogger _logger = Log.ForContext<Adb>();
 
         private int _serverPort;
@@ -93,13 +102,9 @@ namespace REVUnit.AutoArknights.Core
 
         public Mat GetScreenshot()
         {
-            const int retryCount = 3;
-            return Policy.HandleResult<Mat>(mat => mat.Empty())
-                         .Retry(retryCount,
-                                (_, i) => Log.Warning(
-                                    string.Format(Resources.Adb_Exception_GetScreenshot, i, retryCount)))
-                         .Execute(() => Cv2.ImDecode(Execute("exec-out screencap -p", 5 * 1024 * 1024, 0).stdOut,
-                                                     ImreadModes.Unchanged)) ??
+            return _getScreenshotPolicy
+                      .Execute(() => Cv2.ImDecode(Execute("exec-out screencap -p", 5 * 1024 * 1024, 0).stdOut,
+                                                  ImreadModes.Unchanged)) ??
                    throw new Exception(Resources.Adb_Exception_GetScreenshotFailed);
         }
 
