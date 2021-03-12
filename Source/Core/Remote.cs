@@ -11,6 +11,9 @@ namespace REVUnit.AutoArknights.Core
         private static readonly Lazy<Remote> LazyInitializer =
             new(() => new Remote(Library.Settings.Remote.AdbExecutable, Library.Settings.Remote.Serial));
 
+        private static readonly Regex CurrentSanityRegex =
+            new(@"(?<current>\d+)\s*\/\s*(?<max>\d+)", RegexOptions.Compiled);
+
         private readonly Adb _adb;
         private readonly string _targetSerial;
         private Size _resolution;
@@ -40,8 +43,10 @@ namespace REVUnit.AutoArknights.Core
             Textual = new Text(this);
         }
 
-        private static Point Randomize(Point point) =>
-            new(Math.Abs(Random.Next(-5, 5) + point.X), Math.Abs(Random.Next(-5, 5) + point.Y));
+        private static Point Randomize(Point point)
+        {
+            return new(Math.Abs(Random.Next(-5, 5) + point.X), Math.Abs(Random.Next(-5, 5) + point.Y));
+        }
 
         private static Point Randomize(Rect rect)
         {
@@ -50,18 +55,30 @@ namespace REVUnit.AutoArknights.Core
             return new Point(randX, randY);
         }
 
-        public void Click(int x, int y) => Click(new Point(x, y));
+        public void Click(int x, int y)
+        {
+            Click(new Point(x, y));
+        }
 
-        public void Click(RelativeArea area) => Click(area.For(_resolution));
+        public void Click(RelativeArea area)
+        {
+            Click(area.For(_resolution));
+        }
 
-        public void Click(Rect rect) => Click(Randomize(rect));
+        public void Click(Rect rect)
+        {
+            Click(Randomize(rect));
+        }
 
-        public void Click(Point point) => _adb.Click(Randomize(point));
+        public void Click(Point point)
+        {
+            _adb.Click(Randomize(point));
+        }
 
         public Sanity GetCurrentSanity()
         {
             string text = Textual.Ocr(RelativeArea.CurrentSanity);
-            Match match = Regex.Match(text, @"(?<current>\d+)\s*\/\s*(?<max>\d+)");
+            Match match = CurrentSanityRegex.Match(text);
             if (!(int.TryParse(match.Groups["current"].Value, out int current) &&
                   int.TryParse(match.Groups["max"].Value, out int max)))
             {
@@ -74,14 +91,14 @@ namespace REVUnit.AutoArknights.Core
         public int GetRequiredSanity()
         {
             string text = Textual.Ocr(RelativeArea.RequiredSanity);
-            if (!int.TryParse(text[1..], out int requiredSanity))
-            {
-                throw new Exception();
-            }
+            if (!int.TryParse(text[1..], out int requiredSanity)) throw new Exception();
 
             return requiredSanity;
         }
 
-        public Mat GetScreenshot() => _adb.GetScreenshot();
+        public Mat GetScreenshot()
+        {
+            return _adb.GetScreenshot();
+        }
     }
 }
