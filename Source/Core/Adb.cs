@@ -104,7 +104,7 @@ namespace REVUnit.AutoArknights.Core
         {
             return _getScreenshotPolicy
                       .Execute(() => Cv2.ImDecode(Execute("exec-out screencap -p", 5 * 1024 * 1024, 0).stdOut,
-                                                  ImreadModes.Unchanged)) ??
+                                                  ImreadModes.Color)) ??
                    throw new Exception(Resources.Adb_Exception_GetScreenshotFailed);
         }
 
