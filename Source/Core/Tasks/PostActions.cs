@@ -57,25 +57,24 @@ namespace REVUnit.AutoArknights.Core.Tasks
         }
 
         public bool Hibernate { get; set; }
-        public bool Forced { get; set; }
 
         public override ExecuteResult Execute()
         {
-            SetSuspendState(Hibernate, Forced, Forced);
+            SetSuspendState(Hibernate, false, false);
             return ExecuteResult.Success();
         }
 
         [DllImport("powrprof.dll")]
         private static extern bool IsPwrHibernateAllowed();
 
+        /// <param name="forceCritical">This parameter is useless.</param>
         [DllImport("powrprof.dll")]
+        [SuppressMessage("ReSharper", "InvalidXmlDocComment")]
         private static extern uint SetSuspendState(bool hibernate, bool forceCritical, bool disableWakeEvent);
 
         public override string ToString()
         {
             var b = new StringBuilder();
-            if (Forced) b.Append(Resources.PostAction_Suspend_Forced);
-
             b.Append(!Hibernate ? Resources.PostAction_Suspend_Sleep : Resources.PostAction_Suspend_Hibernate);
             return b.ToString();
         }
