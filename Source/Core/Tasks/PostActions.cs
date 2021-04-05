@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
 using REVUnit.AutoArknights.Core.Properties;
@@ -16,8 +17,8 @@ namespace REVUnit.AutoArknights.Core.Tasks
             {
                 'c' => new Shutdown(),
                 'r' => new Reboot(),
-                's' => new Suspend(false) { Forced = settings.ForcedSuspend },
-                'h' => new Suspend(true) { Forced = settings.ForcedSuspend },
+                's' => new Suspend(false),
+                'h' => new Suspend(true),
                 'e' => new CloseRemote(settings.Remote.ShutdownCommand ??
                                        throw new Exception(Resources.PostActions_CloseRemote_Exception_EmptyCommand)),
                 _ => throw new FormatException(string.Format(Resources.PostAction_Exception_ParseFailed, c))

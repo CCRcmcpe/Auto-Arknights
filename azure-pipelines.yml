@@ -16,19 +16,30 @@ jobs:
   - checkout: self
     displayName: Checkout
   - task: UseDotNet@2
-    displayName: Initialize .NET SDK
+    displayName: Use DotNet
     inputs:
-      packageType: sdk
-      version: 5.x
-  - task: PowerShell@2
-    displayName: Build
+      packageType: 'sdk'
+      useGlobalJson: true
+      workingDirectory: 'Source/CLI'
+  - task: DotNetCoreCLI@2
+    displayName: Restore
     inputs:
-      filePath: Source/CLI/build.ps1
-      workingDirectory: Source/CLI
+      command: 'restore'
+      projects: 'Source/**/*.csproj'
+      feedsToUse: 'select'
+  - task: DotNetCoreCLI@2
+    displayName: Publish
+    inputs:
+      command: 'publish'
+      publishWebProjects: false
+      projects: 'Source/CLI/Auto Arknights CLI.csproj'
+      arguments: '-c Publish -o $(Build.ArtifactStagingDirectory)/artifact/ --no-restore'
+      zipAfterPublish: false
+      workingDirectory: 'Source/CLI'
   - task: ArchiveFiles@2
     displayName: Archive Artifact
     inputs:
-      rootFolderOrFile: Source/CLI/artifact
+      rootFolderOrFile: $(Build.ArtifactStagingDirectory)/artifact
       includeRootFolder: false
       archiveType: 7z
       sevenZipCompression: ultra
