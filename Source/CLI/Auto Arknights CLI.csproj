@@ -7,7 +7,6 @@
     <OutputType>Exe</OutputType>
     <DisableWinExeOutputInference>true</DisableWinExeOutputInference>
     <Platforms>x64</Platforms>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <UseWPF>true</UseWPF> <!--Needed because OpenCvSharp4.Windows depends on WPF-->
   </PropertyGroup>
 
