@@ -33,7 +33,7 @@ jobs:
       command: 'publish'
       publishWebProjects: false
       projects: 'Source/CLI/Auto Arknights CLI.csproj'
-      arguments: '-p:PublishProfile="Windows x64" --no-restore'
+      arguments: '-c Release -p:PublishProfile="Windows x64" --no-restore'
       zipAfterPublish: false
       workingDirectory: 'Source/CLI'
   - task: ArchiveFiles@2
