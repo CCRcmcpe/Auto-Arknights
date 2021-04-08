@@ -8,20 +8,13 @@
     <DisableWinExeOutputInference>true</DisableWinExeOutputInference>
     <Platforms>x64</Platforms>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <UseWPF>true</UseWPF>
+    <UseWPF>true</UseWPF> <!--Needed because OpenCvSharp4.Windows depends on WPF-->
   </PropertyGroup>
 
   <PropertyGroup>
     <Company>REV Unit</Company>
     <Version>2.0.0</Version>
     <NeutralLanguage>zh-CN</NeutralLanguage>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)'=='Publish'">
-    <SelfContained>false</SelfContained>
-    <PublishReadyToRun>true</PublishReadyToRun>
-    <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
-    <PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -57,6 +50,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
 
 </Project>

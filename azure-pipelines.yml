@@ -33,13 +33,13 @@ jobs:
       command: 'publish'
       publishWebProjects: false
       projects: 'Source/CLI/Auto Arknights CLI.csproj'
-      arguments: '-c Publish -o $(Build.ArtifactStagingDirectory)/artifact/ --no-restore'
+      arguments: '-p:PublishProfile="Windows x64" --no-restore'
       zipAfterPublish: false
       workingDirectory: 'Source/CLI'
   - task: ArchiveFiles@2
     displayName: Archive Artifact
     inputs:
-      rootFolderOrFile: $(Build.ArtifactStagingDirectory)/artifact
+      rootFolderOrFile: 'Source/CLI/artifact'
       includeRootFolder: false
       archiveType: 7z
       sevenZipCompression: ultra
