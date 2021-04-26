@@ -26,7 +26,7 @@ jobs:
     inputs:
       command: 'restore'
       projects: 'Source/**/*.csproj'
-      feedsToUse: 'select'
+      restoreArguments: '-r win-x64'
   - task: DotNetCoreCLI@2
     displayName: Publish
     inputs:
@@ -36,17 +36,8 @@ jobs:
       arguments: '-c Release -p:PublishProfile="Windows x64" --no-restore'
       zipAfterPublish: false
       workingDirectory: 'Source/CLI'
-  - task: ArchiveFiles@2
-    displayName: Archive Artifact
-    inputs:
-      rootFolderOrFile: 'Source/CLI/artifact'
-      includeRootFolder: false
-      archiveType: 7z
-      sevenZipCompression: ultra
-      archiveFile: $(Build.ArtifactStagingDirectory)/Auto Arknights.7z
-      replaceExistingArchive: true
   - task: PublishPipelineArtifact@1
     displayName: Publish Artifact
     inputs:
-      targetPath: $(Build.ArtifactStagingDirectory)/Auto Arknights.7z
+      targetPath: Source/CLI/artifact
       artifactName: Auto Arknights CLI
