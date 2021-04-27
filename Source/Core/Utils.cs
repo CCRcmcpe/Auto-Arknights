@@ -12,16 +12,6 @@ namespace REVUnit.AutoArknights.Core
             return Cv2.ImDecode(File.ReadAllBytes(path), mode);
         }
 
-        public static Point ToCvPoint(this System.Drawing.Point point)
-        {
-            return new(point.X, point.Y);
-        }
-
-        public static System.Drawing.Point ToPoint(this Point point)
-        {
-            return new(point.X, point.Y);
-        }
-
         public static void Sleep(double seconds)
         {
             Thread.Sleep(TimeSpan.FromSeconds(seconds));

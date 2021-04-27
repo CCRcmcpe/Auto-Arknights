@@ -117,7 +117,7 @@ namespace REVUnit.AutoArknights.Core
         {
             using Mat scrn = _device.GetScreenshot();
             using Mat sub = area.Reduce(scrn);
-            return TencentOcr.OcrMulti(sub);
+            throw new NotImplementedException();
         }
 
         public RegisterResult Locate(string assetExpr)

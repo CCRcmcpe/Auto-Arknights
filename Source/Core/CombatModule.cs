@@ -8,7 +8,7 @@ using Serilog;
 
 namespace REVUnit.AutoArknights.Core
 {
-    public class CombatSettings
+    public class CombatModuleSettings
     {
         public int IntervalBeforeVerifyInLevel { get; set; } = 50;
         public double IntervalAfterLevelComplete { get; set; } = 5;
@@ -39,7 +39,7 @@ namespace REVUnit.AutoArknights.Core
             }).WaitAndRetry(2, _ => TimeSpan.FromSeconds(2));
         }
 
-        public CombatSettings Settings { get; set; } = new();
+        public CombatModuleSettings Settings { get; set; } = new();
 
         public void Run(Level? level, LevelCombatSettings settings)
         {
