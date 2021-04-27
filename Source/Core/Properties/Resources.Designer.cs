@@ -448,15 +448,6 @@ namespace REVUnit.AutoArknights.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 强制.
-        /// </summary>
-        internal static string PostAction_Suspend_Forced {
-            get {
-                return ResourceManager.GetString("PostAction_Suspend_Forced", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 休眠.
         /// </summary>
         internal static string PostAction_Suspend_Hibernate {
@@ -477,9 +468,9 @@ namespace REVUnit.AutoArknights.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to 指令不能为空.
         /// </summary>
-        internal static string PostActions_CloseRemote_Exception_EmptyCommand {
+        internal static string PostActionsSettings_Exception_EmptyCommand {
             get {
-                return ResourceManager.GetString("PostActions_CloseRemote_Exception_EmptyCommand", resourceCulture);
+                return ResourceManager.GetString("PostActionsSettings_Exception_EmptyCommand", resourceCulture);
             }
         }
         

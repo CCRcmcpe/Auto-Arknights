@@ -12,7 +12,7 @@ namespace REVUnit.AutoArknights.Core.CV
         public readonly Feature2DType Type;
 
         public MatFeature(KeyPoint[] keyPoints, Mat descriptors, int matWidth,
-                          int matHeight, Feature2DType type)
+            int matHeight, Feature2DType type)
         {
             KeyPoints = keyPoints;
             Descriptors = descriptors;

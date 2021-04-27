@@ -177,7 +177,7 @@
   <data name="FeatureMatcher_Exception_FeatureTypesMismatch" xml:space="preserve">
     <value>{0}和{1}的类型不匹配</value>
   </data>
-  <data name="PostActions_CloseRemote_Exception_EmptyCommand" xml:space="preserve">
+  <data name="PostActionsSettings_Exception_EmptyCommand" xml:space="preserve">
     <value>指令不能为空</value>
   </data>
   <data name="PostAction_Exception_ParseFailed" xml:space="preserve">
@@ -191,9 +191,6 @@
   </data>
   <data name="PostAction_Suspend_Exception_HibernateNotSupported" xml:space="preserve">
     <value>系统未开启或不支持休眠</value>
-  </data>
-  <data name="PostAction_Suspend_Forced" xml:space="preserve">
-    <value>强制</value>
   </data>
   <data name="PostAction_Suspend_Sleep" xml:space="preserve">
     <value>睡眠</value>

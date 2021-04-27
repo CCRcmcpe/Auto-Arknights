@@ -19,7 +19,7 @@ namespace REVUnit.AutoArknights.Core.CV
             }
 
             return matches.Select(match => new RegisterResult(match.rect, match.confidence))
-                          .OrderBy(match => match.Confidence).ToArray();
+                .OrderBy(match => match.Confidence).ToArray();
         }
     }
 }

@@ -8,7 +8,9 @@ namespace REVUnit.AutoArknights.Core
 {
     public class AssetLoadException : Exception
     {
-        public AssetLoadException(string key) : base(string.Format(Resources.AssetsLoadException, key)) { }
+        public AssetLoadException(string key) : base(string.Format(Resources.AssetsLoadException, key))
+        {
+        }
     }
 
     public class ImageAssets : IDisposable
@@ -63,10 +65,13 @@ namespace REVUnit.AutoArknights.Core
             Size size = mat.Size();
             bool upscale = size.Width < targetSize.Width || size.Height < targetSize.Height;
             Cv2.Resize(mat, mat, targetSize, interpolation: upscale
-                           ? InterpolationFlags.Cubic
-                           : InterpolationFlags.Area);
+                ? InterpolationFlags.Cubic
+                : InterpolationFlags.Area);
         }
 
-        private static string GetFilePath(string key) => Path.Combine("Assets", key) + ".png";
+        private static string GetFilePath(string key)
+        {
+            return Path.Combine("Assets", key) + ".png";
+        }
     }
 }

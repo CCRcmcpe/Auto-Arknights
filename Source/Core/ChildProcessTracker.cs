@@ -16,8 +16,8 @@ namespace REVUnit.AutoArknights.Core
         {
             IntPtr jobHandle = CreateJobObject(IntPtr.Zero, Guid.NewGuid().ToString());
 
-            var info = new JOBOBJECT_BASIC_LIMIT_INFORMATION { LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE };
-            var extendedInfo = new JOBOBJECT_EXTENDED_LIMIT_INFORMATION { BasicLimitInformation = info };
+            var info = new JOBOBJECT_BASIC_LIMIT_INFORMATION {LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE};
+            var extendedInfo = new JOBOBJECT_EXTENDED_LIMIT_INFORMATION {BasicLimitInformation = info};
 
             int length = Marshal.SizeOf(typeof(JOBOBJECT_EXTENDED_LIMIT_INFORMATION));
             IntPtr extendedInfoPtr = Marshal.AllocHGlobal(length);
@@ -26,7 +26,7 @@ namespace REVUnit.AutoArknights.Core
             {
                 Marshal.StructureToPtr(extendedInfo, extendedInfoPtr, false);
                 if (!SetInformationJobObject(jobHandle, JobObjectExtendedLimitInformation, extendedInfoPtr,
-                                             (uint) length))
+                    (uint) length))
                 {
                     throw new Win32Exception(Marshal.GetLastWin32Error());
                 }
@@ -44,7 +44,7 @@ namespace REVUnit.AutoArknights.Core
 
         [DllImport("kernel32.dll")]
         private static extern bool SetInformationJobObject(IntPtr job, int infoType,
-                                                           IntPtr lpJobObjectInfo, uint cbJobObjectInfoLength);
+            IntPtr lpJobObjectInfo, uint cbJobObjectInfoLength);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool AssignProcessToJobObject(IntPtr job, IntPtr process);

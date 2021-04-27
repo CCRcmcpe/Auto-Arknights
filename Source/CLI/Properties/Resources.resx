@@ -212,4 +212,8 @@
   <data name="Entry_FatalException" xml:space="preserve">
     <value>出现致命错误</value>
   </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="DefaultConfig" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Auto Arknights CLI.config.yml;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

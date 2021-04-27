@@ -20,7 +20,7 @@ namespace REVUnit.AutoArknights.Core.CV
         {
             if (modelF.Type != sceneF.Type)
                 throw new ArgumentException(string.Format(Resources.FeatureMatcher_Exception_FeatureTypesMismatch,
-                                                          nameof(modelF), nameof(sceneF)));
+                    nameof(modelF), nameof(sceneF)));
             if (modelF.KeyPoints.Length == 0 || modelF.Descriptors.Empty() || sceneF.KeyPoints.Length == 0 ||
                 sceneF.Descriptors.Empty())
                 return default;
@@ -55,7 +55,7 @@ namespace REVUnit.AutoArknights.Core.CV
             if (confidence < 0.1) return (confidence, Rect.Empty);
 
             using Mat homography = Cv2.FindHomography(InputArray.Create(mPoints), InputArray.Create(sPoints),
-                                                      HomographyMethods.Ransac);
+                HomographyMethods.Ransac);
 
             if (homography.Empty()) return default;
 
@@ -78,8 +78,8 @@ namespace REVUnit.AutoArknights.Core.CV
         }
 
         private static int VoteForSizeAndOrientation(KeyPoint[] modelKeyPoints, KeyPoint[] sceneKeyPoints,
-                                                     DMatch[][] matches, Mat mask, float scaleIncrement,
-                                                     int rotationBins)
+            DMatch[][] matches, Mat mask, float scaleIncrement,
+            int rotationBins)
         {
             var logScale = new List<float>();
             var rotations = new List<float>();
@@ -105,18 +105,18 @@ namespace REVUnit.AutoArknights.Core.CV
             var scaleBinSize = (int) Math.Ceiling((maxS - minS) / Math.Log10(scaleIncrement));
             if (scaleBinSize < 2) scaleBinSize = 2;
 
-            float[] scaleRanges = { (float) minS, (float) (minS + scaleBinSize + Math.Log10(scaleIncrement)) };
+            float[] scaleRanges = {(float) minS, (float) (minS + scaleBinSize + Math.Log10(scaleIncrement))};
 
             using var flagsMat = new Mat<float>(logScale.Count, 1);
             using var hist = new Mat();
 
-            int[] histSize = { scaleBinSize, rotationBins };
-            int[] channels = { 0, 1 };
-            Rangef[] ranges = { new(scaleRanges[0], scaleRanges[1]), new(rotations.Min(), rotations.Max()) };
+            int[] histSize = {scaleBinSize, rotationBins};
+            int[] channels = {0, 1};
+            Rangef[] ranges = {new(scaleRanges[0], scaleRanges[1]), new(rotations.Min(), rotations.Max())};
 
             using var scalesMat = new Mat<float>(logScale.Count, 1, logScale.ToArray());
             using var rotationsMat = new Mat<float>(rotations.Count, 1, rotations.ToArray());
-            Mat[] scalesAndRotations = { scalesMat, rotationsMat };
+            Mat[] scalesAndRotations = {scalesMat, rotationsMat};
 
             Cv2.CalcHist(scalesAndRotations, channels, null, hist, 2, histSize, ranges);
             Cv2.MinMaxLoc(hist, out _, out double maxVal);

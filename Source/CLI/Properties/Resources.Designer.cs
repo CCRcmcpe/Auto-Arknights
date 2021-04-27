@@ -201,6 +201,16 @@ namespace REVUnit.AutoArknights.CLI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] DefaultConfig {
+            get {
+                object obj = ResourceManager.GetObject("DefaultConfig", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 出现致命错误.
         /// </summary>
         internal static string Entry_FatalException {

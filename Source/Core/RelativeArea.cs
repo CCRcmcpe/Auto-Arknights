@@ -36,7 +36,10 @@ namespace REVUnit.AutoArknights.Core
             return Rect.FromLTRB(left, top, right, bottom);
         }
 
-        public Mat Reduce(Mat super) => super.Clone(For(super.Size()));
+        public Mat Reduce(Mat super)
+        {
+            return super.Clone(For(super.Size()));
+        }
 
         #region 常量
 
@@ -48,8 +51,10 @@ namespace REVUnit.AutoArknights.Core
         public static RelativeArea RequiredSanity { get; } = Ref1080P(1763, 1014, 1841, 1053);
         public static RelativeArea LevelCompletedScreenCloseClick { get; } = Ref1080P(0, 0, 1920, 700);
 
-        private static RelativeArea Ref1080P(int left, int top, int right, int bottom) =>
-            new(left / Rw, top / Rh, right / Rw, bottom / Rh);
+        private static RelativeArea Ref1080P(int left, int top, int right, int bottom)
+        {
+            return new(left / Rw, top / Rh, right / Rw, bottom / Rh);
+        }
 
         #endregion
     }

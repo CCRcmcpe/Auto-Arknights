@@ -1,36 +1,52 @@
 ﻿using System;
+using System.IO;
+using Microsoft.Extensions.Configuration;
 using REVUnit.AutoArknights.CLI.Properties;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 
 namespace REVUnit.AutoArknights.CLI
 {
-    public static class Entry
+    public class Entry
     {
-        public static void Main()
-        {
-            Environment.CurrentDirectory = AppContext.BaseDirectory;
+        private const string ConfigFilePath = "Auto Arknights CLI.config.yml";
 
+        public static void Main(string[] args)
+        {
             Console.WriteLine(Resources.StartupLogo);
 
+            if (!File.Exists(ConfigFilePath))
+            {
+                File.WriteAllBytes(ConfigFilePath, Resources.DefaultConfig);
+            }
+
+            IConfiguration config = new ConfigurationBuilder()
+                .SetBasePath(AppContext.BaseDirectory)
+                .AddYamlFile(ConfigFilePath)
+                .Build();
+
             Log.Logger = new LoggerConfiguration()
-                        .ReadFrom.Configuration(App.Config.Inner).WriteTo.Console(theme: AnsiConsoleTheme.Code).WriteTo
-                        .Debug().WriteTo
-                        .File($"Log/{DateTime.Now:yyyy-MM-dd hh.mm.ss}.log").CreateLogger();
+                .WriteTo.Console(theme: AnsiConsoleTheme.Code)
+                .WriteTo.Debug()
+                .WriteTo.File($"Log/{DateTime.Now:yyyy-MM-dd hh.mm.ss}.log")
+                .CreateLogger();
 
-            Log.Information(Resources.App_Starting);
+            var app = new App(config);
 
-            var app = App.Instance;
-            App.Initialize();
+            app.Start();
 
-            Log.Information(Resources.App_Started);
+            if (args.Length == 0)
+            {
+                Log.Information("未输入参数，进入交互模式");
+            }
+
             Console.Clear();
 #if DEBUG
-            app.Run();
+            app.Run(args);
 #else
             try
             {
-                app.Run();
+                app.Run(args);
             }
             catch (Exception e)
             {
@@ -38,7 +54,6 @@ namespace REVUnit.AutoArknights.CLI
                 Console.ReadKey(true);
             }
 #endif
-
             Log.CloseAndFlush();
         }
     }

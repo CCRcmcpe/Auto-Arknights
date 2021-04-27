@@ -27,7 +27,7 @@ namespace REVUnit.AutoArknights.Core.CV
         public override RegisterResult[] Register(Mat model, Mat scene, int minMatchCount)
         {
             // TODO implement minMatchCount
-            return new[] { Register(model, scene, Feature2DType.FastFreak) };
+            return new[] {Register(model, scene, Feature2DType.FastFreak)};
         }
 
         public RegisterResult Register(Mat model, Mat scene, Feature2DType type)

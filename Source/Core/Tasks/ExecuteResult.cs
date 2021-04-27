@@ -13,10 +13,14 @@ namespace REVUnit.AutoArknights.Core.Tasks
         public bool Successful { get; set; }
         public string Message { get; set; }
 
-        public static ExecuteResult MaxRetryReached(string operation, int triedCount) =>
-            new(false, string.Format(Resources.ExecuteResult_MaxRetryReached, triedCount, operation));
+        public static ExecuteResult MaxRetryReached(string operation, int triedCount)
+        {
+            return new(false, string.Format(Resources.ExecuteResult_MaxRetryReached, triedCount, operation));
+        }
 
-        public static ExecuteResult Success(string? message = null) =>
-            new(true, message ?? Resources.ExecuteResult_Success);
+        public static ExecuteResult Success(string? message = null)
+        {
+            return new(true, message ?? Resources.ExecuteResult_Success);
+        }
     }
 }

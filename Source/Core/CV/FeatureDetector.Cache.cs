@@ -12,7 +12,9 @@ namespace REVUnit.AutoArknights.Core.CV
     public class CacheLoadException : Exception
     {
         public CacheLoadException(string cacheFilePath, string node, Exception? innerException = null) :
-            base($"Error loading node {node} in cache file {cacheFilePath}", innerException) { }
+            base($"Error loading node {node} in cache file {cacheFilePath}", innerException)
+        {
+        }
     }
 
     public partial class FeatureDetector
@@ -75,7 +77,7 @@ namespace REVUnit.AutoArknights.Core.CV
                         Feature2DType type = Read("Type", it => Enum.Parse<Feature2DType>(it.ReadString()));
 
                         _md5Map.Add(Path.GetFileNameWithoutExtension(cacheFile),
-                                    new MatFeature(keyPoints, descriptors, originWidth, originHeight, type));
+                            new MatFeature(keyPoints, descriptors, originWidth, originHeight, type));
                     }
                 }
             }
@@ -91,7 +93,10 @@ namespace REVUnit.AutoArknights.Core.CV
                 foreach (MatFeature matFeature in _md5Map.Values) matFeature.Dispose();
             }
 
-            private static string[] GetCacheFiles(string cacheDirPath) => Directory.GetFiles(cacheDirPath, "*.json.gz");
+            private static string[] GetCacheFiles(string cacheDirPath)
+            {
+                return Directory.GetFiles(cacheDirPath, "*.json.gz");
+            }
 
             private static string GetMd5(byte[] data)
             {

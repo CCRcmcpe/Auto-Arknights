@@ -1,0 +1,6 @@
+Device:
+  Mode: Adb
+  ShutdownCommand: '"C:\Program Files\Microvirt\MEmu\memuc.exe" stop -i 0'
+Adb:
+  ExecutablePath: adb\adb.exe
+  DeviceSerial: 127.0.0.1:21503
