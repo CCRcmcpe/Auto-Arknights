@@ -70,6 +70,24 @@ namespace REVUnit.AutoArknights.Core
             _device.Click(Randomize(point));
         }
 
+        public void Click(string assetExpr)
+        {
+            Click(Asset(assetExpr));
+        }
+
+        public void Click(Mat model)
+        {
+            PolicyResult<RegisterResult> policyResult = _registerPolicy.ExecuteAndCapture(() => Locate(model));
+            if (policyResult.FaultType == null)
+            {
+                Click(policyResult.Result.CircumRect);
+            }
+            else
+            {
+                throw new Exception(); // TODO
+            }
+        }
+
         public bool TestTextAppear(string text)
         {
             return OcrMulti(RelativeArea.All).Any(field => field.Contains(text));
@@ -100,16 +118,6 @@ namespace REVUnit.AutoArknights.Core
             using Mat scrn = _device.GetScreenshot();
             using Mat sub = area.Reduce(scrn);
             return TencentOcr.OcrMulti(sub);
-        }
-
-        public void Click(string assetExpr)
-        {
-            Click(Asset(assetExpr));
-        }
-
-        public void Click(Mat model)
-        {
-            Click(_registerPolicy.Execute(() => Locate(model)).CircumRect);
         }
 
         public RegisterResult Locate(string assetExpr)
