@@ -3,6 +3,7 @@ using System.IO;
 using Microsoft.Extensions.Configuration;
 using REVUnit.AutoArknights.CLI.Properties;
 using Serilog;
+using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 
 namespace REVUnit.AutoArknights.CLI
@@ -26,9 +27,10 @@ namespace REVUnit.AutoArknights.CLI
                 .Build();
 
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console(theme: AnsiConsoleTheme.Code)
-                .WriteTo.Debug()
-                .WriteTo.File($"Log/{DateTime.Now:yyyy-MM-dd hh.mm.ss}.log")
+                .WriteTo.Console(theme: AnsiConsoleTheme.Code, restrictedToMinimumLevel: LogEventLevel.Information)
+                .WriteTo.Debug(LogEventLevel.Debug)
+                .WriteTo.File($"Log/{DateTime.Now:yyyy-MM-dd hh.mm.ss}.log",
+                    config.GetValue("Log:Level", LogEventLevel.Debug))
                 .CreateLogger();
 
             var app = new App(config);
