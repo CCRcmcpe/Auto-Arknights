@@ -1,6 +1,0 @@
-﻿{
-  "Remote": {
-    "AdbExecutable": "adb\\adb.exe",
-    "Serial": "127.0.0.1:7555"
-  }
-}

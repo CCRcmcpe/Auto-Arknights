@@ -1,54 +1,106 @@
-﻿using System.CommandLine;
+﻿using System;
+using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.Diagnostics;
+using System.Threading;
 using Microsoft.Extensions.Configuration;
 using REVUnit.AutoArknights.CLI.Properties;
 using REVUnit.AutoArknights.Core;
 using REVUnit.Crlib.Extensions;
 using Serilog;
 using Console = System.Console;
+using Process = System.Diagnostics.Process;
 
 namespace REVUnit.AutoArknights.CLI
 {
     public class App
     {
+        private readonly Lazy<Arknights> _arknightsLazy;
         private readonly IConfiguration _config;
         private readonly RootCommand _rootCommand;
-        private Arknights? _arknights;
 
         public App(IConfiguration config)
         {
             _config = config;
+            _arknightsLazy = new Lazy<Arknights>(AttachArknights);
 
-            _rootCommand = new RootCommand("Enter interactive mode")
+            _rootCommand = new RootCommand("Interactive mode")
             {
+                new Option<bool>("--no-logo"),
+
+                new Command("start").Also(c =>
+                    c.Handler = CommandHandler.Create(() => RunCommandLine(_config["Remote:StartCommandLine"]))),
+                new Command("close-remote").Also(c => c.Handler = CommandHandler.Create(() =>
+                    RunCommandLine(_config["Remote:CloseCommandLine"] ?? throw new Exception()))),
+                new Command("shutdown-local").Also(c =>
+                    c.Handler = CommandHandler.Create(() => RunCommandLine("shutdown /p"))),
+                new Command("reboot-local").Also(c =>
+                    c.Handler = CommandHandler.Create(() => RunCommandLine("shutdown /r /t 0"))),
                 new Command("combat")
                 {
-                    new Option("level"),
-                    new Argument<int>("times"),
-                    new Option<bool>("wait"),
-                    new Option<bool>("use-potions"),
-                    new Option<bool>("use-originites"),
-                    new Option<int>("max-originites-usage")
-                }.Also(c => c.Handler = CommandHandler.Create<string, int, bool, bool, bool, int>(Combat)) /*,
+                    new Option("--level"),
+                    new Argument<int>("--times"),
+                    new Option<bool>("--wait"),
+                    new Option<bool>("--use-potions"),
+                    new Option<bool>("--use-originites"),
+                    new Option<int>("--max-originites-usage")
+                }.Also(c => c.Handler = CommandHandler.Create<string, int, bool, bool, bool, int>(Combat)),
                 new Command("collect")
                 {
-                    new Command("credit-points") {Handler = CommandHandler.Create(() => Console.WriteLine())}
-                        .Also(c => c.AddAlias("credit"))
-                        .Also(c => c.AddAlias("cp")),
-                    new Command("infrastructure") {Handler = CommandHandler.Create(() => Console.WriteLine())}.Also(c =>
-                        c.AddAlias("infra"))
-                }*/
-            }.Also(c => c.Handler = CommandHandler.Create(Interactive));
+                    new Command("tasks")
+                    {
+                        Handler = CommandHandler.Create(() => Arknights.CollectTasks())
+                    },
+                    new Command("credit-points")
+                    {
+                        Handler = CommandHandler.Create(() => Arknights.Infrastructure.CollectCreditPoints())
+                    }.Also(c => c.AddAlias("credit")).Also(c => c.AddAlias("cp")),
+                    new Command("infrastructure")
+                    {
+                        Handler = CommandHandler.Create(() => Arknights.Infrastructure.Collect())
+                    }.Also(c => c.AddAlias("infra"))
+                }
+            }.Also(c => c.Handler = CommandHandler.Create<bool>(Interactive));
         }
 
-        private void Interactive()
+        private Arknights Arknights => _arknightsLazy.Value;
+
+        private static void RunCommandLine(string commandLine)
         {
+            Process? process =
+                Process.Start(new ProcessStartInfo("cmd.exe", "/c " + commandLine) {CreateNoWindow = true});
+            if (process == null) throw new Exception("无法启动cmd");
+
+            if (!process.WaitForExit(5000))
+            {
+                throw new Exception("命令行运行超时");
+            }
+        }
+
+        private Arknights AttachArknights()
+        {
+            var adbDevice = new AdbDevice(_config["Adb:ExecutablePath"]);
+            adbDevice.Connect(_config["Adb:DeviceSerial"]);
+
+            return Arknights.FromDevice(adbDevice);
+        }
+
+        private void Interactive(bool noLogo)
+        {
+            if (!noLogo)
+            {
+                Console.WriteLine(Resources.Logo);
+                Thread.Sleep(500);
+                Console.Clear();
+            }
+
             while (true)
             {
+                Console.Write("> ");
                 string? args = Console.ReadLine();
                 if (string.IsNullOrWhiteSpace(args))
                 {
-                    Log.Information("请输入指令");
+                    Log.Warning("请输入指令");
                     continue;
                 }
 
@@ -60,7 +112,7 @@ namespace REVUnit.AutoArknights.CLI
         private void Combat(string? levelName, int times, bool wait, bool usePotions, bool useOriginites,
             int maxOriginitesUsage)
         {
-            _arknights!.Combat.Run(levelName == null ? null : Level.FromName(levelName), new LevelCombatSettings
+            Arknights.Combat.Run(levelName == null ? null : Level.FromName(levelName), new LevelCombatSettings
             {
                 RepeatTimes = times,
                 WaitWhenNoSanity = wait,
@@ -68,22 +120,6 @@ namespace REVUnit.AutoArknights.CLI
                 UseOriginites = useOriginites,
                 MaxOriginitesUsage = maxOriginitesUsage
             });
-        }
-
-        public void Start()
-        {
-            Log.Information(Resources.App_Starting);
-
-            Log.Information("正在连接ADB");
-
-            var adbDevice = new AdbDevice(_config["Adb:ExecutablePath"]);
-            adbDevice.Connect(_config["Adb:DeviceSerial"]);
-
-            Log.Information("ADB已连接");
-
-            _arknights = Arknights.FromDevice(adbDevice);
-
-            Log.Information(Resources.App_Started);
         }
 
         public void Run(string[] args)

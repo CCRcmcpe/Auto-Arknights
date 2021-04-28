@@ -4,9 +4,9 @@ using OpenCvSharp;
 
 namespace REVUnit.AutoArknights.Core.CV
 {
-    public class TemplateRegister : ImageRegister
+    public class TemplateRegistration : ImageRegistration
     {
-        public override RegisterResult[] Register(Mat model, Mat scene, int minMatchCount)
+        public override RegistrationResult[] Register(Mat model, Mat scene, int minMatchCount)
         {
             Mat diff = scene.MatchTemplate(model, TemplateMatchModes.CCoeffNormed);
             var matches = new List<(Rect rect, double confidence)>();
@@ -18,7 +18,7 @@ namespace REVUnit.AutoArknights.Core.CV
                 diff.At<float>(maxLoc.Y, maxLoc.X) = 0;
             }
 
-            return matches.Select(match => new RegisterResult(match.rect, match.confidence))
+            return matches.Select(match => new RegistrationResult(match.rect, match.confidence))
                 .OrderBy(match => match.Confidence).ToArray();
         }
     }

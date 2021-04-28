@@ -21,13 +21,13 @@ namespace REVUnit.AutoArknights.Core
 
         private readonly RetryPolicy<Sanity> _getCurrentSanityPolicy;
 
-        private readonly Interactor _interactor;
+        private readonly Interactor _i;
         private Sanity? _lastGetSanityResult;
         private int _requiredSanity;
 
         internal CombatModule(Interactor interactor)
         {
-            _interactor = interactor;
+            _i = interactor;
             _getCurrentSanityPolicy = Policy.HandleResult<Sanity>(sanity =>
             {
                 if (_lastGetSanityResult == null) return false;
@@ -55,30 +55,29 @@ namespace REVUnit.AutoArknights.Core
 
         private void RunCurrentLevel()
         {
-            _interactor.Click("Ops/Begin");
+            _i.Click("Combat/Begin");
             Utils.Sleep(1);
 
-            _interactor.Click("Ops/Start");
+            _i.Click("Combat/Start");
             Utils.Sleep(Settings.IntervalBeforeVerifyInLevel);
 
-            if (!_interactor.TestAppear("Ops/TakeOver"))
+            if (!_i.TestAppear("Combat/TakeOver"))
             {
                 Log.Warning(Resources.LevelFarming_Exception_AutoDeploy);
                 Log.Warning(Resources.LevelFarming_Exception_AutoDeployHint,
                     Settings.IntervalBeforeVerifyInLevel);
             }
 
-            Utils.Sleep(50);
-            while (_interactor.TestAppear("Ops/TakeOver"))
+            while (_i.TestAppear("Combat/TakeOver"))
             {
             }
 
             Utils.Sleep(Settings.IntervalAfterLevelComplete);
             while (true)
             {
-                _interactor.Click(RelativeArea.LevelCompletedScreenCloseClick);
+                _i.Back();
                 Utils.Sleep(7);
-                if (_interactor.TestAppear("Ops/Begin")) break;
+                if (_i.TestAppear("Combat/Begin")) break;
             }
         }
 
@@ -118,7 +117,7 @@ namespace REVUnit.AutoArknights.Core
         {
             PolicyResult<Sanity> result = _getCurrentSanityPolicy.ExecuteAndCapture(() =>
             {
-                string text = _interactor.Ocr(RelativeArea.CurrentSanity);
+                string text = _i.Ocr(RelativeArea.CurrentSanityText);
                 Match match = CurrentSanityRegex.Match(text);
                 if (!(int.TryParse(match.Groups["current"].Value, out int current) &&
                       int.TryParse(match.Groups["max"].Value, out int max)))
@@ -146,7 +145,7 @@ namespace REVUnit.AutoArknights.Core
 
         private int GetRequiredSanity()
         {
-            string text = _interactor.Ocr(RelativeArea.RequiredSanity);
+            string text = _i.Ocr(RelativeArea.RequiredSanityText);
             if (!int.TryParse(text[1..], out int requiredSanity)) throw new Exception();
 
             Log.Information(Resources.LevelFarming_RequiredSanity, requiredSanity);

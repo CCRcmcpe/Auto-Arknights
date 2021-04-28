@@ -7,6 +7,12 @@ using REVUnit.AutoArknights.Core.CV;
 
 namespace REVUnit.AutoArknights.Core
 {
+    public enum RegistrationType
+    {
+        TemplateMatching,
+        FeatureMatching
+    }
+
     internal class Interactor : IDisposable
     {
         private const double ConfidenceThreshold = 0.8;
@@ -14,12 +20,14 @@ namespace REVUnit.AutoArknights.Core
         private readonly ImageAssets _assets;
 
         private readonly IDevice _device;
-        private readonly TemplateRegister _register = new();
+        private readonly FeatureRegistration _featureRegistration = new("Cache");
 
-        private readonly RetryPolicy<RegisterResult> _registerPolicy =
-            Policy.HandleResult<RegisterResult>(result => result.Confidence < ConfidenceThreshold).Retry(3);
+        private readonly RetryPolicy<RegistrationResult> _registerPolicy =
+            Policy.HandleResult<RegistrationResult>(result => result.Confidence < ConfidenceThreshold).Retry(3);
 
         private readonly Size _resolution;
+
+        private readonly TemplateRegistration _templateRegistration = new();
 
         public Interactor(IDevice device)
         {
@@ -33,7 +41,7 @@ namespace REVUnit.AutoArknights.Core
             _assets.Dispose();
         }
 
-        private Mat Asset(string assetExpr)
+        private Mat GetImageAsset(string assetExpr)
         {
             return _assets.Get(assetExpr);
         }
@@ -48,6 +56,11 @@ namespace REVUnit.AutoArknights.Core
             int randX = Random.Next((int) (rect.Width * 0.1), (int) (rect.Width * 0.9)) + rect.X;
             int randY = Random.Next((int) (rect.Height * 0.1), (int) (rect.Height * 0.9)) + rect.Y;
             return new Point(randX, randY);
+        }
+
+        public void Back()
+        {
+            _device.Back();
         }
 
         public void Click(int x, int y)
@@ -70,14 +83,15 @@ namespace REVUnit.AutoArknights.Core
             _device.Click(Randomize(point));
         }
 
-        public void Click(string assetExpr)
+        public void Click(string assetExpr, RegistrationType registrationType = RegistrationType.TemplateMatching)
         {
-            Click(Asset(assetExpr));
+            Click(GetImageAsset(assetExpr), registrationType);
         }
 
-        public void Click(Mat model)
+        public void Click(Mat model, RegistrationType registrationType = RegistrationType.TemplateMatching)
         {
-            PolicyResult<RegisterResult> policyResult = _registerPolicy.ExecuteAndCapture(() => Locate(model));
+            PolicyResult<RegistrationResult> policyResult = _registerPolicy.ExecuteAndCapture(() => LocateImage(model,
+                registrationType));
             if (policyResult.FaultType == null)
             {
                 Click(policyResult.Result.CircumRect);
@@ -100,7 +114,7 @@ namespace REVUnit.AutoArknights.Core
 
         public void WaitTextAppear(string text, double waitSec = 5)
         {
-            while (!TestAppear(text)) Utils.Sleep(waitSec);
+            while (!TestTextAppear(text)) Utils.Sleep(waitSec);
         }
 
         public void WaitTextAppear(string text, RelativeArea area, double waitSec = 5)
@@ -120,34 +134,50 @@ namespace REVUnit.AutoArknights.Core
             throw new NotImplementedException();
         }
 
-        public RegisterResult Locate(string assetExpr)
+        public RegistrationResult LocateImage(string assetExpr, RegistrationType registrationType =
+            RegistrationType.TemplateMatching)
         {
-            Mat model = Asset(assetExpr);
-            return Locate(model);
+            return LocateImage(
+                GetImageAsset(assetExpr),
+                registrationType);
         }
 
-        public RegisterResult Locate(Mat model)
+        public RegistrationResult LocateImage(Mat model, RegistrationType registrationType =
+            RegistrationType.TemplateMatching)
         {
+            return LocateImageMulti(model,
+                1, registrationType)[0];
+        }
+
+        public RegistrationResult[] LocateImageMulti(Mat model, int minMatchCount, RegistrationType registrationType =
+            RegistrationType.TemplateMatching)
+        {
+            ImageRegistration imageRegistration = registrationType switch
+            {
+                RegistrationType.TemplateMatching => _templateRegistration,
+                RegistrationType.FeatureMatching => _featureRegistration,
+                _ => throw new ArgumentOutOfRangeException(nameof(registrationType), registrationType, null)
+            };
             using Mat scrn = _device.GetScreenshot();
-            RegisterResult result = _register.Register(model, scrn, 1)[0];
+            RegistrationResult[] result = imageRegistration.Register(model, scrn, minMatchCount);
             return result;
         }
 
-        public RegisterResult[] LocateMulti(Mat model, int minMatchCount = 1)
-        {
-            using Mat scrn = _device.GetScreenshot();
-            RegisterResult[] result = _register.Register(model, scrn, minMatchCount);
-            return result;
-        }
-
-        private static bool IsSuccessful(RegisterResult result)
+        private static bool IsSuccessful(RegistrationResult result)
         {
             return result.Confidence > ConfidenceThreshold;
         }
 
-        public bool TestAppear(string assetExpr)
+        public bool TestAppear(string assetExpr, RegistrationType registrationType = RegistrationType.TemplateMatching)
         {
-            return IsSuccessful(Locate(assetExpr));
+            return IsSuccessful(LocateImage(assetExpr, registrationType));
+        }
+
+        public bool TestAppear(string assetExpr, out RegistrationResult result, RegistrationType registrationType =
+            RegistrationType.TemplateMatching)
+        {
+            result = LocateImage(assetExpr, registrationType);
+            return IsSuccessful(result);
         }
     }
 }

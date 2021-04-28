@@ -9,9 +9,9 @@ namespace REVUnit.AutoArknights.Core.CV
     public partial class FeatureDetector : IDisposable
     {
         private readonly Cache? _cache;
-        private readonly Feature2D _fast = FastFeatureDetector.Create();
-        private readonly Feature2D _freak = FREAK.Create();
-        private readonly Feature2D _sift = SIFT.Create();
+        private readonly Lazy<Feature2D> _fast = new(() => FastFeatureDetector.Create());
+        private readonly Lazy<Feature2D> _freak = new(() => FREAK.Create());
+        private readonly Lazy<Feature2D> _sift = new(() => SIFT.Create());
 
         public FeatureDetector(string? cacheDirPath = null)
         {
@@ -21,9 +21,17 @@ namespace REVUnit.AutoArknights.Core.CV
         public void Dispose()
         {
             _cache?.Dispose();
-            _fast.Dispose();
-            _freak.Dispose();
-            _sift.Dispose();
+            DisposeIfCreated(_fast);
+            DisposeIfCreated(_freak);
+            DisposeIfCreated(_sift);
+        }
+
+        private static void DisposeIfCreated(Lazy<Feature2D> lazyFeature2D)
+        {
+            if (lazyFeature2D.IsValueCreated)
+            {
+                lazyFeature2D.Value.Dispose();
+            }
         }
 
         public MatFeature DetectCached(Mat mat, Feature2DType type)
@@ -55,8 +63,8 @@ namespace REVUnit.AutoArknights.Core.CV
         {
             return feature2DType switch
             {
-                Feature2DType.FastFreak => (_fast, _freak),
-                Feature2DType.Sift => (_sift, _sift),
+                Feature2DType.FastFreak => (_fast.Value, _freak.Value),
+                Feature2DType.Sift => (_sift.Value, _sift.Value),
                 _ => throw new ArgumentOutOfRangeException(nameof(feature2DType), feature2DType, null)
             };
         }

@@ -26,7 +26,6 @@ namespace REVUnit.AutoArknights.Core
                 (_, i) => Log.Warning(string.Format(Resources.Adb_Exception_GetScreenshot, i,
                     GetScreenshotRetryTimes)));
 
-        private readonly ILogger _logger = Log.ForContext<AdbDevice>();
         private int _serverPort;
         private bool _serverStarted;
 
@@ -50,6 +49,11 @@ namespace REVUnit.AutoArknights.Core
             return new Size(a > b ? a : b, a > b ? b : a);
         }
 
+        public void Back()
+        {
+            KeyEvent("KEYCODE_BACK");
+        }
+
         public void Click(Point point)
         {
             ThrowIfServiceUnavailable();
@@ -61,6 +65,13 @@ namespace REVUnit.AutoArknights.Core
             return _getScreenshotPolicy.Execute(() =>
                        Cv2.ImDecode(Execute("exec-out screencap -p", 5 * 1024 * 1024, 0).stdOut, ImreadModes.Color)) ??
                    throw new Exception(Resources.Adb_Exception_GetScreenshotFailed);
+        }
+
+        // https://developer.android.com/reference/android/view/KeyEvent
+        public void KeyEvent(string keyCodeOrName)
+        {
+            ThrowIfServiceUnavailable();
+            Execute($"shell input keyevent {keyCodeOrName}");
         }
 
         private static int GetFreeTcpPort()
@@ -83,13 +94,13 @@ namespace REVUnit.AutoArknights.Core
         private bool GetDeviceOnline()
         {
             string state = Encoding.UTF8.GetString(Execute("get-state", targeted: false).stdOut).Trim();
-            _logger.Debug(Resources.Adb_DeviceState, state);
+            Log.Debug(Resources.Adb_DeviceState, state);
             return state == "device";
         }
 
         public void StartServer()
         {
-            _logger.Information(Resources.Adb_StartingServer);
+            Log.Information(Resources.Adb_StartingServer);
 
             int port = GetFreeTcpPort();
 
@@ -109,7 +120,7 @@ namespace REVUnit.AutoArknights.Core
             adbServerProcess.Exited += (_, _) => throw new Exception("ADB 服务器进程意外停止");
             ChildProcessTracker.Track(adbServerProcess);
 
-            _logger.Information("已启动 ADB 服务器，端口：{Port}", _serverPort);
+            Log.Information("已启动 ADB 服务器，端口：{Port}", _serverPort);
 
             _serverStarted = true;
         }
@@ -117,7 +128,7 @@ namespace REVUnit.AutoArknights.Core
         [MemberNotNull(nameof(TargetSerial))]
         public void Connect(string targetSerial)
         {
-            _logger.Debug(Resources.Adb_Connecting, TargetSerial);
+            Log.Information(Resources.Adb_Connecting, targetSerial);
 
             KillConnectedProcesses(targetSerial);
 
@@ -134,7 +145,7 @@ namespace REVUnit.AutoArknights.Core
 
             TargetSerial = targetSerial;
 
-            _logger.Debug(Resources.Adb_Connected);
+            Log.Information(Resources.Adb_Connected);
         }
 
         private static void KillConnectedProcesses(string targetSerial)

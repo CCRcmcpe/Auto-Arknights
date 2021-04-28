@@ -14,8 +14,6 @@ namespace REVUnit.AutoArknights.CLI
 
         public static void Main(string[] args)
         {
-            Console.WriteLine(Resources.StartupLogo);
-
             if (!File.Exists(ConfigFilePath))
             {
                 File.WriteAllBytes(ConfigFilePath, Resources.DefaultConfig);
@@ -27,20 +25,14 @@ namespace REVUnit.AutoArknights.CLI
                 .Build();
 
             Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Verbose()
                 .WriteTo.Console(theme: AnsiConsoleTheme.Code, restrictedToMinimumLevel: LogEventLevel.Information)
-                .WriteTo.Debug(LogEventLevel.Debug)
-                .WriteTo.File($"Log/{DateTime.Now:yyyy-MM-dd hh.mm.ss}.log",
+                .WriteTo.Debug()
+                .WriteTo.File($"Log/{DateTime.Now:yyyy-MM-dd HH.mm.ss}.log",
                     config.GetValue("Log:Level", LogEventLevel.Debug))
                 .CreateLogger();
 
             var app = new App(config);
-
-            app.Start();
-
-            if (args.Length == 0)
-            {
-                Log.Information("未输入参数，进入交互模式");
-            }
 
             Console.Clear();
 #if DEBUG

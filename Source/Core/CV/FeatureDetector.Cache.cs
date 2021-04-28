@@ -138,6 +138,7 @@ namespace REVUnit.AutoArknights.Core.CV
                 storage.Write("Descriptors", feature.Descriptors);
                 storage.Write("OriginWidth", mat.Width);
                 storage.Write("OriginHeight", mat.Height);
+                storage.Write("Type", feature.Type.ToString());
 
                 File.WriteAllText(_serialFilePath, CoreAssemblySerial);
             }

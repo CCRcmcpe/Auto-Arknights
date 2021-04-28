@@ -3,11 +3,11 @@ using OpenCvSharp;
 
 namespace REVUnit.AutoArknights.Core.CV
 {
-    public class FeatureRegister : ImageRegister, IDisposable
+    public class FeatureRegistration : ImageRegistration, IDisposable
     {
         private readonly bool _useCache;
 
-        public FeatureRegister(string? cacheDirPath = null)
+        public FeatureRegistration(string? cacheDirPath = null)
         {
             _useCache = cacheDirPath != null;
             FeatureDetector = new FeatureDetector(cacheDirPath);
@@ -24,13 +24,13 @@ namespace REVUnit.AutoArknights.Core.CV
             FeatureMatcher.Dispose();
         }
 
-        public override RegisterResult[] Register(Mat model, Mat scene, int minMatchCount)
+        public override RegistrationResult[] Register(Mat model, Mat scene, int minMatchCount)
         {
             // TODO implement minMatchCount
             return new[] {Register(model, scene, Feature2DType.FastFreak)};
         }
 
-        public RegisterResult Register(Mat model, Mat scene, Feature2DType type)
+        public RegistrationResult Register(Mat model, Mat scene, Feature2DType type)
         {
             MatFeature? sceneFeature = null;
             MatFeature? modelFeature = null;
@@ -39,7 +39,7 @@ namespace REVUnit.AutoArknights.Core.CV
                 modelFeature = FeatureDetector.DetectCached(model, type);
                 sceneFeature = FeatureDetector.Detect(scene, type);
                 (double confidence, Rect circumRect) = FeatureMatcher.Match(modelFeature, sceneFeature);
-                return new RegisterResult(circumRect, confidence);
+                return new RegistrationResult(circumRect, confidence > 4 ? 1 : 0);
             }
             finally
             {

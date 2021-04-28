@@ -117,9 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="StartupLogo" xml:space="preserve">
-    <value>                                                                                                    
-            @                      @@@#%%                                   #/                      
+  <data name="Logo" xml:space="preserve">
+    <value>@                      @@@#%%                                   #/                      
             @@@###    @            @@@/ %%******=-                 @@@.    ##                       
             @@@  @@@  @@@===       @@@/        (@@@                       @@@ @@                    
             @@@  @@@  @@@  =#@@@   @@@/        (@@@        @(             @@@    (@*                
@@ -135,79 +134,7 @@
                                                      @&amp;      @   ,@*                                
                                                                %@,                                  
                                                                                                     
-   本程序仅供研究学习使用     ============= [Auto Arknights] =============       REV Unit (c)2021     
-                                                                                                    </value>
-  </data>
-  <data name="QuickHelpMessage" xml:space="preserve">
-    <value>
-02    刷关2次
-011    刷关11次
-15    刷关5次，理智耗尽时等待恢复
-2    刷关到理智耗尽
-2es    刷关到理智耗尽，随后关闭模拟器，使计算机睡眠
-3    刷关到理智耗尽，无限等待恢复继续刷关
-
-后续动作 [c]关机 [r]重启 [s]睡眠 [h]休眠 [e]关闭远端
-</value>
-  </data>
-  <data name="App_NotSupported" xml:space="preserve">
-    <value>CPU不支持AVX2指令集，无法运行本程序</value>
-  </data>
-  <data name="App_Starting" xml:space="preserve">
-    <value>正在初始化设备抽象层</value>
-  </data>
-  <data name="App_Started" xml:space="preserve">
-    <value>启动成功</value>
-  </data>
-  <data name="App_ParamsHint" xml:space="preserve">
-    <value>&lt;模式&gt;[次数][后续动作]</value>
-  </data>
-  <data name="App_TaskListHeader" xml:space="preserve">
-    <value>
--[任务列表]---------------------------------------
-
-</value>
-  </data>
-  <data name="App_TaskListFooter" xml:space="preserve">
-    <value>
---------------------------------------------------
-</value>
-  </data>
-  <data name="App_ReadyToExecute" xml:space="preserve">
-    <value>即将执行以上任务，请按任意键继续. . . </value>
-  </data>
-  <data name="App_TaskBegin" xml:space="preserve">
-    <value>任务[{TaskId}]：开始</value>
-  </data>
-  <data name="App_TaskComplete" xml:space="preserve">
-    <value>任务[{TaskId}]完成：{Message}</value>
-  </data>
-  <data name="App_TaskFaulted" xml:space="preserve">
-    <value>任务[{TaskId}]出现错误：{Message}</value>
-  </data>
-  <data name="App_AllTasksCompleted" xml:space="preserve">
-    <value>所有任务已结束，请按任意键退出程序. . . </value>
-  </data>
-  <data name="Plan_Exception_Parsing" xml:space="preserve">
-    <value>无效的计划，请输入 "help" 来获取快速帮助</value>
-  </data>
-  <data name="Plan_Exception_InvalidMode" xml:space="preserve">
-    <value>无效的模式，请输入 "help" 来获取快速帮助</value>
-  </data>
-  <data name="Plan_Exception_InvalidTimes" xml:space="preserve">
-    <value>无效的刷关次数值，请输入 "help" 来获取快速帮助</value>
-  </data>
-  <data name="Config_Exception_InvalidConfig" xml:space="preserve">
-    <value>配置文件无效，请检查语法</value>
-  </data>
-  <data name="Config_Exception_RequirementsUnmet" xml:space="preserve">
-    <value>配置文件需填写 {0}</value>
-  </data>
-  <data name="Config_Exception_InvalidKey" xml:space="preserve">
-    <value>无法解析 {0} 的值</value>
-  </data>
-  <data name="Config_Exception_CannotParse" xml:space="preserve">
-    <value>无法解析配置值 {0}</value>
+   本程序仅供研究学习使用                   [Auto Arknights]                     REV Unit (c)2021</value>
   </data>
   <data name="Entry_FatalException" xml:space="preserve">
     <value>出现致命错误</value>

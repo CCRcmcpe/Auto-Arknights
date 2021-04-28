@@ -16,7 +16,7 @@ namespace REVUnit.AutoArknights.Core.CV
             _matcher.Dispose();
         }
 
-        public (double confidence, Rect circumRect) Match(MatFeature modelF, MatFeature sceneF)
+        public (int matchCount, Rect circumRect) Match(MatFeature modelF, MatFeature sceneF)
         {
             if (modelF.Type != sceneF.Type)
                 throw new ArgumentException(string.Format(Resources.FeatureMatcher_Exception_FeatureTypesMismatch,
@@ -48,11 +48,13 @@ namespace REVUnit.AutoArknights.Core.CV
                 }
             }
 
-            int nonZero = VoteForSizeAndOrientation(modelF.KeyPoints, sceneF.KeyPoints, matches, mask, 1.5f, 20);
-            //mask.CountNonZero();
+            if (mask.CountNonZero() < 4)
+            {
+                return default;
+            }
 
-            double confidence = (double) nonZero / matches.Length;
-            if (confidence < 0.1) return (confidence, Rect.Empty);
+            int nonZero = VoteForSizeAndOrientation(modelF.KeyPoints, sceneF.KeyPoints, matches, mask, 1.5f, 20);
+            if (nonZero < 4) return (nonZero, Rect.Empty);
 
             using Mat homography = Cv2.FindHomography(InputArray.Create(mPoints), InputArray.Create(sPoints),
                 HomographyMethods.Ransac);
@@ -74,7 +76,7 @@ namespace REVUnit.AutoArknights.Core.CV
             if (circumRect.Width < 10 || circumRect.Height < 10 || circumRect.X < 0 && circumRect.Y < 0 ||
                 circumRect.Height > sceneF.MatHeight && circumRect.Width > sceneF.MatWidth)
                 return default;
-            return (confidence, circumRect);
+            return (nonZero, circumRect);
         }
 
         private static int VoteForSizeAndOrientation(KeyPoint[] modelKeyPoints, KeyPoint[] sceneKeyPoints,
