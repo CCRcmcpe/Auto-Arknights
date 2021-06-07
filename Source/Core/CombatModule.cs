@@ -75,7 +75,7 @@ namespace REVUnit.AutoArknights.Core
             Utils.Sleep(Settings.IntervalAfterLevelComplete);
             while (true)
             {
-                _i.Back();
+                _i.Click(RelativeArea.LevelCompletedScreenCloseClick);
                 Utils.Sleep(7);
                 if (_i.TestAppear("Combat/Begin")) break;
             }
