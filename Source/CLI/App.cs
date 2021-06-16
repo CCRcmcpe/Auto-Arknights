@@ -2,7 +2,6 @@
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using REVUnit.AutoArknights.CLI.Properties;
@@ -66,7 +65,6 @@ namespace REVUnit.AutoArknights.CLI
 
         public async Task Run(string[] args)
         {
-            await AttachArknights();
             await _rootCommand.InvokeAsync(args);
 
             /*Plan? plan;
@@ -111,26 +109,32 @@ namespace REVUnit.AutoArknights.CLI
             });
         }
 
-        private void Interactive(bool noLogo)
+        private async Task Interactive(bool noLogo)
         {
             if (!noLogo)
             {
                 Console.WriteLine(Resources.Logo);
-                Thread.Sleep(500);
+                Console.WriteLine();
+                await AttachArknights();
                 Console.Clear();
+            }
+            else
+            {
+                await AttachArknights();
             }
 
             while (true)
             {
+                // ReSharper disable once LocalizableElement
                 Console.Write("> ");
                 string? args = Console.ReadLine();
                 if (string.IsNullOrWhiteSpace(args))
                 {
-                    Log.Warning("请输入指令");
+                    Log.Warning("未输入指令");
                     continue;
                 }
 
-                _rootCommand.Invoke(args);
+                await _rootCommand.InvokeAsync(args);
             }
             // ReSharper disable once FunctionNeverReturns
         }

@@ -57,24 +57,24 @@ namespace REVUnit.AutoArknights.Core
             _device.Back();
         }
 
-        public void Click(int x, int y)
+        public async Task Click(int x, int y)
         {
-            Click(new Point(x, y));
+            await Click(new Point(x, y));
         }
 
-        public void Click(RelativeArea area)
+        public async Task Click(RelativeArea area)
         {
-            Click(area.For(_resolution));
+            await Click(area.For(_resolution));
         }
 
-        public void Click(Rect rect)
+        public async Task Click(Rect rect)
         {
-            Click(PickRandomPoint(rect));
+            await Click(PickRandomPoint(rect));
         }
 
-        public void Click(Point point)
+        public async Task Click(Point point)
         {
-            _device.Click(RandomOffset(point));
+            await _device.Click(RandomOffset(point));
         }
 
         public async Task Click(string assetExpr, RegistrationType registrationType = RegistrationType.TemplateMatching)
@@ -89,7 +89,7 @@ namespace REVUnit.AutoArknights.Core
                     async () => await LocateImage(model, registrationType));
             if (policyResult.FaultType == null)
             {
-                Click(policyResult.Result.CircumRect);
+                await Click(policyResult.Result.CircumRect);
             }
             else
             {

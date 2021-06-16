@@ -22,6 +22,7 @@ namespace REVUnit.AutoArknights.Core
             while (!await _i.TestAppear("Home/Settings"))
             {
                 _i.Back();
+                await Task.Delay(500);
                 if (await _i.TestAppear("Yes"))
                 {
                     await _i.Click("Yes");
@@ -33,26 +34,29 @@ namespace REVUnit.AutoArknights.Core
         {
             async Task CollectCurrentTab()
             {
-                while (!await _i.TestAppear("Tasks/AllCompleted") && !await _i.TestAppear("Tasks/Receive"))
+                while (!await _i.TestAppear("Tasks/AllCompleted") && await _i.TestAppear("Tasks/Receive"))
                 {
-                    _i.Click(RelativeArea.ReceiveTaskRewardButton);
-                    _i.Back();
+                    await _i.Click(RelativeArea.ReceiveTaskRewardButton);
+
+                    if (await _i.TestAppear("Tasks/Daily")) continue;
+                    await _i.Click(RelativeArea.ReceiveTaskRewardButton);
+                    await Task.Delay(200);
                 }
             }
 
             await BackToMainScreen();
-            _i.Click(RelativeArea.TasksButton);
-            await Task.Delay(2000);
+            await _i.Click(RelativeArea.TasksButton);
+            await Task.Delay(1000);
 
             if (!await _i.TestAppear("Tasks/Daily"))
             {
-                throw new Exception();
+                throw new Exception("Tasks interface not entered");
             }
 
             await CollectCurrentTab();
 
             await _i.Click("Tasks/Weekly");
-            await Task.Delay(2000);
+            await Task.Delay(1000);
             await CollectCurrentTab();
 
             await BackToMainScreen();

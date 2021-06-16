@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using Polly;
 using Polly.Retry;
@@ -96,10 +95,10 @@ namespace REVUnit.AutoArknights.Core
         private async Task RunCurrentLevel()
         {
             await _i.Click("Combat/Begin");
-            await Utils.Delay(1);
+            await Task.Delay(500);
 
             await _i.Click("Combat/Start");
-            await Utils.Delay(Settings.IntervalBeforeVerifyInLevel);
+            await Task.Delay(TimeSpan.FromSeconds(Settings.IntervalBeforeVerifyInLevel));
 
             if (!await _i.TestAppear("Combat/TakeOver"))
             {
@@ -110,16 +109,16 @@ namespace REVUnit.AutoArknights.Core
 
             while (await _i.TestAppear("Combat/TakeOver"))
             {
-                await Utils.Delay(5);
+                await Task.Delay(5000);
             }
 
-            await Utils.Delay(Settings.IntervalAfterLevelComplete);
-            while (true)
+            await Task.Delay(TimeSpan.FromSeconds(Settings.IntervalAfterLevelComplete));
+
+            do
             {
-                _i.Click(RelativeArea.LevelCompletedScreenCloseClick);
-                await Utils.Delay(7);
-                if (await _i.TestAppear("Combat/Begin")) break;
-            }
+                await _i.Click(RelativeArea.LevelCompletedScreenCloseClick);
+                await Task.Delay(5000);
+            } while (!await _i.TestAppear("Combat/Begin"));
         }
 
         private async Task RunCurrentLevel(int times, bool waitWhenNoSanity)
@@ -145,7 +144,7 @@ namespace REVUnit.AutoArknights.Core
                 {
                     while ((await GetCurrentSanity()).Value < _requiredSanity)
                     {
-                        Thread.Sleep(TimeSpan.FromSeconds(5));
+                        await Task.Delay(5000);
                     }
                 }
 

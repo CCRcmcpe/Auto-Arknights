@@ -208,15 +208,25 @@ namespace REVUnit.AutoArknights.Core
                 }
 
                 string[] split = Regex.Split(line, @"\s+").Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
-                if (split.Length != 5)
+                if (split.Length != 5 || split[2] != targetSerial)
                 {
                     return;
                 }
 
-                if (split[2] == targetSerial)
+                int pid = int.Parse(split[4]);
+                if (pid == 0)
                 {
-                    var process = Process.GetProcessById(int.Parse(split[4]));
+                    return;
+                }
+
+                var process = Process.GetProcessById(pid);
+                try
+                {
                     process.Kill();
+                }
+                catch (Exception e)
+                {
+                    Log.Debug(e, "尝试杀死PID为{PID}的程序时出错", pid);
                 }
             };
             netstat.Start();
