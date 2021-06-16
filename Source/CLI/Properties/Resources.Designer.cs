@@ -80,7 +80,7 @@ namespace REVUnit.AutoArknights.CLI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to @                      @@@#%%                                   #/                      
+        ///   Looks up a localized string similar to                        @@@#%%                                   #/                      
         ///            @@@###    @            @@@/ %%******=-                 @@@.    ##                       
         ///            @@@  @@@  @@@===       @@@/        (@@@                       @@@ @@                    
         ///            @@@  @@@  @@@  =#@@@   @@@/        (@@@        @(             @@@    (@*                
