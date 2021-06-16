@@ -41,7 +41,7 @@ namespace REVUnit.AutoArknights.CLI
 #else
             try
             {
-                app.Run(args);
+                await app.Run(args);
             }
             catch (Exception e)
             {
