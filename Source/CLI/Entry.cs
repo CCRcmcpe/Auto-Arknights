@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using REVUnit.AutoArknights.CLI.Properties;
 using Serilog;
@@ -12,11 +13,11 @@ namespace REVUnit.AutoArknights.CLI
     {
         private const string ConfigFilePath = "Auto Arknights CLI.config.yml";
 
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             if (!File.Exists(ConfigFilePath))
             {
-                File.WriteAllBytes(ConfigFilePath, Resources.DefaultConfig);
+                await File.WriteAllBytesAsync(ConfigFilePath, Resources.DefaultConfig);
             }
 
             IConfiguration config = new ConfigurationBuilder()
@@ -36,7 +37,7 @@ namespace REVUnit.AutoArknights.CLI
 
             Console.Clear();
 #if DEBUG
-            app.Run(args);
+            await app.Run(args);
 #else
             try
             {

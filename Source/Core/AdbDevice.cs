@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using OpenCvSharp;
 using Polly;
 using Polly.Retry;
@@ -21,8 +22,8 @@ namespace REVUnit.AutoArknights.Core
 
         private const int GetScreenshotRetryTimes = 3;
 
-        private readonly RetryPolicy<Mat> _getScreenshotPolicy = Policy.HandleResult<Mat>(mat => mat.Empty())
-            .Retry(GetScreenshotRetryTimes,
+        private readonly AsyncRetryPolicy<Mat> _getScreenshotPolicy = Policy.HandleResult<Mat>(mat => mat.Empty())
+            .RetryAsync(GetScreenshotRetryTimes,
                 (_, i) => Log.Warning(string.Format(Resources.Adb_Exception_GetScreenshot, i,
                     GetScreenshotRetryTimes)));
 
@@ -37,10 +38,10 @@ namespace REVUnit.AutoArknights.Core
         public string Executable { get; set; }
         public string? TargetSerial { get; set; }
 
-        public Size GetResolution()
+        public async Task<Size> GetResolution()
         {
-            ThrowIfServiceUnavailable();
-            string result = Encoding.UTF8.GetString(Execute("shell wm size").stdOut);
+            await ThrowIfServiceUnavailable();
+            string result = Encoding.UTF8.GetString((await Execute("shell wm size")).stdOut);
             Match match = Regex.Match(result, @"Physical size: (\d+)x(\d+)");
             if (!match.Success) throw new Exception(Resources.Adb_Exception_GetResolution);
 
@@ -49,53 +50,54 @@ namespace REVUnit.AutoArknights.Core
             return new Size(a > b ? a : b, a > b ? b : a);
         }
 
-        public void Back()
+        public async Task Back()
         {
-            KeyEvent("KEYCODE_BACK");
+            await KeyEvent("KEYCODE_BACK");
         }
 
-        public void Click(Point point)
+        public async Task Click(Point point)
         {
-            ThrowIfServiceUnavailable();
-            Execute($"shell input tap {point.X} {point.Y}");
+            await ThrowIfServiceUnavailable();
+            await Execute($"shell input tap {point.X} {point.Y}");
         }
 
-        public Mat GetScreenshot()
+        public Task<Mat> GetScreenshot()
         {
-            return _getScreenshotPolicy.Execute(() =>
-                       Cv2.ImDecode(Execute("exec-out screencap -p", 5 * 1024 * 1024, 0).stdOut, ImreadModes.Color)) ??
-                   throw new Exception(Resources.Adb_Exception_GetScreenshotFailed);
+            return Task.Run(() =>
+            {
+                return _getScreenshotPolicy.ExecuteAsync(async () =>
+                    Cv2.ImDecode((await Execute("exec-out screencap -p", 5 * 1024 * 1024, 0)).stdOut,
+                        ImreadModes.Color));
+            });
+        }
+
+        public async Task Connect(string targetSerial)
+        {
+            Log.Information(Resources.Adb_Connecting, targetSerial);
+
+            KillConnectedProcesses(targetSerial);
+
+            if (!_serverStarted)
+            {
+                StartServer();
+            }
+
+            await Execute($"connect {targetSerial}", targeted: false);
+            if (!await GetDeviceOnline())
+            {
+                throw new Exception(Resources.Adb_Exception_ConnectFailed);
+            }
+
+            TargetSerial = targetSerial;
+
+            Log.Information(Resources.Adb_Connected);
         }
 
         // https://developer.android.com/reference/android/view/KeyEvent
-        public void KeyEvent(string keyCodeOrName)
+        public async Task KeyEvent(string keyCodeOrName)
         {
-            ThrowIfServiceUnavailable();
-            Execute($"shell input keyevent {keyCodeOrName}");
-        }
-
-        private static int GetFreeTcpPort()
-        {
-            var listener = new TcpListener(IPAddress.Loopback, 0);
-            listener.Start();
-            int port = ((IPEndPoint) listener.LocalEndpoint).Port;
-            listener.Stop();
-            return port;
-        }
-
-        private void ThrowIfServiceUnavailable()
-        {
-            if (!_serverStarted || !GetDeviceOnline())
-            {
-                throw new Exception(); // TODO Message
-            }
-        }
-
-        private bool GetDeviceOnline()
-        {
-            string state = Encoding.UTF8.GetString(Execute("get-state", targeted: false).stdOut).Trim();
-            Log.Debug(Resources.Adb_DeviceState, state);
-            return state == "device";
+            await ThrowIfServiceUnavailable();
+            await Execute($"shell input keyevent {keyCodeOrName}");
         }
 
         public void StartServer()
@@ -125,27 +127,69 @@ namespace REVUnit.AutoArknights.Core
             _serverStarted = true;
         }
 
-        [MemberNotNull(nameof(TargetSerial))]
-        public void Connect(string targetSerial)
+        private async Task<(byte[] stdOut, byte[] stdErr)> Execute(string arguments,
+            int stdOutBufferSize = DefaultBufferSize,
+            int stdErrBufferSize = DefaultBufferSize,
+            bool waitForExit = false, bool targeted = true)
         {
-            Log.Information(Resources.Adb_Connecting, targetSerial);
-
-            KillConnectedProcesses(targetSerial);
-
-            if (!_serverStarted)
+            var sb = new StringBuilder();
+            sb.Append($"-P {_serverPort} ");
+            if (targeted)
             {
-                StartServer();
+                sb.Append($"-s {TargetSerial} ");
             }
 
-            Execute($"connect {targetSerial}", targeted: false);
-            if (!GetDeviceOnline())
+            sb.Append(arguments);
+
+            arguments = sb.ToString();
+
+            using var process = new Process
             {
-                throw new Exception(Resources.Adb_Exception_ConnectFailed);
+                StartInfo = new ProcessStartInfo(Executable, arguments)
+                {
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                    StandardOutputEncoding = Encoding.UTF8,
+                    RedirectStandardError = true,
+                    StandardErrorEncoding = Encoding.UTF8
+                }
+            };
+
+            process.Start();
+            ChildProcessTracker.Track(process);
+
+            byte[]? stdOut = null;
+            byte[]? stdErr = null;
+
+            if (stdOutBufferSize > 0)
+                stdOut = await ReadToEnd(process.StandardOutput.BaseStream, stdOutBufferSize);
+
+            if (stdErrBufferSize > 0)
+                stdErr = await ReadToEnd(process.StandardError.BaseStream, stdErrBufferSize);
+
+            if (waitForExit)
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                await process.WaitForExitAsync(cts.Token);
             }
 
-            TargetSerial = targetSerial;
+            return (stdOut!, stdErr!);
+        }
 
-            Log.Information(Resources.Adb_Connected);
+        private async Task<bool> GetDeviceOnline()
+        {
+            string state = Encoding.UTF8.GetString((await Execute("get-state", targeted: false)).stdOut).Trim();
+            Log.Debug(Resources.Adb_DeviceState, state);
+            return state == "device";
+        }
+
+        private static int GetFreeTcpPort()
+        {
+            var listener = new TcpListener(IPAddress.Loopback, 0);
+            listener.Start();
+            int port = ((IPEndPoint) listener.LocalEndpoint).Port;
+            listener.Stop();
+            return port;
         }
 
         private static void KillConnectedProcesses(string targetSerial)
@@ -180,63 +224,24 @@ namespace REVUnit.AutoArknights.Core
             netstat.WaitForExit(1000);
         }
 
-        private static byte[] ReadToEnd(Stream stream, int bufferSize)
+        private static async Task<byte[]> ReadToEnd(Stream stream, int bufferSize)
         {
             byte[] buffer = new byte[bufferSize];
 
             int read;
             var totalLen = 0;
-            while ((read = stream.Read(buffer, totalLen, bufferSize - totalLen)) > 0) totalLen += read;
+            while ((read = await stream.ReadAsync(buffer, totalLen, bufferSize - totalLen)) > 0) totalLen += read;
 
             Array.Resize(ref buffer, totalLen);
             return buffer;
         }
 
-        private (byte[] stdOut, byte[] stdErr) Execute(string arguments, int stdOutBufferSize = DefaultBufferSize,
-            int stdErrBufferSize = DefaultBufferSize,
-            bool waitForExit = false, bool targeted = true)
+        private async Task ThrowIfServiceUnavailable()
         {
-            var sb = new StringBuilder();
-            sb.Append($"-P {_serverPort} ");
-            if (targeted)
+            if (!_serverStarted || !await GetDeviceOnline())
             {
-                sb.Append($"-s {TargetSerial} ");
+                throw new Exception(); // TODO Message
             }
-
-            sb.Append(arguments);
-
-            arguments = sb.ToString();
-
-            using var process = new Process
-            {
-                StartInfo = new ProcessStartInfo(Executable, arguments)
-                {
-                    CreateNoWindow = true,
-                    RedirectStandardOutput = true,
-                    StandardOutputEncoding = Encoding.UTF8,
-                    RedirectStandardError = true,
-                    StandardErrorEncoding = Encoding.UTF8
-                }
-            };
-
-            process.Start();
-            ChildProcessTracker.Track(process);
-
-            byte[]? stdOut = null;
-            byte[]? stdErr = null;
-
-            if (stdOutBufferSize > 0)
-                stdOut = ReadToEnd(process.StandardOutput.BaseStream, stdOutBufferSize);
-
-            if (stdErrBufferSize > 0)
-                stdErr = ReadToEnd(process.StandardError.BaseStream, stdErrBufferSize);
-
-            if (waitForExit)
-            {
-                process.WaitForExit();
-            }
-
-            return (stdOut!, stdErr!);
         }
     }
 }

@@ -39,15 +39,15 @@ namespace REVUnit.AutoArknights.Core
             AssignProcessToJobObject(jobHandle, process.Handle);
         }
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool AssignProcessToJobObject(IntPtr job, IntPtr process);
+
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         private static extern IntPtr CreateJobObject(IntPtr lpJobAttributes, string? name);
 
         [DllImport("kernel32.dll")]
         private static extern bool SetInformationJobObject(IntPtr job, int infoType,
             IntPtr lpJobObjectInfo, uint cbJobObjectInfoLength);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool AssignProcessToJobObject(IntPtr job, IntPtr process);
     }
 
     // ReSharper disable All

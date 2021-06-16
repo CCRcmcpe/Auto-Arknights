@@ -3,6 +3,7 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using REVUnit.AutoArknights.CLI.Properties;
 using REVUnit.AutoArknights.Core;
@@ -15,14 +16,14 @@ namespace REVUnit.AutoArknights.CLI
 {
     public class App
     {
-        private readonly Lazy<Arknights> _arknightsLazy;
         private readonly IConfiguration _config;
         private readonly RootCommand _rootCommand;
+
+        private Game? _game;
 
         public App(IConfiguration config)
         {
             _config = config;
-            _arknightsLazy = new Lazy<Arknights>(AttachArknights);
 
             _rootCommand = new RootCommand("Interactive mode")
             {
@@ -49,40 +50,65 @@ namespace REVUnit.AutoArknights.CLI
                 {
                     new Command("tasks")
                     {
-                        Handler = CommandHandler.Create(() => Arknights.CollectTasks())
+                        Handler = CommandHandler.Create(() => _game!.CollectTasks())
                     },
                     new Command("credit-points")
                     {
-                        Handler = CommandHandler.Create(() => Arknights.Infrastructure.CollectCreditPoints())
+                        Handler = CommandHandler.Create(() => _game!.Infrastructure.CollectCreditPoints())
                     }.Also(c => c.AddAlias("credit")).Also(c => c.AddAlias("cp")),
                     new Command("infrastructure")
                     {
-                        Handler = CommandHandler.Create(() => Arknights.Infrastructure.Collect())
+                        Handler = CommandHandler.Create(() => _game!.Infrastructure.Collect())
                     }.Also(c => c.AddAlias("infra"))
                 }
             }.Also(c => c.Handler = CommandHandler.Create<bool>(Interactive));
         }
 
-        private Arknights Arknights => _arknightsLazy.Value;
-
-        private static void RunCommandLine(string commandLine)
+        public async Task Run(string[] args)
         {
-            Process? process =
-                Process.Start(new ProcessStartInfo("cmd.exe", "/c " + commandLine) {CreateNoWindow = true});
-            if (process == null) throw new Exception("无法启动cmd");
+            await AttachArknights();
+            await _rootCommand.InvokeAsync(args);
 
-            if (!process.WaitForExit(5000))
+            /*Plan? plan;
+            do
             {
-                throw new Exception("命令行运行超时");
-            }
+                plan = _input.Get(Resources.App_ParamsHint, (Cin.Parser<Plan>) ParseParams);
+            } while (_input.LastException != null);
+
+            if (plan == null) return;
+
+            IArkTask[] tasks = plan.Tasks;
+
+            PrintTasksSummary(tasks);
+
+            Console.WriteLine(Resources.App_ReadyToExecute);
+            Console.ReadKey(true);
+
+            ExecuteTasks(tasks);
+
+            Console.WriteLine(Resources.App_AllTasksCompleted);
+            Console.ReadKey(true);*/
         }
 
-        private Arknights AttachArknights()
+        private async Task AttachArknights()
         {
             var adbDevice = new AdbDevice(_config["Adb:ExecutablePath"]);
-            adbDevice.Connect(_config["Adb:DeviceSerial"]);
+            await adbDevice.Connect(_config["Adb:DeviceSerial"]);
 
-            return Arknights.FromDevice(adbDevice);
+            _game = await Game.FromDevice(adbDevice);
+        }
+
+        private async Task Combat(string? levelName, int times, bool wait, bool usePotions, bool useOriginites,
+            int maxOriginitesUsage)
+        {
+            await _game!.Combat.Run(levelName == null ? null : Level.FromName(levelName), new LevelCombatSettings
+            {
+                RepeatTimes = times,
+                WaitWhenNoSanity = wait,
+                UseSanityPotions = usePotions,
+                UseOriginites = useOriginites,
+                MaxOriginitesUsage = maxOriginitesUsage
+            });
         }
 
         private void Interactive(bool noLogo)
@@ -109,42 +135,16 @@ namespace REVUnit.AutoArknights.CLI
             // ReSharper disable once FunctionNeverReturns
         }
 
-        private void Combat(string? levelName, int times, bool wait, bool usePotions, bool useOriginites,
-            int maxOriginitesUsage)
+        private static void RunCommandLine(string commandLine)
         {
-            Arknights.Combat.Run(levelName == null ? null : Level.FromName(levelName), new LevelCombatSettings
+            Process? process =
+                Process.Start(new ProcessStartInfo("cmd.exe", "/c " + commandLine) {CreateNoWindow = true});
+            if (process == null) throw new Exception("无法启动cmd");
+
+            if (!process.WaitForExit(5000))
             {
-                RepeatTimes = times,
-                WaitWhenNoSanity = wait,
-                UseSanityPotions = usePotions,
-                UseOriginites = useOriginites,
-                MaxOriginitesUsage = maxOriginitesUsage
-            });
-        }
-
-        public void Run(string[] args)
-        {
-            _rootCommand.Invoke(args);
-
-            /*Plan? plan;
-            do
-            {
-                plan = _input.Get(Resources.App_ParamsHint, (Cin.Parser<Plan>) ParseParams);
-            } while (_input.LastException != null);
-
-            if (plan == null) return;
-
-            IArkTask[] tasks = plan.Tasks;
-
-            PrintTasksSummary(tasks);
-
-            Console.WriteLine(Resources.App_ReadyToExecute);
-            Console.ReadKey(true);
-
-            ExecuteTasks(tasks);
-
-            Console.WriteLine(Resources.App_AllTasksCompleted);
-            Console.ReadKey(true);*/
+                throw new Exception("命令行运行超时");
+            }
         }
 
         /*private static Exception? ParseParams(string value, out Plan? result)

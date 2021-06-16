@@ -11,12 +11,12 @@ namespace REVUnit.AutoArknights.Core
             _i = interactor;
         }
 
-        public void CollectCreditPoints()
+        public void Collect()
         {
             throw new NotImplementedException();
         }
 
-        public void Collect()
+        public void CollectCreditPoints()
         {
             throw new NotImplementedException();
         }

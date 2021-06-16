@@ -52,6 +52,11 @@ namespace REVUnit.AutoArknights.Core
             return asset;
         }
 
+        private static string GetFilePath(string key)
+        {
+            return Path.Combine("Assets", key) + ".png";
+        }
+
         private void NormalizeScale(Mat model)
         {
             Size size = model.Size();
@@ -67,11 +72,6 @@ namespace REVUnit.AutoArknights.Core
             Cv2.Resize(mat, mat, targetSize, interpolation: upscale
                 ? InterpolationFlags.Cubic
                 : InterpolationFlags.Area);
-        }
-
-        private static string GetFilePath(string key)
-        {
-            return Path.Combine("Assets", key) + ".png";
         }
     }
 }

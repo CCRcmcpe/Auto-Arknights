@@ -1,12 +1,13 @@
-﻿using OpenCvSharp;
+﻿using System.Threading.Tasks;
+using OpenCvSharp;
 
 namespace REVUnit.AutoArknights.Core
 {
     public interface IDevice
     {
-        Size GetResolution();
-        void Back();
-        void Click(Point point);
-        Mat GetScreenshot();
+        Task Back();
+        Task Click(Point point);
+        Task<Size> GetResolution();
+        Task<Mat> GetScreenshot();
     }
 }

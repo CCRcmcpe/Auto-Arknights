@@ -93,6 +93,29 @@ namespace REVUnit.AutoArknights.Core.CV
                 foreach (MatFeature matFeature in _md5Map.Values) matFeature.Dispose();
             }
 
+            private void DoCache(Mat mat, MatFeature feature)
+            {
+                string md5 = GetMd5(mat);
+
+                _md5Map.Add(md5, feature);
+
+                using var storage =
+                    new FileStorage(Path.Combine(_cacheDirPath, $"{md5}.json.gz"), FileStorage.Modes.Write);
+                storage.Write("Keypoints", feature.KeyPoints);
+                storage.Write("Descriptors", feature.Descriptors);
+                storage.Write("OriginWidth", mat.Width);
+                storage.Write("OriginHeight", mat.Height);
+                storage.Write("Type", feature.Type.ToString());
+
+                File.WriteAllText(_serialFilePath, CoreAssemblySerial);
+            }
+
+            private MatFeature? GetCache(Mat mat)
+            {
+                _md5Map.TryGetValue(GetMd5(mat), out MatFeature? result);
+                return result;
+            }
+
             private static string[] GetCacheFiles(string cacheDirPath)
             {
                 return Directory.GetFiles(cacheDirPath, "*.json.gz");
@@ -118,29 +141,6 @@ namespace REVUnit.AutoArknights.Core.CV
                 Marshal.Copy(mat.Data, data, 0, (int) total);
 
                 return GetMd5(data);
-            }
-
-            private MatFeature? GetCache(Mat mat)
-            {
-                _md5Map.TryGetValue(GetMd5(mat), out MatFeature? result);
-                return result;
-            }
-
-            private void DoCache(Mat mat, MatFeature feature)
-            {
-                string md5 = GetMd5(mat);
-
-                _md5Map.Add(md5, feature);
-
-                using var storage =
-                    new FileStorage(Path.Combine(_cacheDirPath, $"{md5}.json.gz"), FileStorage.Modes.Write);
-                storage.Write("Keypoints", feature.KeyPoints);
-                storage.Write("Descriptors", feature.Descriptors);
-                storage.Write("OriginWidth", mat.Width);
-                storage.Write("OriginHeight", mat.Height);
-                storage.Write("Type", feature.Type.ToString());
-
-                File.WriteAllText(_serialFilePath, CoreAssemblySerial);
             }
         }
     }

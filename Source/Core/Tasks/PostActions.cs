@@ -90,6 +90,13 @@ namespace REVUnit.AutoArknights.Core.Tasks
             return ExecuteResult.Success();
         }
 
+        public override string ToString()
+        {
+            var b = new StringBuilder();
+            b.Append(!Hibernate ? Resources.PostAction_Suspend_Sleep : Resources.PostAction_Suspend_Hibernate);
+            return b.ToString();
+        }
+
         [DllImport("powrprof.dll")]
         private static extern bool IsPwrHibernateAllowed();
 
@@ -97,13 +104,6 @@ namespace REVUnit.AutoArknights.Core.Tasks
         [DllImport("powrprof.dll")]
         [SuppressMessage("ReSharper", "InvalidXmlDocComment")]
         private static extern uint SetSuspendState(bool hibernate, bool forceCritical, bool disableWakeEvent);
-
-        public override string ToString()
-        {
-            var b = new StringBuilder();
-            b.Append(!Hibernate ? Resources.PostAction_Suspend_Sleep : Resources.PostAction_Suspend_Hibernate);
-            return b.ToString();
-        }
     }
 
     public class ExecuteCommand : PostAction

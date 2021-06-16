@@ -26,12 +26,16 @@ namespace REVUnit.AutoArknights.Core.CV
             DisposeIfCreated(_sift);
         }
 
-        private static void DisposeIfCreated(Lazy<Feature2D> lazyFeature2D)
+        public MatFeature Detect(Mat mat, Feature2DType type)
         {
-            if (lazyFeature2D.IsValueCreated)
-            {
-                lazyFeature2D.Value.Dispose();
-            }
+            var (detector, descriptor) = GetFeature2D(type);
+
+            KeyPoint[] keyPoints = detector.Detect(mat);
+
+            var descriptors = new Mat();
+            descriptor.Compute(mat, ref keyPoints, descriptors);
+
+            return new MatFeature(keyPoints, descriptors, mat.Width, mat.Height, type);
         }
 
         public MatFeature DetectCached(Mat mat, Feature2DType type)
@@ -47,16 +51,12 @@ namespace REVUnit.AutoArknights.Core.CV
             return result;
         }
 
-        public MatFeature Detect(Mat mat, Feature2DType type)
+        private static void DisposeIfCreated(Lazy<Feature2D> lazyFeature2D)
         {
-            var (detector, descriptor) = GetFeature2D(type);
-
-            KeyPoint[] keyPoints = detector.Detect(mat);
-
-            var descriptors = new Mat();
-            descriptor.Compute(mat, ref keyPoints, descriptors);
-
-            return new MatFeature(keyPoints, descriptors, mat.Width, mat.Height, type);
+            if (lazyFeature2D.IsValueCreated)
+            {
+                lazyFeature2D.Value.Dispose();
+            }
         }
 
         private (Feature2D detector, Feature2D descriptor) GetFeature2D(Feature2DType feature2DType)
