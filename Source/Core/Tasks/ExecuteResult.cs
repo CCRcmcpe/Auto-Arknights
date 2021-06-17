@@ -10,8 +10,9 @@ namespace REVUnit.AutoArknights.Core.Tasks
             Message = message ?? Resources.ExecuteResult_Ended;
         }
 
-        public bool Successful { get; set; }
         public string Message { get; set; }
+
+        public bool Successful { get; set; }
 
         public static ExecuteResult MaxRetryReached(string operation, int triedCount)
         {

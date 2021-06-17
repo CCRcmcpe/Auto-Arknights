@@ -4,11 +4,11 @@ namespace REVUnit.AutoArknights.Core
 {
     public class LevelCombatSettings
     {
-        public int RepeatTimes { get; set; }
-        public bool WaitWhenNoSanity { get; set; }
-        public bool UseSanityPotions { get; set; }
-        public bool UseOriginites { get; set; }
         public int MaxOriginitesUsage { get; set; }
+        public int RepeatTimes { get; set; }
+        public bool UseOriginites { get; set; }
+        public bool UseSanityPotions { get; set; }
+        public bool WaitWhenNoSanity { get; set; }
 
         public override string ToString()
         {

@@ -10,8 +10,8 @@ namespace REVUnit.AutoArknights.Core
 {
     public class CombatModuleSettings
     {
-        public int IntervalBeforeVerifyInLevel { get; set; } = 50;
         public double IntervalAfterLevelComplete { get; set; } = 5;
+        public int IntervalBeforeVerifyInLevel { get; set; } = 50;
     }
 
     public class CombatModule
@@ -49,7 +49,7 @@ namespace REVUnit.AutoArknights.Core
             }
             else
             {
-                await RunCurrentLevel(settings.RepeatTimes, settings.WaitWhenNoSanity);
+                await RunCurrentSelectedLevel(settings.RepeatTimes, settings.WaitWhenNoSanity);
             }
         }
 
@@ -75,7 +75,7 @@ namespace REVUnit.AutoArknights.Core
             }
             else
             {
-                Log.Warning(Resources.LevelFarming_PossiblyOcrError);
+                Log.Warning(Resources.CombatModule_PossibleOcrError);
                 currentSanity = result.FinalHandledResult;
             }
 
@@ -88,11 +88,11 @@ namespace REVUnit.AutoArknights.Core
             string text = await _i.Ocr(RelativeArea.RequiredSanityText);
             if (!int.TryParse(text[1..], out int requiredSanity)) throw new Exception();
 
-            Log.Information(Resources.LevelFarming_RequiredSanity, requiredSanity);
+            Log.Information(Resources.CombatModule_RequiredSanity, requiredSanity);
             return requiredSanity;
         }
 
-        private async Task RunCurrentLevel()
+        private async Task RunCurrentSelectedLevel()
         {
             await _i.Click("Combat/Begin");
             await Task.Delay(500);
@@ -102,8 +102,8 @@ namespace REVUnit.AutoArknights.Core
 
             if (!await _i.TestAppear("Combat/TakeOver"))
             {
-                Log.Warning(Resources.LevelFarming_Exception_AutoDeploy);
-                Log.Warning(Resources.LevelFarming_Exception_AutoDeployHint,
+                Log.Warning(Resources.CombatModule_AutoDeployNotRunning);
+                Log.Warning(Resources.CombatModule_AutoDeployNotRunningHint,
                     Settings.IntervalBeforeVerifyInLevel);
             }
 
@@ -121,17 +121,32 @@ namespace REVUnit.AutoArknights.Core
             } while (!await _i.TestAppear("Combat/Begin"));
         }
 
-        private async Task RunCurrentLevel(int times, bool waitWhenNoSanity)
+        private async Task RunCurrentSelectedLevel(int times, bool waitWhenNoSanity)
         {
+            var currentTimes = 0;
+
             if (waitWhenNoSanity)
             {
                 _requiredSanity = await GetRequiredSanity();
             }
 
-            var currentTimes = 0;
             Func<Task<bool>> continueCondition = times switch
             {
-                -1 => () => Task.FromResult(true),
+                -1 => async () =>
+                {
+                    if ((await GetCurrentSanity()).Value < _requiredSanity)
+                    {
+                        Log.Information(Resources.LevelFarming_WaitingForSanityRecovery);
+                        while ((await GetCurrentSanity()).Value < _requiredSanity)
+                        {
+                            await Task.Delay(10000);
+                        }
+
+                        Log.Information(Resources.LevelFarming_SanityRecovered);
+                    }
+
+                    return true;
+                },
                 0 => async () => (await GetCurrentSanity()).Value < _requiredSanity,
                 // ReSharper disable once AccessToModifiedClosure
                 _ => () => Task.FromResult(currentTimes < times)
@@ -139,17 +154,25 @@ namespace REVUnit.AutoArknights.Core
 
             while (await continueCondition())
             {
-                Log.Information(Resources.LevelFarming_SpecifiedTimes_Begin, currentTimes + 1, times);
-                if (waitWhenNoSanity || times == -1)
+                if (times > 0)
                 {
-                    while ((await GetCurrentSanity()).Value < _requiredSanity)
-                    {
-                        await Task.Delay(5000);
-                    }
+                    Log.Information(Resources.CombatModule_LevelBegin, currentTimes + 1, times);
+                }
+                else
+                {
+                    Log.Information(Resources.CombatModule_LevelBegin_Infinite, currentTimes + 1);
                 }
 
-                await RunCurrentLevel();
-                Log.Information(Resources.LevelFarming_SpecifiedTimes_Complete, ++currentTimes, times);
+                await RunCurrentSelectedLevel();
+
+                if (times > 0)
+                {
+                    Log.Information(Resources.CombatModule_LevelEnd, ++currentTimes, times);
+                }
+                else
+                {
+                    Log.Information(Resources.CombatModule_LevelEnd_Infinite, ++currentTimes);
+                }
             }
         }
     }

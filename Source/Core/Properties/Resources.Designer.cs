@@ -88,65 +88,38 @@ namespace REVUnit.AutoArknights.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 连接失败，重新启动 ADB 服务器后重试（第 {0}/{1} 次）.
-        /// </summary>
-        internal static string Adb_Exception_Connect {
-            get {
-                return ResourceManager.GetString("Adb_Exception_Connect", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 重试失败，无法连接.
         /// </summary>
-        internal static string Adb_Exception_ConnectFailed {
+        internal static string Adb_ErrorConnect {
             get {
-                return ResourceManager.GetString("Adb_Exception_ConnectFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 发生错误，标准错误流输出：{0}.
-        /// </summary>
-        internal static string Adb_Exception_Execute {
-            get {
-                return ResourceManager.GetString("Adb_Exception_Execute", resourceCulture);
+                return ResourceManager.GetString("Adb_ErrorConnect", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to 无法获取设备分辨率信息.
         /// </summary>
-        internal static string Adb_Exception_GetResolution {
+        internal static string Adb_ErrorGetResolution {
             get {
-                return ResourceManager.GetString("Adb_Exception_GetResolution", resourceCulture);
+                return ResourceManager.GetString("Adb_ErrorGetResolution", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 截图失败，正在重试（第 {0}/{1} 次）.
+        ///   Looks up a localized string similar to 截图最终失败.
         /// </summary>
-        internal static string Adb_Exception_GetScreenshot {
+        internal static string Adb_ErrorGetScreenshot {
             get {
-                return ResourceManager.GetString("Adb_Exception_GetScreenshot", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 截图失败.
-        /// </summary>
-        internal static string Adb_Exception_GetScreenshotFailed {
-            get {
-                return ResourceManager.GetString("Adb_Exception_GetScreenshotFailed", resourceCulture);
+                return ResourceManager.GetString("Adb_ErrorGetScreenshot", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to ADB 服务器未能正常启动.
         /// </summary>
-        internal static string Adb_Exception_StartServer {
+        internal static string Adb_ErrorStartServer {
             get {
-                return ResourceManager.GetString("Adb_Exception_StartServer", resourceCulture);
+                return ResourceManager.GetString("Adb_ErrorStartServer", resourceCulture);
             }
         }
         
@@ -156,6 +129,15 @@ namespace REVUnit.AutoArknights.Core.Properties {
         internal static string Adb_ExecutingCommand {
             get {
                 return ResourceManager.GetString("Adb_ExecutingCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 截图失败，正在重试（第 {0}/{1} 次）.
+        /// </summary>
+        internal static string Adb_RetryGetScreenshot {
+            get {
+                return ResourceManager.GetString("Adb_RetryGetScreenshot", resourceCulture);
             }
         }
         
@@ -174,6 +156,78 @@ namespace REVUnit.AutoArknights.Core.Properties {
         internal static string AssetsLoadException {
             get {
                 return ResourceManager.GetString("AssetsLoadException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 未检测到代理指挥正常运行迹象！.
+        /// </summary>
+        internal static string CombatModule_AutoDeployNotRunning {
+            get {
+                return ResourceManager.GetString("CombatModule_AutoDeployNotRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 请检查是否在正常代理作战，如果正常，请增加检测代理正常前等待的时间（现在为{WaitTime}s），以避免假警告出现.
+        /// </summary>
+        internal static string CombatModule_AutoDeployNotRunningHint {
+            get {
+                return ResourceManager.GetString("CombatModule_AutoDeployNotRunningHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 开始第[{CurrentTimes}/{times}]次刷关.
+        /// </summary>
+        internal static string CombatModule_LevelBegin {
+            get {
+                return ResourceManager.GetString("CombatModule_LevelBegin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 开始第{CurrentTimes}次刷关.
+        /// </summary>
+        internal static string CombatModule_LevelBegin_Infinite {
+            get {
+                return ResourceManager.GetString("CombatModule_LevelBegin_Infinite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 关卡完成，目前已刷关[{currentTimes}/{Times}]次.
+        /// </summary>
+        internal static string CombatModule_LevelEnd {
+            get {
+                return ResourceManager.GetString("CombatModule_LevelEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 关卡完成，目前已刷关{CurrentTimes}次.
+        /// </summary>
+        internal static string CombatModule_LevelEnd_Infinite {
+            get {
+                return ResourceManager.GetString("CombatModule_LevelEnd_Infinite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OCR识别结果似乎有误.
+        /// </summary>
+        internal static string CombatModule_PossibleOcrError {
+            get {
+                return ResourceManager.GetString("CombatModule_PossibleOcrError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 检测到此关卡需要[{RequiredSanity}]理智.
+        /// </summary>
+        internal static string CombatModule_RequiredSanity {
+            get {
+                return ResourceManager.GetString("CombatModule_RequiredSanity", resourceCulture);
             }
         }
         
@@ -205,15 +259,6 @@ namespace REVUnit.AutoArknights.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 当前理智[{CurrentSanity}]，需要理智[{RequiredSanity}].
-        /// </summary>
-        internal static string FarmLevel_CurrentSanity {
-            get {
-                return ResourceManager.GetString("FarmLevel_CurrentSanity", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 必须提供缓存保存文件夹才能使用缓存.
         /// </summary>
         internal static string FeatureDetector_Exception_NoCachePath {
@@ -232,128 +277,11 @@ namespace REVUnit.AutoArknights.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 未检测到代理指挥正常运行迹象！.
-        /// </summary>
-        internal static string LevelFarming_Exception_AutoDeploy {
-            get {
-                return ResourceManager.GetString("LevelFarming_Exception_AutoDeploy", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 请检查是否在正常代理作战，如果正常，请增加检测代理正常前等待的时间（现在为{WaitTime}s），以避免假警告出现.
-        /// </summary>
-        internal static string LevelFarming_Exception_AutoDeployHint {
-            get {
-                return ResourceManager.GetString("LevelFarming_Exception_AutoDeployHint", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 刷关{0}次.
-        /// </summary>
-        internal static string LevelFarming_Mode_SpecifiedTimes {
-            get {
-                return ResourceManager.GetString("LevelFarming_Mode_SpecifiedTimes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 刷关{0}次，当理智不足以完成时等待恢复.
-        /// </summary>
-        internal static string LevelFarming_Mode_SpecTimesWithWait {
-            get {
-                return ResourceManager.GetString("LevelFarming_Mode_SpecTimesWithWait", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 刷关直到理智耗尽.
-        /// </summary>
-        internal static string LevelFarming_Mode_UntilNoSanity {
-            get {
-                return ResourceManager.GetString("LevelFarming_Mode_UntilNoSanity", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 刷关直到手动结束程序.
-        /// </summary>
-        internal static string LevelFarming_Mode_WaitWhileNoSanity {
-            get {
-                return ResourceManager.GetString("LevelFarming_Mode_WaitWhileNoSanity", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to OCR识别结果似乎有误.
-        /// </summary>
-        internal static string LevelFarming_PossiblyOcrError {
-            get {
-                return ResourceManager.GetString("LevelFarming_PossiblyOcrError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 检测到此关卡需要[{RequiredSanity}]理智.
-        /// </summary>
-        internal static string LevelFarming_RequiredSanity {
-            get {
-                return ResourceManager.GetString("LevelFarming_RequiredSanity", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to ...理智恢复完成.
         /// </summary>
         internal static string LevelFarming_SanityRecovered {
             get {
                 return ResourceManager.GetString("LevelFarming_SanityRecovered", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 开始第[{CurrentTimes}/{times}]次刷关.
-        /// </summary>
-        internal static string LevelFarming_SpecifiedTimes_Begin {
-            get {
-                return ResourceManager.GetString("LevelFarming_SpecifiedTimes_Begin", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 关卡完成，目前已刷关[{currentTimes}/{Times}]次.
-        /// </summary>
-        internal static string LevelFarming_SpecifiedTimes_Complete {
-            get {
-                return ResourceManager.GetString("LevelFarming_SpecifiedTimes_Complete", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 成功刷关{0}次.
-        /// </summary>
-        internal static string LevelFarming_Success {
-            get {
-                return ResourceManager.GetString("LevelFarming_Success", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 开始第{CurrentTimes}次刷关.
-        /// </summary>
-        internal static string LevelFarming_Unlimited_Begin {
-            get {
-                return ResourceManager.GetString("LevelFarming_Unlimited_Begin", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 关卡完成，目前已刷关{CurrentTimes}次.
-        /// </summary>
-        internal static string LevelFarming_Unlimited_Complete {
-            get {
-                return ResourceManager.GetString("LevelFarming_Unlimited_Complete", resourceCulture);
             }
         }
         

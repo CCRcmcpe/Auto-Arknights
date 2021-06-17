@@ -71,21 +71,13 @@ namespace REVUnit.AutoArknights.CLI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 出现致命错误.
-        /// </summary>
-        internal static string Entry_FatalException {
-            get {
-                return ResourceManager.GetString("Entry_FatalException", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to                        @@@#%%                                   #/                      
+        ///   Looks up a localized string similar to 
+        ///                       @@@#%%                                   #/                      
         ///            @@@###    @            @@@/ %%******=-                 @@@.    ##                       
         ///            @@@  @@@  @@@===       @@@/        (@@@                       @@@ @@                    
         ///            @@@  @@@  @@@  =#@@@   @@@/        (@@@        @(             @@@    (@*                
         ///            @@@&amp; @@@  @@@&amp;&amp;  @@@   @@@/        (@@@         @@@           @@@  @@%   @@@            
-        ///            @@ [rest of string was truncated]&quot;;.
+        ///             [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Logo {
             get {

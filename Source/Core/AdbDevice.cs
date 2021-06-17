@@ -24,8 +24,8 @@ namespace REVUnit.AutoArknights.Core
 
         private readonly AsyncRetryPolicy<Mat> _getScreenshotPolicy = Policy.HandleResult<Mat>(mat => mat.Empty())
             .RetryAsync(GetScreenshotRetryTimes,
-                (_, i) => Log.Warning(string.Format(Resources.Adb_Exception_GetScreenshot, i,
-                    GetScreenshotRetryTimes)));
+                (_, i) => Log.Warning(Resources.Adb_RetryGetScreenshot, i,
+                    GetScreenshotRetryTimes));
 
         private int _serverPort;
         private bool _serverStarted;
@@ -38,18 +38,6 @@ namespace REVUnit.AutoArknights.Core
         public string Executable { get; set; }
         public string? TargetSerial { get; set; }
 
-        public async Task<Size> GetResolution()
-        {
-            await ThrowIfServiceUnavailable();
-            string result = Encoding.UTF8.GetString((await Execute("shell wm size")).stdOut);
-            Match match = Regex.Match(result, @"Physical size: (\d+)x(\d+)");
-            if (!match.Success) throw new Exception(Resources.Adb_Exception_GetResolution);
-
-            int a = int.Parse(match.Groups[1].Value);
-            int b = int.Parse(match.Groups[2].Value);
-            return new Size(a > b ? a : b, a > b ? b : a);
-        }
-
         public async Task Back()
         {
             await KeyEvent("KEYCODE_BACK");
@@ -61,14 +49,28 @@ namespace REVUnit.AutoArknights.Core
             await Execute($"shell input tap {point.X} {point.Y}");
         }
 
-        public Task<Mat> GetScreenshot()
+        public async Task<Size> GetResolution()
         {
-            return Task.Run(() =>
+            await ThrowIfServiceUnavailable();
+            string result = Encoding.UTF8.GetString((await Execute("shell wm size")).stdOut);
+            Match match = Regex.Match(result, @"Physical size: (\d+)x(\d+)");
+            if (!match.Success) throw new Exception(Resources.Adb_ErrorGetResolution);
+
+            int a = int.Parse(match.Groups[1].Value);
+            int b = int.Parse(match.Groups[2].Value);
+            return new Size(Math.Max(a, b), Math.Min(a, b));
+        }
+
+        public async Task<Mat> GetScreenshot()
+        {
+            PolicyResult<Mat> result = await _getScreenshotPolicy.ExecuteAndCaptureAsync(async () =>
+                Cv2.ImDecode((await Execute("exec-out screencap -p", 5 * 1024 * 1024, 0)).stdOut, ImreadModes.Color));
+            if (result.Outcome == OutcomeType.Failure)
             {
-                return _getScreenshotPolicy.ExecuteAsync(async () =>
-                    Cv2.ImDecode((await Execute("exec-out screencap -p", 5 * 1024 * 1024, 0)).stdOut,
-                        ImreadModes.Color));
-            });
+                throw new Exception(Resources.Adb_ErrorGetScreenshot);
+            }
+
+            return result.Result;
         }
 
         public async Task Connect(string targetSerial)
@@ -85,7 +87,7 @@ namespace REVUnit.AutoArknights.Core
             await Execute($"connect {targetSerial}", targeted: false);
             if (!await GetDeviceOnline())
             {
-                throw new Exception(Resources.Adb_Exception_ConnectFailed);
+                throw new Exception(Resources.Adb_ErrorConnect);
             }
 
             TargetSerial = targetSerial;
@@ -115,7 +117,7 @@ namespace REVUnit.AutoArknights.Core
 
             if (!adbServerProcess.Start())
             {
-                throw new Exception(Resources.Adb_Exception_StartServer);
+                throw new Exception(Resources.Adb_ErrorStartServer);
             }
 
             _serverPort = port;
@@ -132,16 +134,15 @@ namespace REVUnit.AutoArknights.Core
             int stdErrBufferSize = DefaultBufferSize,
             bool waitForExit = false, bool targeted = true)
         {
-            var sb = new StringBuilder();
-            sb.Append($"-P {_serverPort} ");
+            Log.Debug(Resources.Adb_ExecutingCommand);
+
+            string adbSystemArgs = $"-P {_serverPort} ";
             if (targeted)
             {
-                sb.Append($"-s {TargetSerial} ");
+                adbSystemArgs += $"-s {TargetSerial} ";
             }
 
-            sb.Append(arguments);
-
-            arguments = sb.ToString();
+            arguments = adbSystemArgs + arguments;
 
             using var process = new Process
             {

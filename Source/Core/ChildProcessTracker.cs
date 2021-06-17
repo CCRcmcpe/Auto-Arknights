@@ -9,8 +9,8 @@ namespace REVUnit.AutoArknights.Core
 {
     internal static class ChildProcessTracker
     {
-        private const int JobObjectExtendedLimitInformation = 9;
         private const int JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x2000;
+        private const int JobObjectExtendedLimitInformation = 9;
 
         public static void Track(Process process)
         {

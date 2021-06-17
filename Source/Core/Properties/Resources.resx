@@ -117,9 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="FarmLevel_CurrentSanity" xml:space="preserve">
-    <value>当前理智[{CurrentSanity}]，需要理智[{RequiredSanity}]</value>
-  </data>
   <data name="ExecuteResult_Ended" xml:space="preserve">
     <value>任务结束</value>
   </data>
@@ -129,22 +126,19 @@
   <data name="ExecuteResult_Success" xml:space="preserve">
     <value>任务完成</value>
   </data>
-  <data name="LevelFarming_Success" xml:space="preserve">
-    <value>成功刷关{0}次</value>
-  </data>
-  <data name="LevelFarming_RequiredSanity" xml:space="preserve">
+  <data name="CombatModule_RequiredSanity" xml:space="preserve">
     <value>检测到此关卡需要[{RequiredSanity}]理智</value>
   </data>
-  <data name="LevelFarming_Exception_AutoDeploy" xml:space="preserve">
+  <data name="CombatModule_AutoDeployNotRunning" xml:space="preserve">
     <value>未检测到代理指挥正常运行迹象！</value>
   </data>
-  <data name="LevelFarming_Exception_AutoDeployHint" xml:space="preserve">
+  <data name="CombatModule_AutoDeployNotRunningHint" xml:space="preserve">
     <value>请检查是否在正常代理作战，如果正常，请增加检测代理正常前等待的时间（现在为{WaitTime}s），以避免假警告出现</value>
   </data>
-  <data name="LevelFarming_SpecifiedTimes_Begin" xml:space="preserve">
+  <data name="CombatModule_LevelBegin" xml:space="preserve">
     <value>开始第[{CurrentTimes}/{times}]次刷关</value>
   </data>
-  <data name="LevelFarming_Unlimited_Begin" xml:space="preserve">
+  <data name="CombatModule_LevelBegin_Infinite" xml:space="preserve">
     <value>开始第{CurrentTimes}次刷关</value>
   </data>
   <data name="LevelFarming_WaitingForSanityRecovery" xml:space="preserve">
@@ -153,23 +147,11 @@
   <data name="LevelFarming_SanityRecovered" xml:space="preserve">
     <value>...理智恢复完成</value>
   </data>
-  <data name="LevelFarming_Unlimited_Complete" xml:space="preserve">
+  <data name="CombatModule_LevelEnd_Infinite" xml:space="preserve">
     <value>关卡完成，目前已刷关{CurrentTimes}次</value>
   </data>
-  <data name="LevelFarming_SpecifiedTimes_Complete" xml:space="preserve">
+  <data name="CombatModule_LevelEnd" xml:space="preserve">
     <value>关卡完成，目前已刷关[{currentTimes}/{Times}]次</value>
-  </data>
-  <data name="LevelFarming_Mode_SpecifiedTimes" xml:space="preserve">
-    <value>刷关{0}次</value>
-  </data>
-  <data name="LevelFarming_Mode_SpecTimesWithWait" xml:space="preserve">
-    <value>刷关{0}次，当理智不足以完成时等待恢复</value>
-  </data>
-  <data name="LevelFarming_Mode_UntilNoSanity" xml:space="preserve">
-    <value>刷关直到理智耗尽</value>
-  </data>
-  <data name="LevelFarming_Mode_WaitWhileNoSanity" xml:space="preserve">
-    <value>刷关直到手动结束程序</value>
   </data>
   <data name="FeatureDetector_Exception_NoCachePath" xml:space="preserve">
     <value>必须提供缓存保存文件夹才能使用缓存</value>
@@ -213,17 +195,14 @@
   <data name="Adb_StartingServer" xml:space="preserve">
     <value>正在启动 ADB 服务器</value>
   </data>
-  <data name="Adb_Exception_StartServer" xml:space="preserve">
+  <data name="Adb_ErrorStartServer" xml:space="preserve">
     <value>ADB 服务器未能正常启动</value>
   </data>
-  <data name="Adb_Exception_GetResolution" xml:space="preserve">
+  <data name="Adb_ErrorGetResolution" xml:space="preserve">
     <value>无法获取设备分辨率信息</value>
   </data>
-  <data name="Adb_Exception_GetScreenshot" xml:space="preserve">
+  <data name="Adb_RetryGetScreenshot" xml:space="preserve">
     <value>截图失败，正在重试（第 {0}/{1} 次）</value>
-  </data>
-  <data name="Adb_Exception_Execute" xml:space="preserve">
-    <value>发生错误，标准错误流输出：{0}</value>
   </data>
   <data name="Adb_DeviceState" xml:space="preserve">
     <value>检测到设备状态: "{State}"</value>
@@ -231,20 +210,17 @@
   <data name="Adb_ExecutingCommand" xml:space="preserve">
     <value>正在执行 ADB 指令：{$Param}</value>
   </data>
-  <data name="Adb_Exception_Connect" xml:space="preserve">
-    <value>连接失败，重新启动 ADB 服务器后重试（第 {0}/{1} 次）</value>
-  </data>
   <data name="Adb_Connecting" xml:space="preserve">
     <value>正在连接到 ADB 设备 {Target}</value>
   </data>
-  <data name="Adb_Exception_ConnectFailed" xml:space="preserve">
+  <data name="Adb_ErrorConnect" xml:space="preserve">
     <value>重试失败，无法连接</value>
   </data>
   <data name="Adb_Connected" xml:space="preserve">
     <value>连接设备成功</value>
   </data>
-  <data name="Adb_Exception_GetScreenshotFailed" xml:space="preserve">
-    <value>截图失败</value>
+  <data name="Adb_ErrorGetScreenshot" xml:space="preserve">
+    <value>截图最终失败</value>
   </data>
   <data name="AssetsLoadException" xml:space="preserve">
     <value>无法载入资源: {0}</value>
@@ -252,7 +228,7 @@
   <data name="PostAction_CloseRemote" xml:space="preserve">
     <value>关闭远端</value>
   </data>
-  <data name="LevelFarming_PossiblyOcrError" xml:space="preserve">
+  <data name="CombatModule_PossibleOcrError" xml:space="preserve">
     <value>OCR识别结果似乎有误</value>
   </data>
 </root>

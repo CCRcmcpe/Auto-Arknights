@@ -12,8 +12,9 @@ namespace REVUnit.AutoArknights.Core.CV
             Confidence = confidence;
         }
 
-        public Rect CircumRect { get; }
         public Point CenterPoint { get; }
+
+        public Rect CircumRect { get; }
         public double Confidence { get; }
     }
 }
