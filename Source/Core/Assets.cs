@@ -1,7 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using OpenCvSharp;
+using Polly;
+using Polly.Caching;
+using Polly.Caching.Memory;
 using REVUnit.AutoArknights.Core.Properties;
 
 namespace REVUnit.AutoArknights.Core
@@ -13,43 +17,39 @@ namespace REVUnit.AutoArknights.Core
         }
     }
 
-    public class ImageAssets : IDisposable
+    public class ImageAssets
     {
-        private readonly Dictionary<string, Mat> _cache = new();
+        private readonly AsyncCachePolicy<Mat> _getAssetCachePolicy =
+            Policy.CacheAsync<Mat>(new MemoryCacheProvider(new MemoryCache(new MemoryCacheOptions())),
+                TimeSpan.MaxValue);
+
         private readonly bool _needNormalizeScale;
         private readonly double _resizeRatio;
 
         public ImageAssets(Size actualResolution)
         {
-            _needNormalizeScale = actualResolution != TargetedResolution;
-            _resizeRatio = (double) actualResolution.Height / TargetedResolution.Height;
+            _needNormalizeScale = actualResolution != TargetResolution;
+            _resizeRatio = (double) actualResolution.Height / TargetResolution.Height;
         }
 
-        public static Size TargetedResolution { get; } = new(1920, 1080);
+        public static Size TargetResolution { get; } = new(1920, 1080);
 
-        public void Dispose()
+        public Task<Mat> Get(string key)
         {
-            foreach (Mat asset in _cache.Values) asset.Dispose();
-        }
-
-        public Mat Get(string key)
-        {
-            key = key.Trim();
-            if (_cache.TryGetValue(key, out Mat? asset)) return asset;
-
-            string assetFilePath = GetFilePath(key);
-            if (!File.Exists(assetFilePath)) throw new AssetLoadException(key);
-
-            asset = Utils.Imread(assetFilePath);
-            if (asset.Empty()) throw new AssetLoadException(key);
-
-            if (_needNormalizeScale)
+            return _getAssetCachePolicy.ExecuteAsync(async context =>
             {
-                NormalizeScale(asset);
-            }
+                string assetFilePath = GetFilePath(context.OperationKey);
+                if (!File.Exists(assetFilePath)) throw new AssetLoadException(key);
+                Mat asset = await Utils.Imread(assetFilePath);
+                if (asset.Empty()) throw new AssetLoadException(key);
 
-            _cache.Add(key, asset);
-            return asset;
+                if (_needNormalizeScale)
+                {
+                    NormalizeScale(asset);
+                }
+
+                return asset;
+            }, new Context(key));
         }
 
         private static string GetFilePath(string key)

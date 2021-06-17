@@ -138,6 +138,9 @@
    本程序仅供研究学习使用                   [Auto Arknights]                     REV Unit (c)2021]]>
     </value>
   </data>
+  <data name="Entry_FatalException" xml:space="preserve">
+    <value>出现致命错误</value>
+  </data>
   <!-- ReSharper disable ResxNotResolved -->
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="DefaultConfig" type="System.Resources.ResXFileRef, System.Windows.Forms">

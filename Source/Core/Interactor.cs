@@ -16,7 +16,7 @@ namespace REVUnit.AutoArknights.Core
         FeatureMatching
     }
 
-    internal class Interactor : IDisposable
+    internal class Interactor
     {
         private const double ConfidenceThreshold = 0.8;
         private static readonly Random Random = new();
@@ -47,10 +47,6 @@ namespace REVUnit.AutoArknights.Core
             _assets = new ImageAssets(_resolution);
         }
 
-        public void Dispose()
-        {
-            _assets.Dispose();
-        }
 
         public void Back()
         {
@@ -79,7 +75,7 @@ namespace REVUnit.AutoArknights.Core
 
         public async Task Click(string assetExpr, RegistrationType registrationType = RegistrationType.TemplateMatching)
         {
-            await Click(GetImageAsset(assetExpr), registrationType);
+            await Click(await GetImageAsset(assetExpr), registrationType);
         }
 
         public async Task Click(Mat model, RegistrationType registrationType = RegistrationType.TemplateMatching)
@@ -106,7 +102,8 @@ namespace REVUnit.AutoArknights.Core
         public Task<RegistrationResult> LocateImage(string assetExpr, RegistrationType registrationType =
             RegistrationType.TemplateMatching)
         {
-            return _locateImageCachePolicy.ExecuteAsync(() => LocateImage(GetImageAsset(assetExpr), registrationType));
+            return _locateImageCachePolicy.ExecuteAsync(async () =>
+                await LocateImage(await GetImageAsset(assetExpr), registrationType));
         }
 
         public async Task<RegistrationResult> LocateImage(Mat model, RegistrationType registrationType =
@@ -170,7 +167,7 @@ namespace REVUnit.AutoArknights.Core
         //     while (!TestTextAppear(text, area)) Utils.Sleep(waitSec);
         // }
 
-        private Mat GetImageAsset(string assetExpr)
+        private Task<Mat> GetImageAsset(string assetExpr)
         {
             return _assets.Get(assetExpr);
         }
