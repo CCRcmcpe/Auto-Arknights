@@ -134,7 +134,7 @@ namespace REVUnit.AutoArknights.Core
             int stdErrBufferSize = DefaultBufferSize,
             bool waitForExit = false, bool targeted = true)
         {
-            Log.Debug(Resources.Adb_ExecutingCommand);
+            Log.Debug(Resources.Adb_ExecutingCommand, arguments);
 
             string adbSystemArgs = $"-P {_serverPort} ";
             if (targeted)
