@@ -36,10 +36,12 @@ namespace REVUnit.AutoArknights.Core.CV
             MatFeature? modelFeature = null;
             try
             {
-                modelFeature = FeatureDetector.DetectCached(model, type);
+                modelFeature = _useCache
+                    ? FeatureDetector.DetectCached(model, type)
+                    : FeatureDetector.Detect(model, type);
                 sceneFeature = FeatureDetector.Detect(scene, type);
-                (double confidence, Rect circumRect) = FeatureMatcher.Match(modelFeature, sceneFeature);
-                return new RegistrationResult(circumRect, confidence > 4 ? 1 : 0);
+                (double matchCount, Quadrilateral region) = FeatureMatcher.Match(modelFeature, sceneFeature);
+                return new RegistrationResult(region, matchCount > 4 ? 1 : 0);
             }
             finally
             {

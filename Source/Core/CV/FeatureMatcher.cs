@@ -16,7 +16,7 @@ namespace REVUnit.AutoArknights.Core.CV
             _matcher.Dispose();
         }
 
-        public (int matchCount, Rect circumRect) Match(MatFeature modelF, MatFeature sceneF)
+        public (int matchCount, Quadrilateral region) Match(MatFeature modelF, MatFeature sceneF)
         {
             if (modelF.Type != sceneF.Type)
                 throw new ArgumentException(string.Format(Resources.FeatureMatcher_Exception_FeatureTypesMismatch,
@@ -54,7 +54,7 @@ namespace REVUnit.AutoArknights.Core.CV
             }
 
             int nonZero = VoteForSizeAndOrientation(modelF.KeyPoints, sceneF.KeyPoints, matches, mask, 1.5f, 20);
-            if (nonZero < 4) return (nonZero, Rect.Empty);
+            if (nonZero < 4) return (nonZero, Quadrilateral.Empty);
 
             using Mat homography = Cv2.FindHomography(InputArray.Create(mPoints), InputArray.Create(sPoints),
                 HomographyMethods.Ransac);
@@ -69,14 +69,10 @@ namespace REVUnit.AutoArknights.Core.CV
             Point2f[] mCornersFt = Cv2.PerspectiveTransform(mCorners, homography);
             Point[] mCornersT = mCornersFt.Select(it => new Point(it.X, it.Y)).ToArray();
 
-            Point topLeft = mCornersT[0];
-            Point bottomRight = mCornersT[2];
-            Rect circumRect = Rect.FromLTRB(topLeft.X, topLeft.Y, bottomRight.X, bottomRight.Y);
-
-            if (circumRect.Width < 10 || circumRect.Height < 10 || circumRect.X < 0 && circumRect.Y < 0 ||
-                circumRect.Height > sceneF.MatHeight && circumRect.Width > sceneF.MatWidth)
-                return default;
-            return (nonZero, circumRect);
+            // if (circumRect.Width < 10 || circumRect.Height < 10 || circumRect.X < 0 && circumRect.Y < 0 ||
+            //     circumRect.Height > sceneF.MatHeight && circumRect.Width > sceneF.MatWidth)
+            //     return default;
+            return (nonZero, Quadrilateral.FromVertices(mCornersT));
         }
 
         private static int VoteForSizeAndOrientation(KeyPoint[] modelKeyPoints, KeyPoint[] sceneKeyPoints,
