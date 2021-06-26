@@ -58,9 +58,10 @@ namespace REVUnit.AutoArknights.Core
             return Click(randomize ? GetCenter(rect) : PickRandomPoint(rect), !randomize);
         }
 
-        public Task Click(Quadrilateral quadrilateral, bool randomize = true)
+        public Task Click(Quadrilateral32 quadrilateral32, bool randomize = true)
         {
-            return Click(randomize ? quadrilateral.Center : PickRandomPoint(quadrilateral), !randomize);
+            return Click(randomize ? quadrilateral32.VertexCentroid.ToPoint() : PickRandomPoint(quadrilateral32),
+                !randomize);
         }
 
         public Task Click(Point point, bool randomize = true)
@@ -197,9 +198,9 @@ namespace REVUnit.AutoArknights.Core
             return new Point(randX, randY);
         }
 
-        private static Point PickRandomPoint(Quadrilateral quadrilateral)
+        private static Point PickRandomPoint(Quadrilateral32 quadrilateral32)
         {
-            Quadrilateral downScaled = quadrilateral.ScaleTo(0.8);
+            Quadrilateral32 downScaled = quadrilateral32.ScaleTo(0.8f);
             return downScaled.PickRandomPoint();
         }
 

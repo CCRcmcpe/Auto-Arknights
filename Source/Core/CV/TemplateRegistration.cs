@@ -18,7 +18,8 @@ namespace REVUnit.AutoArknights.Core.CV
                 diff.At<float>(maxLoc.Y, maxLoc.X) = 0;
             }
 
-            return matches.Select(match => new RegistrationResult(Quadrilateral.FromRect(match.rect), match.confidence))
+            return matches.Select(match =>
+                    new RegistrationResult(Quadrilateral32.FromRect(match.rect), match.confidence))
                 .OrderBy(match => match.Confidence).ToArray();
         }
     }

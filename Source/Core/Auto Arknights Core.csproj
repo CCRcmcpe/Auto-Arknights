@@ -5,6 +5,7 @@
     <RootNamespace>REVUnit.AutoArknights.Core</RootNamespace>
     <nullable>enable</nullable>
     <Platforms>x64</Platforms>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,12 +19,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Adb\**">
+    <Content Include="Adb\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Assets\**">
+    </Content>
+    <Content Include="Assets\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

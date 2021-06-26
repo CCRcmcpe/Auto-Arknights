@@ -20,13 +20,14 @@ namespace REVUnit.AutoArknights.Core.Test
 
         public static IEnumerable<object[]> GetTest1Data()
         {
-            return Directory.EnumerateDirectories(@"Data\FeatureRegistrationTest\Test1").Select(s => new object[]
-                {new Mat(Path.Combine(s, "model.png")), new Mat(Path.Combine(s, "scene.png"))});
+            return Directory.EnumerateDirectories(@"Data\FeatureRegistrationTest\StandardRegister").Select(s =>
+                new object[]
+                    {new Mat(Path.Combine(s, "model.png")), new Mat(Path.Combine(s, "scene.png"))});
         }
 
         [MemberData(nameof(GetTest1Data))]
         [Theory]
-        public void Test1(Mat model, Mat scene)
+        public void StandardRegister(Mat model, Mat scene)
         {
             RegistrationResult[] results = FeatureRegistration.Register(model, scene, 1);
             Assert.Single(results);
@@ -35,7 +36,15 @@ namespace REVUnit.AutoArknights.Core.Test
 
             Mat diagram = scene.Clone();
 
-            diagram.Polylines(new[] {result.Region.Vertices}, true, Scalar.Red, 2, LineTypes.AntiAlias);
+            Quadrilateral32 region = result.Region.ScaleTo(0.8f);
+            for (var i = 0; i < 1000; i++)
+            {
+                Point point = region.PickRandomPoint();
+                diagram.DrawMarker(point, Scalar.Red);
+            }
+
+            diagram.Polylines(new[] {region.Vertices.Select(p => p.ToPoint())}, true, Scalar.Red, 2,
+                LineTypes.AntiAlias);
             Cv2.ImEncode(".png", diagram, out byte[] bytes);
 
             string tmpFilePath = Path.GetTempFileName();

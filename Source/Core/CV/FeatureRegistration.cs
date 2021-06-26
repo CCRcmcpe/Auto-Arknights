@@ -40,7 +40,7 @@ namespace REVUnit.AutoArknights.Core.CV
                     ? FeatureDetector.DetectCached(model, type)
                     : FeatureDetector.Detect(model, type);
                 sceneFeature = FeatureDetector.Detect(scene, type);
-                (double matchCount, Quadrilateral region) = FeatureMatcher.Match(modelFeature, sceneFeature);
+                (double matchCount, Quadrilateral32 region) = FeatureMatcher.Match(modelFeature, sceneFeature);
                 return new RegistrationResult(region, matchCount > 4 ? 1 : 0);
             }
             finally

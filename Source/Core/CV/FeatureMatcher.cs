@@ -16,7 +16,7 @@ namespace REVUnit.AutoArknights.Core.CV
             _matcher.Dispose();
         }
 
-        public (int matchCount, Quadrilateral region) Match(MatFeature modelF, MatFeature sceneF)
+        public (int matchCount, Quadrilateral32 region) Match(MatFeature modelF, MatFeature sceneF)
         {
             if (modelF.Type != sceneF.Type)
                 throw new ArgumentException(string.Format(Resources.FeatureMatcher_Exception_FeatureTypesMismatch,
@@ -54,7 +54,7 @@ namespace REVUnit.AutoArknights.Core.CV
             }
 
             int nonZero = VoteForSizeAndOrientation(modelF.KeyPoints, sceneF.KeyPoints, matches, mask, 1.5f, 20);
-            if (nonZero < 4) return (nonZero, Quadrilateral.Empty);
+            if (nonZero < 4) return (nonZero, Quadrilateral32.Empty);
 
             using Mat homography = Cv2.FindHomography(InputArray.Create(mPoints), InputArray.Create(sPoints),
                 HomographyMethods.Ransac);
@@ -66,13 +66,12 @@ namespace REVUnit.AutoArknights.Core.CV
                 new(0, 0), new(modelF.MatWidth, 0), new(modelF.MatWidth, modelF.MatHeight), new(0, modelF.MatHeight)
             };
 
-            Point2f[] mCornersFt = Cv2.PerspectiveTransform(mCorners, homography);
-            Point[] mCornersT = mCornersFt.Select(it => new Point(it.X, it.Y)).ToArray();
+            Point2f[] mCornersT = Cv2.PerspectiveTransform(mCorners, homography);
 
             // if (circumRect.Width < 10 || circumRect.Height < 10 || circumRect.X < 0 && circumRect.Y < 0 ||
             //     circumRect.Height > sceneF.MatHeight && circumRect.Width > sceneF.MatWidth)
             //     return default;
-            return (nonZero, Quadrilateral.FromVertices(mCornersT));
+            return (nonZero, Quadrilateral32.FromVertices(mCornersT));
         }
 
         private static int VoteForSizeAndOrientation(KeyPoint[] modelKeyPoints, KeyPoint[] sceneKeyPoints,

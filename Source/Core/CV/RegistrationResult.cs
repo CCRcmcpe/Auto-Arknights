@@ -2,7 +2,7 @@
 {
     public class RegistrationResult
     {
-        public RegistrationResult(Quadrilateral region, double confidence)
+        public RegistrationResult(Quadrilateral32 region, double confidence)
         {
             Region = region;
             Confidence = confidence;
@@ -10,6 +10,6 @@
 
         public double Confidence { get; }
 
-        public Quadrilateral Region { get; }
+        public Quadrilateral32 Region { get; }
     }
 }
