@@ -3,14 +3,6 @@ using OpenCvSharp;
 
 namespace REVUnit.AutoArknights.Core.CV
 {
-    internal static class Point2FExt
-    {
-        public static Point2f Multiply(this Point2f p, float value)
-        {
-            return new(p.X * value, p.Y * value);
-        }
-    }
-
     /// <summary>
     ///     Represents a convex quadrilateral, using 32-bit floating point numbers.
     /// </summary>
