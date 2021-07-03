@@ -77,7 +77,7 @@ namespace REVUnit.AutoArknights.Core
         {
             Log.Information(Resources.Adb_Connecting, targetSerial);
 
-            KillConnectedProcesses(targetSerial);
+            await KillConnectedProcesses(targetSerial);
 
             if (!_serverStarted)
             {
@@ -193,31 +193,29 @@ namespace REVUnit.AutoArknights.Core
             return port;
         }
 
-        private static void KillConnectedProcesses(string targetSerial)
+        private static async Task KillConnectedProcesses(string targetSerial)
         {
             var netstat = new Process
             {
                 StartInfo = new ProcessStartInfo("netstat", "-no")
                     {CreateNoWindow = true, RedirectStandardOutput = true}
             };
-            netstat.OutputDataReceived += (_, args) =>
-            {
-                string? line = args.Data;
-                if (string.IsNullOrEmpty(line))
-                {
-                    return;
-                }
 
+            netstat.Start();
+
+            string? line;
+            while ((line = await netstat.StandardOutput.ReadLineAsync()) != null)
+            {
                 string[] split = Regex.Split(line, @"\s+").Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
                 if (split.Length != 5 || split[2] != targetSerial)
                 {
-                    return;
+                    continue;
                 }
 
                 int pid = int.Parse(split[4]);
                 if (pid == 0)
                 {
-                    return;
+                    continue;
                 }
 
                 var process = Process.GetProcessById(pid);
@@ -229,10 +227,10 @@ namespace REVUnit.AutoArknights.Core
                 {
                     Log.Debug(e, "尝试杀死PID为{PID}的程序时出错", pid);
                 }
-            };
-            netstat.Start();
-            netstat.BeginOutputReadLine();
-            netstat.WaitForExit(1000);
+            }
+
+            var cts = new CancellationTokenSource(1000);
+            await netstat.WaitForExitAsync(cts.Token);
         }
 
         private static async Task<byte[]> ReadToEnd(Stream stream, int bufferSize)
@@ -241,7 +239,8 @@ namespace REVUnit.AutoArknights.Core
 
             int read;
             var totalLen = 0;
-            while ((read = await stream.ReadAsync(buffer, totalLen, bufferSize - totalLen)) > 0) totalLen += read;
+            while ((read = await stream.ReadAsync(buffer.AsMemory(totalLen, bufferSize - totalLen))) > 0)
+                totalLen += read;
 
             Array.Resize(ref buffer, totalLen);
             return buffer;
