@@ -19,14 +19,16 @@ namespace REVUnit.AutoArknights.Core
         private static readonly Regex CurrentSanityRegex =
             new(@"(?<current>\d+)\s*\/\s*(?<max>\d+)", RegexOptions.Compiled);
 
-        private readonly AsyncRetryPolicy<Sanity> _getCurrentSanityPolicy;
+        private readonly Game _game;
 
+        private readonly AsyncRetryPolicy<Sanity> _getCurrentSanityPolicy;
         private readonly Interactor _i;
         private Sanity? _lastGetSanityResult;
         private int _requiredSanity;
 
-        internal CombatModule(Interactor interactor)
+        internal CombatModule(Game game, Interactor interactor)
         {
+            _game = game;
             _i = interactor;
             _getCurrentSanityPolicy = Policy.HandleResult<Sanity>(sanity =>
             {
@@ -43,11 +45,7 @@ namespace REVUnit.AutoArknights.Core
 
         public async Task Run(Level? level, LevelCombatSettings settings)
         {
-            if (level != null)
-            {
-                // TODO Move to level
-            }
-            else
+            if (level == null)
             {
                 await RunCurrentSelectedLevel(settings.RepeatTimes, settings.WaitWhenNoSanity);
             }
@@ -55,28 +53,32 @@ namespace REVUnit.AutoArknights.Core
 
         private async Task<Sanity> GetCurrentSanity()
         {
-            PolicyResult<Sanity> result = await _getCurrentSanityPolicy.ExecuteAndCaptureAsync(async () =>
+            PolicyResult<Sanity> policyResult = await _getCurrentSanityPolicy.ExecuteAndCaptureAsync(async () =>
             {
                 string text = await _i.Ocr(RelativeArea.CurrentSanityText);
                 Match match = CurrentSanityRegex.Match(text);
                 if (!(int.TryParse(match.Groups["current"].Value, out int current) &&
                       int.TryParse(match.Groups["max"].Value, out int max)))
                 {
-                    throw new Exception(); // TODO
+                    throw new Exception("无法识别理智值");
                 }
 
                 return new Sanity(current, max);
             });
 
             Sanity currentSanity;
-            if (result.Result != null)
+            if (policyResult.Outcome == OutcomeType.Successful)
             {
-                currentSanity = result.Result;
+                currentSanity = policyResult.Result;
+            }
+            else if (policyResult.FinalException != null)
+            {
+                throw policyResult.FinalException;
             }
             else
             {
                 Log.Warning(Resources.CombatModule_PossibleOcrError);
-                currentSanity = result.FinalHandledResult;
+                currentSanity = policyResult.FinalHandledResult;
             }
 
             _lastGetSanityResult = currentSanity;
@@ -94,10 +96,10 @@ namespace REVUnit.AutoArknights.Core
 
         private async Task RunCurrentSelectedLevel()
         {
-            await _i.Click("Combat/Begin");
-            await Task.Delay(500);
+            await _i.ClickFor("Combat/Begin");
+            await Task.Delay(1000);
 
-            await _i.Click("Combat/Start");
+            await _i.ClickFor("Combat/Start");
             await Task.Delay(TimeSpan.FromSeconds(Settings.IntervalBeforeVerifyInLevel));
 
             if (!await _i.TestAppear("Combat/TakeOver"))

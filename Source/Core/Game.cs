@@ -11,8 +11,8 @@ namespace REVUnit.AutoArknights.Core
         private Game(Interactor interactor)
         {
             _i = interactor;
-            Combat = new CombatModule(interactor);
-            Infrastructure = new InfrastructureModule(interactor);
+            Combat = new CombatModule(this, interactor);
+            Infrastructure = new InfrastructureModule(this, interactor);
         }
 
         public CombatModule Combat { get; }
@@ -22,55 +22,38 @@ namespace REVUnit.AutoArknights.Core
         {
             while (true)
             {
-                await _i.Update();
-                var cts = new CancellationTokenSource();
-                Task clickYes = Task.Run(async () =>
+                using (var cts = new CancellationTokenSource())
                 {
-                    if (await _i.TestAppear("Yes"))
+                    Task clickYes = Task.Run(async () =>
                     {
-                        await _i.Click("Yes");
+                        if (await _i.TestAppear("Yes"))
+                        {
+                            await _i.ClickFor("Yes");
+                        }
+                    }, cts.Token);
+                    if (await _i.TestAppear("Home/Settings"))
+                    {
+                        cts.Cancel();
+                        return;
                     }
-                }, cts.Token);
-                if (await _i.TestAppear("Home/Settings"))
-                {
-                    cts.Cancel();
-                    return;
+
+                    await clickYes;
                 }
 
-                await clickYes;
                 _i.Back();
                 await Task.Delay(500);
             }
         }
 
-        public async Task CollectTasks()
+        public async Task ClaimTasks()
         {
-            async Task WaitForTasksCollected()
+            async Task TabClaim()
             {
-                while (true)
+                if (await _i.TestAppear("Tasks/ClaimAll"))
                 {
-                    await _i.Update();
-                    Task<bool> task = _i.TestAppear("Tasks/AllCompleted");
-                    if (!await _i.TestAppear("Tasks/Receive"))
-                    {
-                        return;
-                    }
-
-                    if (await task)
-                    {
-                        return;
-                    }
-
-                    await Task.Delay(200);
-                }
-            }
-
-            async Task CollectCurrentTab()
-            {
-                Task waitForTasksCollected = WaitForTasksCollected();
-                while (!waitForTasksCollected.IsCompleted)
-                {
-                    await _i.Click(RelativeArea.ReceiveTaskRewardButton);
+                    await _i.ClickFor("Tasks/ClaimAll");
+                    await Task.Delay(1000);
+                    await _i.Click(RelativeArea.LowerBottom);
                 }
             }
 
@@ -78,18 +61,16 @@ namespace REVUnit.AutoArknights.Core
             await _i.Click(RelativeArea.TasksButton);
 
             await Task.Delay(1000);
-            await _i.Update();
             if (!await _i.TestAppear("Tasks/Daily"))
             {
                 throw new Exception("Tasks interface not entered");
             }
 
-            await CollectCurrentTab();
+            await TabClaim();
 
-            await _i.Update();
-            await _i.Click("Tasks/Weekly");
+            await _i.ClickFor("Tasks/Weekly");
             await Task.Delay(1000);
-            await CollectCurrentTab();
+            await TabClaim();
             await Task.Delay(200);
 
             _i.Back();
@@ -103,6 +84,7 @@ namespace REVUnit.AutoArknights.Core
         public async Task Recurit()
         {
             await BackToMainScreen();
+            throw new NotImplementedException();
         }
     }
 }

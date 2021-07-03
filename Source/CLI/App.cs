@@ -49,7 +49,7 @@ namespace REVUnit.AutoArknights.CLI
                 {
                     new Command("tasks")
                     {
-                        Handler = CommandHandler.Create(() => _game!.CollectTasks())
+                        Handler = CommandHandler.Create(() => _game!.ClaimTasks())
                     },
                     new Command("credit-points")
                     {

@@ -46,6 +46,8 @@ namespace REVUnit.AutoArknights.Core
         public static RelativeArea RequiredSanityText { get; } = Ref1080P(1763, 1014, 1841, 1053);
         public static RelativeArea LevelCompletedScreenCloseClick { get; } = Ref1080P(100, 100, 1820, 600);
         public static RelativeArea ReceiveTaskRewardButton { get; } = Ref1080P(1488, 167, 1863, 258);
+        public static RelativeArea VisitNextButton { get; } = Ref1080P(1661, 883, 1906, 1000);
+        public static RelativeArea LowerBottom { get; } = Ref1080P(0, 720, 1920, 1080);
 
         // public static RelativeArea WeeklyTasksTab { get; } = Ref1080P(1121, 24, 1423, 88);
 

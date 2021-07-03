@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using OpenCvSharp;
 using Polly;
+using Polly.Caching;
+using Polly.Caching.Memory;
 using Polly.Retry;
 using REVUnit.AutoArknights.Core.CV;
+using Serilog;
 
 namespace REVUnit.AutoArknights.Core
 {
@@ -13,29 +17,51 @@ namespace REVUnit.AutoArknights.Core
         FeatureMatching
     }
 
+    public class ClickForException : Exception
+    {
+        public ClickForException(string message) : base(message)
+        {
+        }
+
+        public ClickForException(string? message, Exception? innerException) : base(message, innerException)
+        {
+        }
+    }
+
     internal class Interactor
     {
-        private const double ConfidenceThreshold = 0.8;
-        private static readonly Random Random = new();
-        private readonly ImageAssets _assets;
+        private static readonly int[] ClickForPolicyRetryInterval = {100, 200, 500, 1000};
 
-        private readonly AsyncRetryPolicy<RegistrationResult> _definiteRegisterPolicy =
-            Policy.HandleResult<RegistrationResult>(result => result.Confidence < ConfidenceThreshold).RetryAsync(3);
+        private static readonly AsyncRetryPolicy ClickForPolicy = Policy.Handle<ClickForException>().WaitAndRetryAsync(
+            4,
+            retryCount => TimeSpan.FromMilliseconds(ClickForPolicyRetryInterval[retryCount - 1]),
+            (_, timeSpan, retryCount, context) => Log.Debug("尝试点击 {ImageKey} 第{RetryCount}次失败，等待{SleepDuration}ms后重试",
+                context.OperationKey, retryCount, timeSpan.TotalMilliseconds));
+
+
+        private const double ConfidenceThreshold = 0.8;
+
+        private static readonly FeatureRegistration FeatureRegistration = new("Cache");
+
+        private static readonly AsyncCachePolicy<RegistrationResult[]> LocateImageCachePolicy =
+            Policy.CacheAsync<RegistrationResult[]>(new MemoryCacheProvider(new MemoryCache(new MemoryCacheOptions())),
+                TimeSpan.FromMilliseconds(100));
+
+        private static readonly Random Random = new();
+
+        private static readonly AsyncCachePolicy<Mat> ScreenshotCachePolicy =
+            Policy.CacheAsync<Mat>(new MemoryCacheProvider(new MemoryCache(new MemoryCacheOptions())),
+                TimeSpan.FromMilliseconds(100));
+
+        private static readonly TemplateRegistration TemplateRegistration = new();
 
         private readonly IDevice _device;
-        private readonly FeatureRegistration _featureRegistration = new("Cache");
+        private readonly Size _deviceResolution;
 
-        private readonly Size _resolution;
-
-        private readonly TemplateRegistration _templateRegistration = new();
-
-        private Mat? _screenshot;
-
-        private Interactor(IDevice device, Size resolution)
+        private Interactor(IDevice device, Size deviceResolution)
         {
             _device = device;
-            _resolution = resolution;
-            _assets = new ImageAssets(_resolution);
+            _deviceResolution = deviceResolution;
         }
 
         public void Back()
@@ -43,24 +69,19 @@ namespace REVUnit.AutoArknights.Core
             _device.Back();
         }
 
-        public Task Click(int x, int y)
-        {
-            return Click(new Point(x, y));
-        }
-
         public Task Click(RelativeArea area)
         {
-            return Click(area.For(_resolution));
+            return Click(area.For(_deviceResolution));
         }
 
         public Task Click(Rect rect, bool randomize = true)
         {
-            return Click(randomize ? GetCenter(rect) : PickRandomPoint(rect), !randomize);
+            return Click(randomize ? PickRandomPoint(rect) : GetCenter(rect), !randomize);
         }
 
         public Task Click(Quadrilateral32 quadrilateral32, bool randomize = true)
         {
-            return Click(randomize ? quadrilateral32.VertexCentroid.ToPoint() : PickRandomPoint(quadrilateral32),
+            return Click(randomize ? PickRandomPoint(quadrilateral32) : quadrilateral32.VertexCentroid.ToPoint(),
                 !randomize);
         }
 
@@ -69,62 +90,16 @@ namespace REVUnit.AutoArknights.Core
             return _device.Click(randomize ? RandomOffset(point) : point);
         }
 
-        public async Task Click(string assetExpr, RegistrationType registrationType = RegistrationType.TemplateMatching)
+        public async Task ClickFor(string assetExpr,
+            RegistrationType registrationType = RegistrationType.TemplateMatching)
         {
-            await Click(await GetImageAsset(assetExpr), registrationType);
-        }
-
-        public async Task Click(Mat model, RegistrationType registrationType = RegistrationType.TemplateMatching)
-        {
-            PolicyResult<RegistrationResult> policyResult =
-                await _definiteRegisterPolicy.ExecuteAndCaptureAsync(
-                    async () => await LocateImage(model, registrationType));
-            if (policyResult.FaultType == null)
-            {
-                await Click(policyResult.Result.Region);
-            }
-            else
-            {
-                throw new Exception(); // TODO
-            }
+            await ClickFor(await GetImageAsset(assetExpr), registrationType);
         }
 
         public static async Task<Interactor> FromDevice(IDevice device)
         {
             Size resolution = await device.GetResolution();
             return new Interactor(device, resolution);
-        }
-
-        public async Task<RegistrationResult> LocateImage(string assetExpr, RegistrationType registrationType =
-            RegistrationType.TemplateMatching)
-        {
-            return await LocateImage(await GetImageAsset(assetExpr), registrationType);
-        }
-
-        public async Task<RegistrationResult> LocateImage(Mat model, RegistrationType registrationType =
-            RegistrationType.TemplateMatching)
-        {
-            return (await LocateImageMulti(model,
-                1, registrationType))[0];
-        }
-
-        public async Task<RegistrationResult[]> LocateImageMulti(Mat model, int minMatchCount,
-            RegistrationType registrationType =
-                RegistrationType.TemplateMatching)
-        {
-            ImageRegistration imageRegistration = registrationType switch
-            {
-                RegistrationType.TemplateMatching => _templateRegistration,
-                RegistrationType.FeatureMatching => _featureRegistration,
-                _ => throw new ArgumentOutOfRangeException(nameof(registrationType), registrationType, null)
-            };
-
-            if (_screenshot == null)
-            {
-                await Update();
-            }
-
-            return imageRegistration.Register(model, _screenshot!, minMatchCount);
         }
 
         public async Task<string> Ocr(RelativeArea area)
@@ -134,31 +109,52 @@ namespace REVUnit.AutoArknights.Core
 
         public async Task<string[]> OcrMulti(RelativeArea area)
         {
-            if (_screenshot == null)
-            {
-                await Update();
-            }
-
-            using Mat sub = area.Reduce(_screenshot!);
+            Mat screenshot = await GetScreenshot();
+            using Mat sub = area.Reduce(screenshot);
             throw new NotImplementedException();
         }
 
         public async Task<bool> TestAppear(string assetExpr, RegistrationType registrationType =
             RegistrationType.TemplateMatching)
         {
-            RegistrationResult result = await LocateImage(assetExpr, registrationType);
+            ImageAsset asset = await ImageAsset.Get(assetExpr, _deviceResolution);
+            RegistrationResult result = await LocateImage(asset, registrationType);
+
             return IsSuccessful(result);
         }
 
-        public async Task Update()
+        private async Task ClickFor(ImageAsset asset,
+            RegistrationType registrationType = RegistrationType.TemplateMatching)
         {
-            _screenshot?.Dispose();
-            _screenshot = await _device.GetScreenshot();
+            PolicyResult<RegistrationResult> policyResult =
+                await ClickForPolicy.ExecuteAndCaptureAsync(async context =>
+                {
+                    RegistrationResult result = await LocateImage(asset, registrationType);
+                    if (!IsSuccessful(result))
+                    {
+                        throw new ClickForException($"无法定位 {context.OperationKey}");
+                    }
+
+                    return result;
+                }, new Context(asset.Key));
+            if (policyResult.Outcome == OutcomeType.Successful)
+            {
+                await Click(policyResult.Result.Region);
+            }
+            else
+            {
+                throw new ClickForException($"尝试点击 {asset.Key} 最终失败", policyResult.FinalException);
+            }
         }
 
         private static Point GetCenter(Rect rect)
         {
             return new(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
+        }
+
+        private Task<ImageAsset> GetImageAsset(string assetExpr)
+        {
+            return ImageAsset.Get(assetExpr, _deviceResolution);
         }
 
         // public async Task<bool> TestTextAppear(string text)
@@ -181,14 +177,34 @@ namespace REVUnit.AutoArknights.Core
         //     while (!TestTextAppear(text, area)) Utils.Sleep(waitSec);
         // }
 
-        private Task<Mat> GetImageAsset(string assetExpr)
+        private Task<Mat> GetScreenshot()
         {
-            return _assets.Get(assetExpr);
+            return ScreenshotCachePolicy.ExecuteAsync(_ => _device.GetScreenshot(), new Context(string.Empty));
         }
 
         private static bool IsSuccessful(RegistrationResult result)
         {
             return result.Confidence > ConfidenceThreshold;
+        }
+
+        private async Task<RegistrationResult> LocateImage(ImageAsset image, RegistrationType registrationType =
+            RegistrationType.TemplateMatching)
+        {
+            return (await LocateImage(image, 1, registrationType))[0];
+        }
+
+        private Task<RegistrationResult[]> LocateImage(ImageAsset image, int minMatchCount = 1,
+            RegistrationType registrationType = RegistrationType.TemplateMatching)
+        {
+            ImageRegistration imageRegistration = registrationType switch
+            {
+                RegistrationType.TemplateMatching => TemplateRegistration,
+                RegistrationType.FeatureMatching => FeatureRegistration,
+                _ => throw new ArgumentOutOfRangeException(nameof(registrationType), registrationType, null)
+            };
+            return LocateImageCachePolicy.ExecuteAsync(
+                async _ => imageRegistration.Register(image.Image, await GetScreenshot(), minMatchCount),
+                new Context(image.Key));
         }
 
         private static Point PickRandomPoint(Rect rect)
