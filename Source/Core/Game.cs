@@ -84,7 +84,6 @@ namespace REVUnit.AutoArknights.Core
         public async Task Recurit()
         {
             await BackToMainScreen();
-            throw new NotImplementedException();
         }
     }
 }

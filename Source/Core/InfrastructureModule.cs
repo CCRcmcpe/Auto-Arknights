@@ -14,12 +14,7 @@ namespace REVUnit.AutoArknights.Core
             _i = interactor;
         }
 
-        public void Collect()
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task CollectCreditPoints()
+        public async Task ClaimCreditPoints()
         {
             await _game.BackToMainScreen();
 
@@ -32,26 +27,28 @@ namespace REVUnit.AutoArknights.Core
             await _i.ClickFor("Home/Visit");
             await Task.Delay(5000);
 
-            async Task WaitForCpCollected()
-            {
-                while (true)
-                {
-                    if (!await _i.TestAppear("Infra/VisitNext"))
-                    {
-                        return;
-                    }
+            if (!await _i.TestAppear("Infra/VisitNext")) return;
 
-                    await Task.Delay(1000);
+            async Task WaitForAllCpClaimed()
+            {
+                while (!await _i.TestAppear("Infra/VisitNextGrey"))
+                {
+                    await Task.Delay(2000);
                 }
             }
 
-            Task waitForCpCollected = WaitForCpCollected();
+            Task waitForCpCollected = WaitForAllCpClaimed();
             while (!waitForCpCollected.IsCompleted)
             {
                 await _i.Click(RelativeArea.VisitNextButton);
             }
 
             await _game.BackToMainScreen();
+        }
+
+        public void ClaimProducts()
+        {
+            throw new NotImplementedException();
         }
     }
 }

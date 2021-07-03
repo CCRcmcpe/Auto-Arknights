@@ -30,10 +30,10 @@ namespace REVUnit.AutoArknights.Core
 
     internal class Interactor
     {
-        private static readonly int[] ClickForPolicyRetryInterval = {100, 200, 500, 1000};
+        private static readonly int[] ClickForPolicyRetryInterval = {100, 200, 500, 1000, 1200};
 
         private static readonly AsyncRetryPolicy ClickForPolicy = Policy.Handle<ClickForException>().WaitAndRetryAsync(
-            4,
+            5,
             retryCount => TimeSpan.FromMilliseconds(ClickForPolicyRetryInterval[retryCount - 1]),
             (_, timeSpan, retryCount, context) => Log.Debug("尝试点击 {ImageKey} 第{RetryCount}次失败，等待{SleepDuration}ms后重试",
                 context.OperationKey, retryCount, timeSpan.TotalMilliseconds));

@@ -45,20 +45,20 @@ namespace REVUnit.AutoArknights.CLI
                     new Option<bool>("--use-originites"),
                     new Option<int>("--max-originites-usage")
                 }.Also(c => c.Handler = CommandHandler.Create<string, int, bool, bool, bool, int>(Combat)),
-                new Command("collect")
+                new Command("claim")
                 {
-                    new Command("tasks")
+                    new Command("task")
                     {
                         Handler = CommandHandler.Create(() => _game!.ClaimTasks())
                     },
-                    new Command("credit-points")
+                    new Command("cp")
                     {
-                        Handler = CommandHandler.Create(() => _game!.Infrastructure.CollectCreditPoints())
-                    }.Also(c => c.AddAlias("credit")).Also(c => c.AddAlias("cp")),
-                    new Command("infrastructure")
+                        Handler = CommandHandler.Create(() => _game!.Infrastructure.ClaimCreditPoints())
+                    },
+                    new Command("infra")
                     {
-                        Handler = CommandHandler.Create(() => _game!.Infrastructure.Collect())
-                    }.Also(c => c.AddAlias("infra"))
+                        Handler = CommandHandler.Create(() => _game!.Infrastructure.ClaimProducts())
+                    }
                 }
             }.Also(c => c.Handler = CommandHandler.Create<bool>(Interactive));
         }
