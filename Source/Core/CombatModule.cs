@@ -9,8 +9,15 @@ namespace REVUnit.AutoArknights.Core
 {
     public class CombatModuleSettings
     {
-        public double IntervalAfterLevelComplete { get; set; } = 5;
-        public int IntervalBeforeVerifyInLevel { get; set; } = 50;
+        public CombatModuleSettings(int intervalAfterLevelComplete = 5 * 1000,
+            int intervalBeforeVerifyInLevel = 50 * 1000)
+        {
+            IntervalAfterLevelComplete = intervalAfterLevelComplete;
+            IntervalBeforeVerifyInLevel = intervalBeforeVerifyInLevel;
+        }
+
+        public int IntervalAfterLevelComplete { get; }
+        public int IntervalBeforeVerifyInLevel { get; }
     }
 
     public class CombatModule
@@ -41,10 +48,12 @@ namespace REVUnit.AutoArknights.Core
 
         public async Task Run(Level? level, LevelCombatSettings settings)
         {
-            if (level == null)
+            if (level != null)
             {
-                await RunCurrentSelectedLevel(settings.RepeatTimes, settings.WaitWhenNoSanity);
+                throw new NotImplementedException();
             }
+
+            await RunCurrentSelectedLevel(settings);
         }
 
         private async Task<Sanity> GetCurrentSanity()
@@ -90,11 +99,12 @@ namespace REVUnit.AutoArknights.Core
             return requiredSanity;
         }
 
-        private async Task RunCurrentSelectedLevel(int times, bool waitWhenNoSanity)
+        private async Task RunCurrentSelectedLevel(LevelCombatSettings settings)
         {
             var currentTimes = 0;
+            int times = settings.RepeatTimes;
 
-            if (waitWhenNoSanity)
+            if (settings.WaitWhenNoSanity)
             {
                 _requiredSanity = await GetRequiredSanity();
             }
@@ -124,24 +134,16 @@ namespace REVUnit.AutoArknights.Core
             while (await continueCondition())
             {
                 if (times > 0)
-                {
                     Log.Information("开始第[{CurrentTimes}/{times}]次刷关", currentTimes + 1, times);
-                }
                 else
-                {
                     Log.Information("开始第{CurrentTimes}次刷关", currentTimes + 1);
-                }
 
                 await RunCurrentSelectedLevel();
 
                 if (times > 0)
-                {
                     Log.Information("关卡完成，目前已刷关[{currentTimes}/{Times}]次", ++currentTimes, times);
-                }
                 else
-                {
                     Log.Information("关卡完成，目前已刷关{CurrentTimes}次", ++currentTimes);
-                }
             }
         }
 
@@ -151,12 +153,12 @@ namespace REVUnit.AutoArknights.Core
             await Task.Delay(1000);
 
             await _i.ClickFor("Combat/Start");
-            await Task.Delay(TimeSpan.FromSeconds(Settings.IntervalBeforeVerifyInLevel));
+            await Task.Delay(Settings.IntervalBeforeVerifyInLevel);
 
             if (!await _i.TestAppear("Combat/TakeOver"))
             {
                 Log.Warning("未检测到代理指挥正常运行迹象！");
-                Log.Warning("请检查是否在正常代理作战，如果正常，请增加检测代理正常前等待的时间（现在为{WaitTime}s），以避免假警告出现",
+                Log.Warning("请检查是否在正常代理作战，如果正常，请增加检测代理正常前等待的时间（现在为{WaitTime}ms），以避免假警告出现",
                     Settings.IntervalBeforeVerifyInLevel);
             }
 
@@ -165,7 +167,7 @@ namespace REVUnit.AutoArknights.Core
                 await Task.Delay(5000);
             }
 
-            await Task.Delay(TimeSpan.FromSeconds(Settings.IntervalAfterLevelComplete));
+            await Task.Delay(Settings.IntervalAfterLevelComplete);
 
             do
             {
