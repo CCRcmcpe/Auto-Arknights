@@ -90,35 +90,6 @@ namespace REVUnit.AutoArknights.Core
             return requiredSanity;
         }
 
-        private async Task RunCurrentSelectedLevel()
-        {
-            await _i.ClickFor("Combat/Begin");
-            await Task.Delay(1000);
-
-            await _i.ClickFor("Combat/Start");
-            await Task.Delay(TimeSpan.FromSeconds(Settings.IntervalBeforeVerifyInLevel));
-
-            if (!await _i.TestAppear("Combat/TakeOver"))
-            {
-                Log.Warning("未检测到代理指挥正常运行迹象！");
-                Log.Warning("请检查是否在正常代理作战，如果正常，请增加检测代理正常前等待的时间（现在为{WaitTime}s），以避免假警告出现",
-                    Settings.IntervalBeforeVerifyInLevel);
-            }
-
-            while (await _i.TestAppear("Combat/TakeOver"))
-            {
-                await Task.Delay(5000);
-            }
-
-            await Task.Delay(TimeSpan.FromSeconds(Settings.IntervalAfterLevelComplete));
-
-            do
-            {
-                await _i.Click(RelativeArea.LevelCompletedScreenCloseClick);
-                await Task.Delay(5000);
-            } while (!await _i.TestAppear("Combat/Begin"));
-        }
-
         private async Task RunCurrentSelectedLevel(int times, bool waitWhenNoSanity)
         {
             var currentTimes = 0;
@@ -172,6 +143,35 @@ namespace REVUnit.AutoArknights.Core
                     Log.Information("关卡完成，目前已刷关{CurrentTimes}次", ++currentTimes);
                 }
             }
+        }
+
+        private async Task RunCurrentSelectedLevel()
+        {
+            await _i.ClickFor("Combat/Begin");
+            await Task.Delay(1000);
+
+            await _i.ClickFor("Combat/Start");
+            await Task.Delay(TimeSpan.FromSeconds(Settings.IntervalBeforeVerifyInLevel));
+
+            if (!await _i.TestAppear("Combat/TakeOver"))
+            {
+                Log.Warning("未检测到代理指挥正常运行迹象！");
+                Log.Warning("请检查是否在正常代理作战，如果正常，请增加检测代理正常前等待的时间（现在为{WaitTime}s），以避免假警告出现",
+                    Settings.IntervalBeforeVerifyInLevel);
+            }
+
+            while (await _i.TestAppear("Combat/TakeOver"))
+            {
+                await Task.Delay(5000);
+            }
+
+            await Task.Delay(TimeSpan.FromSeconds(Settings.IntervalAfterLevelComplete));
+
+            do
+            {
+                await _i.Click(RelativeArea.LevelCompletedScreenCloseClick);
+                await Task.Delay(5000);
+            } while (!await _i.TestAppear("Combat/Begin"));
         }
     }
 }
