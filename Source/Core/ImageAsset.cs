@@ -25,7 +25,7 @@ namespace REVUnit.AutoArknights.Core
 
         static ImageAsset()
         {
-            using FileStream fileStream = File.Open(@"Assets\info.json", FileMode.Open);
+            using FileStream fileStream = File.Open(@"Assets\Info.json", FileMode.Open);
             using JsonDocument json = JsonDocument.Parse(fileStream);
 #pragma warning disable CA1507 // Use nameof to express symbol names
             JsonElement element = json.RootElement.GetProperty("TargetResolution");
