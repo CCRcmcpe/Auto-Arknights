@@ -7,13 +7,12 @@ using OpenCvSharp;
 using Polly;
 using Polly.Caching;
 using Polly.Caching.Memory;
-using REVUnit.AutoArknights.Core.Properties;
 
 namespace REVUnit.AutoArknights.Core
 {
     public class AssetLoadException : Exception
     {
-        public AssetLoadException(string key) : base(string.Format(Resources.AssetsLoadException, key))
+        public AssetLoadException(string key) : base($"无法载入资源: {key}")
         {
         }
     }
@@ -28,7 +27,9 @@ namespace REVUnit.AutoArknights.Core
         {
             using FileStream fileStream = File.Open(@"Assets\info.json", FileMode.Open);
             using JsonDocument json = JsonDocument.Parse(fileStream);
+#pragma warning disable CA1507 // Use nameof to express symbol names
             JsonElement element = json.RootElement.GetProperty("TargetResolution");
+#pragma warning restore CA1507 // Use nameof to express symbol names
             int width = element.GetProperty("Width").GetInt32();
             int height = element.GetProperty("Height").GetInt32();
             TargetResolution = new Size(width, height);

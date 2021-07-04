@@ -3,7 +3,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Polly;
 using Polly.Retry;
-using REVUnit.AutoArknights.Core.Properties;
 using Serilog;
 
 namespace REVUnit.AutoArknights.Core
@@ -19,16 +18,13 @@ namespace REVUnit.AutoArknights.Core
         private static readonly Regex CurrentSanityRegex =
             new(@"(?<current>\d+)\s*\/\s*(?<max>\d+)", RegexOptions.Compiled);
 
-        private readonly Game _game;
-
         private readonly AsyncRetryPolicy<Sanity> _getCurrentSanityPolicy;
         private readonly Interactor _i;
         private Sanity? _lastGetSanityResult;
         private int _requiredSanity;
 
-        internal CombatModule(Game game, Interactor interactor)
+        internal CombatModule(Interactor interactor)
         {
-            _game = game;
             _i = interactor;
             _getCurrentSanityPolicy = Policy.HandleResult<Sanity>(sanity =>
             {
@@ -77,7 +73,7 @@ namespace REVUnit.AutoArknights.Core
             }
             else
             {
-                Log.Warning(Resources.CombatModule_PossibleOcrError);
+                Log.Warning("OCR识别结果似乎有误");
                 currentSanity = policyResult.FinalHandledResult;
             }
 
@@ -90,7 +86,7 @@ namespace REVUnit.AutoArknights.Core
             string text = await _i.Ocr(RelativeArea.RequiredSanityText);
             if (!int.TryParse(text[1..], out int requiredSanity)) throw new Exception();
 
-            Log.Information(Resources.CombatModule_RequiredSanity, requiredSanity);
+            Log.Information("检测到此关卡需要[{RequiredSanity}]理智", requiredSanity);
             return requiredSanity;
         }
 
@@ -104,8 +100,8 @@ namespace REVUnit.AutoArknights.Core
 
             if (!await _i.TestAppear("Combat/TakeOver"))
             {
-                Log.Warning(Resources.CombatModule_AutoDeployNotRunning);
-                Log.Warning(Resources.CombatModule_AutoDeployNotRunningHint,
+                Log.Warning("未检测到代理指挥正常运行迹象！");
+                Log.Warning("请检查是否在正常代理作战，如果正常，请增加检测代理正常前等待的时间（现在为{WaitTime}s），以避免假警告出现",
                     Settings.IntervalBeforeVerifyInLevel);
             }
 
@@ -138,13 +134,13 @@ namespace REVUnit.AutoArknights.Core
                 {
                     if ((await GetCurrentSanity()).Value < _requiredSanity)
                     {
-                        Log.Information(Resources.LevelFarming_WaitingForSanityRecovery);
+                        Log.Information("正在等待理智恢复...");
                         while ((await GetCurrentSanity()).Value < _requiredSanity)
                         {
                             await Task.Delay(10000);
                         }
 
-                        Log.Information(Resources.LevelFarming_SanityRecovered);
+                        Log.Information("...理智恢复完成");
                     }
 
                     return true;
@@ -158,22 +154,22 @@ namespace REVUnit.AutoArknights.Core
             {
                 if (times > 0)
                 {
-                    Log.Information(Resources.CombatModule_LevelBegin, currentTimes + 1, times);
+                    Log.Information("开始第[{CurrentTimes}/{times}]次刷关", currentTimes + 1, times);
                 }
                 else
                 {
-                    Log.Information(Resources.CombatModule_LevelBegin_Infinite, currentTimes + 1);
+                    Log.Information("开始第{CurrentTimes}次刷关", currentTimes + 1);
                 }
 
                 await RunCurrentSelectedLevel();
 
                 if (times > 0)
                 {
-                    Log.Information(Resources.CombatModule_LevelEnd, ++currentTimes, times);
+                    Log.Information("关卡完成，目前已刷关[{currentTimes}/{Times}]次", ++currentTimes, times);
                 }
                 else
                 {
-                    Log.Information(Resources.CombatModule_LevelEnd_Infinite, ++currentTimes);
+                    Log.Information("关卡完成，目前已刷关{CurrentTimes}次", ++currentTimes);
                 }
             }
         }

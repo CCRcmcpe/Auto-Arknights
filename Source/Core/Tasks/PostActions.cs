@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
-using REVUnit.AutoArknights.Core.Properties;
 
 namespace REVUnit.AutoArknights.Core.Tasks
 {
@@ -18,7 +16,7 @@ namespace REVUnit.AutoArknights.Core.Tasks
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new Exception(Resources.PostActionsSettings_Exception_EmptyCommand);
+                    throw new Exception("指令不能为空");
                 }
 
                 _shutdownRemoteCommand = value;
@@ -26,28 +24,9 @@ namespace REVUnit.AutoArknights.Core.Tasks
         }
     }
 
-    public abstract class PostAction : IArkTask
+    public class Shutdown : IArkTask
     {
-        public abstract ExecuteResult Execute();
-
-        public static PostAction Parse(char c, PostActionsSettings settings)
-        {
-            return c switch
-            {
-                'c' => new Shutdown(),
-                'r' => new Reboot(),
-                's' => new Suspend(false),
-                'h' => new Suspend(true),
-                'e' => new ShutdownRemote(settings.ShutdownRemoteCommand ??
-                                          throw new Exception(Resources.PostActionsSettings_Exception_EmptyCommand)),
-                _ => throw new FormatException(string.Format(Resources.PostAction_Exception_ParseFailed, c))
-            };
-        }
-    }
-
-    public class Shutdown : PostAction
-    {
-        public override ExecuteResult Execute()
+        public ExecuteResult Execute()
         {
             Process.Start("shutdown.exe", "/p");
             return ExecuteResult.Success();
@@ -55,13 +34,13 @@ namespace REVUnit.AutoArknights.Core.Tasks
 
         public override string ToString()
         {
-            return Resources.PostAction_Shutdown;
+            return "关机";
         }
     }
 
-    public class Reboot : PostAction
+    public class Reboot : IArkTask
     {
-        public override ExecuteResult Execute()
+        public ExecuteResult Execute()
         {
             Process.Start("shutdown.exe", "/r /t 0");
             return ExecuteResult.Success();
@@ -69,44 +48,43 @@ namespace REVUnit.AutoArknights.Core.Tasks
 
         public override string ToString()
         {
-            return Resources.PostAction_Reboot;
+            return "重启";
         }
     }
 
-    public class Suspend : PostAction
+    public class Suspend : IArkTask
     {
         public Suspend(bool hibernate)
         {
             if (hibernate && !IsPwrHibernateAllowed())
-                throw new NotSupportedException(Resources.PostAction_Suspend_Exception_HibernateNotSupported);
+                throw new NotSupportedException("系统未开启或不支持休眠");
             Hibernate = hibernate;
         }
 
         public bool Hibernate { get; set; }
 
-        public override ExecuteResult Execute()
+        public ExecuteResult Execute()
         {
-            SetSuspendState(Hibernate, false, false);
-            return ExecuteResult.Success();
+            bool success = SetSuspendState(Hibernate, false, false);
+            return new ExecuteResult(success);
         }
 
         public override string ToString()
         {
             var b = new StringBuilder();
-            b.Append(!Hibernate ? Resources.PostAction_Suspend_Sleep : Resources.PostAction_Suspend_Hibernate);
+            b.Append(Hibernate ? "休眠" : "睡眠");
             return b.ToString();
         }
 
         [DllImport("powrprof.dll")]
         private static extern bool IsPwrHibernateAllowed();
 
-        /// <param name="forceCritical">This parameter is useless.</param>
         [DllImport("powrprof.dll")]
-        [SuppressMessage("ReSharper", "InvalidXmlDocComment")]
-        private static extern uint SetSuspendState(bool hibernate, bool forceCritical, bool disableWakeEvent);
+        private static extern bool SetSuspendState(bool hibernate, bool forceCritical /* useless */,
+            bool disableWakeEvent);
     }
 
-    public class ExecuteCommand : PostAction
+    public class ExecuteCommand : IArkTask
     {
         public ExecuteCommand(string command)
         {
@@ -116,20 +94,20 @@ namespace REVUnit.AutoArknights.Core.Tasks
         public string Command { get; set; }
         public int Timeout { get; set; } = 2000;
 
-        public override ExecuteResult Execute()
+        public ExecuteResult Execute()
         {
             Process? process =
                 Process.Start(new ProcessStartInfo("cmd.exe", "/c " + Command) {CreateNoWindow = true});
-            if (process == null) return new ExecuteResult(false, Resources.PostAction_ExecuteCommand_CannotStartCmd);
+            if (process == null) return new ExecuteResult(false, "无法启动cmd");
 
             return process.WaitForExit(Timeout)
-                ? new ExecuteResult(false, Resources.PostAction_ExecuteCommand_Exception_Timeout)
-                : new ExecuteResult(true, Resources.PostAction_ExecuteCommand_Completed);
+                ? new ExecuteResult(false, "指令超时")
+                : new ExecuteResult(true, "指令已执行");
         }
 
         public override string ToString()
         {
-            return string.Format(Resources.PostAction_ExecuteCommand);
+            return "执行指令";
         }
     }
 
@@ -141,7 +119,7 @@ namespace REVUnit.AutoArknights.Core.Tasks
 
         public override string ToString()
         {
-            return Resources.PostAction_CloseRemote;
+            return "关闭远端";
         }
     }
 }

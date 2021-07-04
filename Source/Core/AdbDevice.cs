@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using OpenCvSharp;
 using Polly;
 using Polly.Retry;
-using REVUnit.AutoArknights.Core.Properties;
 using Serilog;
 
 namespace REVUnit.AutoArknights.Core
@@ -24,7 +23,7 @@ namespace REVUnit.AutoArknights.Core
 
         private readonly AsyncRetryPolicy<Mat> _getScreenshotPolicy = Policy.HandleResult<Mat>(mat => mat.Empty())
             .RetryAsync(GetScreenshotRetryTimes,
-                (_, i) => Log.Warning(Resources.Adb_RetryGetScreenshot, i,
+                (_, i) => Log.Warning("截图失败，正在重试（第 {0}/{1} 次）", i,
                     GetScreenshotRetryTimes));
 
         private int _serverPort;
@@ -54,7 +53,7 @@ namespace REVUnit.AutoArknights.Core
             await ThrowIfServiceUnavailable();
             string result = Encoding.UTF8.GetString((await Execute("shell wm size")).stdOut);
             Match match = Regex.Match(result, @"Physical size: (\d+)x(\d+)");
-            if (!match.Success) throw new Exception(Resources.Adb_ErrorGetResolution);
+            if (!match.Success) throw new Exception("无法获取设备分辨率信息");
 
             int a = int.Parse(match.Groups[1].Value);
             int b = int.Parse(match.Groups[2].Value);
@@ -67,7 +66,7 @@ namespace REVUnit.AutoArknights.Core
                 Cv2.ImDecode((await Execute("exec-out screencap -p", 5 * 1024 * 1024, 0)).stdOut, ImreadModes.Color));
             if (result.Outcome == OutcomeType.Failure)
             {
-                throw new Exception(Resources.Adb_ErrorGetScreenshot);
+                throw new Exception("截图最终失败");
             }
 
             return result.Result;
@@ -75,7 +74,7 @@ namespace REVUnit.AutoArknights.Core
 
         public async Task Connect(string targetSerial)
         {
-            Log.Information(Resources.Adb_Connecting, targetSerial);
+            Log.Information("正在连接到 ADB 设备 {Target}", targetSerial);
 
             await KillConnectedProcesses(targetSerial);
 
@@ -87,12 +86,12 @@ namespace REVUnit.AutoArknights.Core
             await Execute($"connect {targetSerial}", targeted: false);
             if (!await GetDeviceOnline())
             {
-                throw new Exception(Resources.Adb_ErrorConnect);
+                throw new Exception("重试失败，无法连接");
             }
 
             TargetSerial = targetSerial;
 
-            Log.Information(Resources.Adb_Connected);
+            Log.Information("连接设备成功");
         }
 
         // https://developer.android.com/reference/android/view/KeyEvent
@@ -104,7 +103,7 @@ namespace REVUnit.AutoArknights.Core
 
         public void StartServer()
         {
-            Log.Information(Resources.Adb_StartingServer);
+            Log.Information("正在启动 ADB 服务器");
 
             int port = GetFreeTcpPort();
 
@@ -117,7 +116,7 @@ namespace REVUnit.AutoArknights.Core
 
             if (!adbServerProcess.Start())
             {
-                throw new Exception(Resources.Adb_ErrorStartServer);
+                throw new Exception("ADB 服务器未能正常启动");
             }
 
             _serverPort = port;
@@ -134,7 +133,7 @@ namespace REVUnit.AutoArknights.Core
             int stdErrBufferSize = DefaultBufferSize,
             bool waitForExit = false, bool targeted = true)
         {
-            Log.Debug(Resources.Adb_ExecutingCommand, arguments);
+            Log.Debug("正在执行 ADB 指令：{$Param}", arguments);
 
             string adbSystemArgs = $"-P {_serverPort} ";
             if (targeted)
@@ -180,7 +179,7 @@ namespace REVUnit.AutoArknights.Core
         private async Task<bool> GetDeviceOnline()
         {
             string state = Encoding.UTF8.GetString((await Execute("get-state", targeted: false)).stdOut).Trim();
-            Log.Debug(Resources.Adb_DeviceState, state);
+            Log.Debug("检测到设备状态: \"{State}\"", state);
             return state == "device";
         }
 

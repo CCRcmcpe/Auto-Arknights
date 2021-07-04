@@ -11,7 +11,7 @@ namespace REVUnit.AutoArknights.Core
         private Game(Interactor interactor)
         {
             _i = interactor;
-            Combat = new CombatModule(this, interactor);
+            Combat = new CombatModule(interactor);
             Infrastructure = new InfrastructureModule(this, interactor);
         }
 

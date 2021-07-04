@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using OpenCvSharp;
-using REVUnit.AutoArknights.Core.Properties;
 
 namespace REVUnit.AutoArknights.Core.CV
 {
@@ -19,8 +18,7 @@ namespace REVUnit.AutoArknights.Core.CV
         public (int matchCount, Quadrilateral32 region) Match(MatFeature modelF, MatFeature sceneF)
         {
             if (modelF.Type != sceneF.Type)
-                throw new ArgumentException(string.Format(Resources.FeatureMatcher_Exception_FeatureTypesMismatch,
-                    nameof(modelF), nameof(sceneF)));
+                throw new ArgumentException($"{nameof(modelF)}和{nameof(sceneF)}的类型不匹配");
             if (modelF.KeyPoints.Length == 0 || modelF.Descriptors.Empty() || sceneF.KeyPoints.Length == 0 ||
                 sceneF.Descriptors.Empty())
                 return default;
