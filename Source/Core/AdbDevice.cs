@@ -9,8 +9,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using OpenCvSharp;
-using Polly;
-using Polly.Retry;
 using Serilog;
 
 namespace REVUnit.AutoArknights.Core
@@ -18,13 +16,6 @@ namespace REVUnit.AutoArknights.Core
     public class AdbDevice : IDevice
     {
         private const int DefaultBufferSize = 1024;
-
-        private const int GetScreenshotRetryTimes = 3;
-
-        private readonly AsyncRetryPolicy<Mat> _getScreenshotPolicy = Policy.HandleResult<Mat>(mat => mat.Empty())
-            .RetryAsync(GetScreenshotRetryTimes,
-                (_, i) => Log.Warning("截图失败，正在重试（第 {0}/{1} 次）", i,
-                    GetScreenshotRetryTimes));
 
         private int _serverPort;
         private bool _serverStarted;
@@ -62,14 +53,14 @@ namespace REVUnit.AutoArknights.Core
 
         public async Task<Mat> GetScreenshot()
         {
-            PolicyResult<Mat> result = await _getScreenshotPolicy.ExecuteAndCaptureAsync(async () =>
-                Cv2.ImDecode((await Execute("exec-out screencap -p", 5 * 1024 * 1024, 0)).stdOut, ImreadModes.Color));
-            if (result.Outcome == OutcomeType.Failure)
+            Mat mat = Cv2.ImDecode((await Execute("exec-out screencap -p", 5 * 1024 * 1024, 0)).stdOut,
+                ImreadModes.Color);
+            if (mat.Empty())
             {
-                throw new Exception("截图最终失败");
+                throw new Exception("获取到空截图");
             }
 
-            return result.Result;
+            return mat;
         }
 
         public async Task Connect(string targetSerial)
@@ -249,7 +240,7 @@ namespace REVUnit.AutoArknights.Core
         {
             if (!_serverStarted || !await GetDeviceOnline())
             {
-                throw new Exception(); // TODO Message
+                throw new Exception("ADB 连接意外中断");
             }
         }
     }

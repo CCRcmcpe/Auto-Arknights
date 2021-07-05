@@ -29,9 +29,10 @@ namespace REVUnit.AutoArknights.CLI
             {
                 new Option<bool>("--no-logo"),
 
-                new Command("start").Also(x =>
-                    x.Handler = CommandHandler.Create(StartGame)),
-                new Command("stop").Also(x => x.Handler = CommandHandler.Create(StopGame)),
+                new Command("start")
+                    {Handler = CommandHandler.Create(StartGame)},
+                new Command("stop")
+                    {Handler = CommandHandler.Create(StopGame)},
                 new Command("combat")
                 {
                     new Argument<int>("--times").Also(x => x.AddAlias("-t")),
@@ -43,17 +44,11 @@ namespace REVUnit.AutoArknights.CLI
                 new Command("claim")
                 {
                     new Command("task")
-                    {
-                        Handler = CommandHandler.Create(() => _game!.ClaimTasks())
-                    },
+                        {Handler = CommandHandler.Create(() => _game!.ClaimTasks())},
                     new Command("cp")
-                    {
-                        Handler = CommandHandler.Create(() => _game!.Infrastructure.ClaimCreditPoints())
-                    },
+                        {Handler = CommandHandler.Create(() => _game!.Infrastructure.ClaimCreditPoints())},
                     new Command("infra")
-                    {
-                        Handler = CommandHandler.Create(() => _game!.Infrastructure.ClaimProducts())
-                    }
+                        {Handler = CommandHandler.Create(() => _game!.Infrastructure.ClaimProducts())}
                 }
             }.Also(c => c.Handler = CommandHandler.Create<bool>(Interactive));
         }

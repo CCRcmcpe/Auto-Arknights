@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using REVUnit.AutoArknights.CLI.Properties;
 using Serilog;
-using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 
 namespace REVUnit.AutoArknights.CLI
@@ -37,7 +36,7 @@ namespace REVUnit.AutoArknights.CLI
                 .WriteTo.Console(theme: AnsiConsoleTheme.Code)
 #else
                 .WriteTo.Console(theme: AnsiConsoleTheme.Code,
-                    restrictedToMinimumLevel: _config.GetValue("Log:Level", LogEventLevel.Information))
+                    restrictedToMinimumLevel: _config.GetValue("Log:Level", Serilog.Events.LogEventLevel.Information))
 #endif
                 .WriteTo.Debug()
                 .WriteTo.File($"Log/{DateTime.Now:yyyy-MM-dd HH.mm.ss}.log")
