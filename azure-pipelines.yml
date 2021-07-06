@@ -16,28 +16,27 @@ jobs:
   - checkout: self
     displayName: Checkout
   - task: UseDotNet@2
-    displayName: Use DotNet
+    displayName: Setup .NET
     inputs:
       packageType: 'sdk'
       useGlobalJson: true
       workingDirectory: 'Source/CLI'
-  - task: DotNetCoreCLI@2
-    displayName: Restore
+  - task: PowerShell@2
+    displayName: Build
     inputs:
-      command: 'restore'
-      projects: 'Source/**/*.csproj'
-      restoreArguments: '-r win-x64'
-  - task: DotNetCoreCLI@2
+      filePath: 'Build-Artifact.ps1'
+      pwsh: true
+      workingDirectory: 'Source/CLI'
+  - task: ArchiveFiles@2
+    displayName: Archive
+    inputs:
+      rootFolderOrFile: 'Source/CLI/artifact'
+      includeRootFolder: false
+      archiveType: '7z'
+      sevenZipCompression: 'ultra'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+  - task: PublishPipelineArtifact@1
     displayName: Publish
     inputs:
-      command: 'publish'
-      publishWebProjects: false
-      projects: 'Source/CLI/Auto Arknights CLI.csproj'
-      arguments: '-c Release -p:PublishProfile="Windows x64" --no-restore'
-      zipAfterPublish: false
-      workingDirectory: 'Source/CLI'
-  - task: PublishPipelineArtifact@1
-    displayName: Publish Artifact
-    inputs:
-      targetPath: Source/CLI/artifact
+      targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
       artifactName: Auto Arknights CLI
