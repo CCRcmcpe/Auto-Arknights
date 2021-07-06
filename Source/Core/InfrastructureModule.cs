@@ -21,10 +21,10 @@ namespace REVUnit.AutoArknights.Core
             await _i.ClickFor("Home/Friends", RegistrationType.FeatureMatching);
             await Task.Delay(5000);
 
-            await _i.ClickFor("Home/FriendsList");
+            await _i.ClickFor("Profile/FriendsList");
             await Task.Delay(2000);
 
-            await _i.ClickFor("Home/Visit");
+            await _i.ClickFor("Profile/Visit");
             await Task.Delay(5000);
 
             if (!await _i.TestAppear("Infra/VisitNext")) return;

@@ -26,9 +26,9 @@ namespace REVUnit.AutoArknights.Core
                 {
                     Task clickYes = Task.Run(async () =>
                     {
-                        if (await _i.TestAppear("Yes"))
+                        if (await _i.TestAppear("General/Yes"))
                         {
-                            await _i.ClickFor("Yes");
+                            await _i.ClickFor("General/Yes");
                         }
                     }, cts.Token);
                     if (await _i.TestAppear("Home/Settings"))
