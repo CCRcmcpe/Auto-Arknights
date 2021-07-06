@@ -60,7 +60,7 @@ namespace REVUnit.AutoArknights.Core
         {
             PolicyResult<Sanity> policyResult = await _getCurrentSanityPolicy.ExecuteAndCaptureAsync(async () =>
             {
-                string text = await _i.Ocr(RelativeArea.CurrentSanityText);
+                string text = await _i.Ocr(RelativeArea.CurrentSanityText, "CurrentSanity");
                 Match match = CurrentSanityRegex.Match(text);
                 if (!(int.TryParse(match.Groups["current"].Value, out int current) &&
                       int.TryParse(match.Groups["max"].Value, out int max)))
@@ -92,7 +92,7 @@ namespace REVUnit.AutoArknights.Core
 
         private async Task<int> GetRequiredSanity()
         {
-            string text = await _i.Ocr(RelativeArea.RequiredSanityText);
+            string text = await _i.Ocr(RelativeArea.RequiredSanityText, "RequiredSanity");
             if (!int.TryParse(text[1..], out int requiredSanity)) throw new Exception();
 
             Log.Information("检测到此关卡需要[{RequiredSanity}]理智", requiredSanity);
@@ -102,14 +102,14 @@ namespace REVUnit.AutoArknights.Core
         private async Task RunCurrentSelectedLevel(LevelCombatSettings settings)
         {
             var currentTimes = 0;
-            int times = settings.RepeatTimes;
+            int targetTimes = settings.RepeatTimes;
 
-            if (settings.WaitWhenNoSanity)
+            if (targetTimes <= 0)
             {
                 _requiredSanity = await GetRequiredSanity();
             }
 
-            Func<Task<bool>> continueCondition = times switch
+            Func<Task<bool>> continueCondition = targetTimes switch
             {
                 -1 => async () =>
                 {
@@ -126,22 +126,27 @@ namespace REVUnit.AutoArknights.Core
 
                     return true;
                 },
-                0 => async () => (await GetCurrentSanity()).Value < _requiredSanity,
+                0 => async () =>
+                {
+                    Sanity currentSanity = await GetCurrentSanity();
+                    Log.Information("检测到当前理智为[{CurrentSanity}]", currentSanity);
+                    return currentSanity.Value >= _requiredSanity;
+                },
                 // ReSharper disable once AccessToModifiedClosure
-                _ => () => Task.FromResult(currentTimes < times)
+                _ => () => Task.FromResult(currentTimes < targetTimes)
             };
 
             while (await continueCondition())
             {
-                if (times > 0)
-                    Log.Information("开始第[{CurrentTimes}/{times}]次刷关", currentTimes + 1, times);
+                if (targetTimes > 0)
+                    Log.Information("开始第[{CurrentTimes}/{times}]次刷关", currentTimes + 1, targetTimes);
                 else
                     Log.Information("开始第{CurrentTimes}次刷关", currentTimes + 1);
 
                 await RunCurrentSelectedLevel();
 
-                if (times > 0)
-                    Log.Information("关卡完成，目前已刷关[{currentTimes}/{Times}]次", ++currentTimes, times);
+                if (targetTimes > 0)
+                    Log.Information("关卡完成，目前已刷关[{currentTimes}/{Times}]次", ++currentTimes, targetTimes);
                 else
                     Log.Information("关卡完成，目前已刷关{CurrentTimes}次", ++currentTimes);
             }

@@ -102,16 +102,20 @@ namespace REVUnit.AutoArknights.Core
             return new Interactor(device, resolution);
         }
 
-        public async Task<string> Ocr(RelativeArea area)
-        {
-            return (await OcrMulti(area))[0];
-        }
-
-        public async Task<string[]> OcrMulti(RelativeArea area)
+        public async Task<string> Ocr(RelativeArea area, string? patternName = null)
         {
             Mat screenshot = await GetScreenshot();
-            using Mat sub = area.Reduce(screenshot);
-            throw new NotImplementedException();
+            return await Task.Run(() =>
+            {
+                using Mat sub = area.Of(screenshot);
+                TextBlock textBlock = CV.Ocr.Single(sub, patternName);
+                if (textBlock.Confidence < ConfidenceThreshold)
+                {
+                    Log.Debug("OCR 结果可能有误（置信度：{Confidence}）", textBlock.Confidence);
+                }
+
+                return textBlock.Text;
+            });
         }
 
         public async Task<bool> TestAppear(string assetExpr, RegistrationType registrationType =
@@ -156,26 +160,6 @@ namespace REVUnit.AutoArknights.Core
         {
             return ImageAsset.Get(assetExpr, _deviceResolution);
         }
-
-        // public async Task<bool> TestTextAppear(string text)
-        // {
-        //     return (await OcrMulti(RelativeArea.All)).Any(field => field.Contains(text));
-        // }
-        //
-        // public bool TestTextAppear(string text, RelativeArea area)
-        // {
-        //     return Ocr(area).Contains(text);
-        // }
-        //
-        // public void WaitTextAppear(string text, double waitSec = 5)
-        // {
-        //     while (!TestTextAppear(text)) Utils.Sleep(waitSec);
-        // }
-        //
-        // public void WaitTextAppear(string text, RelativeArea area, double waitSec = 5)
-        // {
-        //     while (!TestTextAppear(text, area)) Utils.Sleep(waitSec);
-        // }
 
         private Task<Mat> GetScreenshot()
         {

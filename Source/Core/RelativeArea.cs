@@ -34,7 +34,7 @@ namespace REVUnit.AutoArknights.Core
             return Rect.FromLTRB(left, top, right, bottom);
         }
 
-        public Mat Reduce(Mat super)
+        public Mat Of(Mat super)
         {
             return super.Clone(For(super.Size()));
         }
