@@ -9,10 +9,18 @@
     <Platforms>x64</Platforms>
   </PropertyGroup>
 
+  <Target Name="PopulateInfo" DependsOnTargets="GitInfo" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <Version>$(GitSemVerMajor).$(GitSemVerMinor).$(GitSemVerPatch)-$(GitSemVerLabel)+$(GitCommit)</Version>
+    </PropertyGroup>
+  </Target>
+
   <PropertyGroup>
-    <Company>REV Unit</Company>
-    <Version>2.0.0</Version>
+    <Authors>Rcmcpe</Authors>
+    <Copyright>Copyright © Rcmcpe 2021</Copyright>
+    <AssemblyTitle>Auto Arknights CLI</AssemblyTitle>
     <NeutralLanguage>zh-CN</NeutralLanguage>
+    <GitDefaultBranch>dev-2.0.0</GitDefaultBranch>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,6 +32,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="GitInfo" Version="2.1.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
     <PackageReference Include="NetEscapades.Configuration.Yaml" Version="2.1.0" />
@@ -47,10 +59,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
 
 </Project>
