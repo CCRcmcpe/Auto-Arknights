@@ -24,19 +24,11 @@ jobs:
   - task: PowerShell@2
     displayName: Build
     inputs:
-      filePath: 'Build-Artifact.ps1'
+      filePath: 'Source/CLI/Build-Artifact.ps1'
       pwsh: true
       workingDirectory: 'Source/CLI'
-  - task: ArchiveFiles@2
-    displayName: Archive
-    inputs:
-      rootFolderOrFile: 'Source/CLI/artifact'
-      includeRootFolder: false
-      archiveType: '7z'
-      sevenZipCompression: 'ultra'
-      archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
   - task: PublishPipelineArtifact@1
     displayName: Publish
     inputs:
-      targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+      targetPath: 'Source/CLI/artifact'
       artifactName: Auto Arknights CLI
