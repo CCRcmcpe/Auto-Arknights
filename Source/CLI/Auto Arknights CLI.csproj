@@ -5,7 +5,7 @@
     <RootNamespace>REVUnit.AutoArknights.CLI</RootNamespace>
     <nullable>enable</nullable>
     <OutputType>Exe</OutputType>
-    <Platform>x64</Platform>
+    <Platforms>x64</Platforms>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
   </PropertyGroup>
 
