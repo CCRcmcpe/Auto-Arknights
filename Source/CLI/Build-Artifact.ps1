@@ -4,7 +4,7 @@ git version
 $publishCommand = 'dotnet publish -o .\artifact -c Release -p:PublishProfile="Windows x64" -p:DebugType=none -p:DebugSymbols=false'
 if ($?) 
 {
-    $tag = git describe --abbrev=0
+    $tag = git describe --tags --abbrev=0
     $version = $tag.Substring(1)
     $commit = git -c log.showSignature=false log --format=format:%h -n 1
     $infoVersion = "$version+$commit"
