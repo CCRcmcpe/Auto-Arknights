@@ -9,10 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenCvSharp4" Version="4.5.3.20210725" />
-    <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.5.3.20210725" />
+    <PackageReference Include="OpenCvSharp4" Version="4.5.5.20211231" />
+    <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.5.5.20211231" />
     <PackageReference Include="Polly.Caching.Memory" Version="3.0.2" />
-    <PackageReference Include="Polly" Version="7.2.2" />
+    <PackageReference Include="Polly" Version="7.2.3" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="tesseract-dotnet-avx2-x64" Version="4.1.1.1" />
   </ItemGroup>
