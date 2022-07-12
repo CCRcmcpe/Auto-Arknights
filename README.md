@@ -1,11 +1,15 @@
 # Auto Arknights
 
-![Framework](https://img.shields.io/badge/.NET%205.0---?logo=C%20Sharp)
+![Framework](https://img.shields.io/badge/.NET%206.0---?logo=C%20Sharp)
 ![Base Branch](https://img.shields.io/badge/Base%20Branch-dev--2.0.0-blue?logo=git)
 [![Build Status](https://rev-unit.visualstudio.com/Auto-Arknights/_apis/build/status/CCRcmcpe.Auto-Arknights?branchName=dev-2.0.0)](https://rev-unit.visualstudio.com/Auto-Arknights/_build/latest?definitionId=1&branchName=dev-2.0.0)
 
 ![刷关演示](Docs/Resources/RunSample.png)
 *用于自动化明日方舟部分操作的程序。*
+
+## 开发现状
+
+由于目前功能已经足够，懒得继续开发。如果明日方舟UI没有大幅更改，本程序将在可预见的将来稳健运行。
 
 ## 入门
 
@@ -15,7 +19,7 @@
 ### 运行最低要求
 
 * Windows 7 x64 或更高版本的操作系统。
-* .NET 5.0 运行时，[官方下载](https://dotnet.microsoft.com/download/dotnet/current/runtime)。
+* .NET 6.0 运行时，[官方下载](https://dotnet.microsoft.com/download/dotnet/current/runtime)。
 
 ### 注意事项
 
@@ -25,7 +29,7 @@
 ## 关于
 
 ![Logo](Docs/Resources/Logo.png)
-这个项目是实验性的，主要作个人学习用途（是的，开发者没有很多开发经验），在使用中如果有问题欢迎提出 issue。  
+这个项目是实验性的，主要作个人学习用途，在使用中如果有问题欢迎提出 issue。  
 
 ### 鸣谢
 

@@ -1,7 +1,7 @@
 if (Test-Path .\artifact\) { Remove-Item -Recurse .\artifact\ }
 
 git version
-$publishCommand = 'dotnet publish -o .\artifact -c Release -p:PublishProfile="Windows x64" -p:DebugType=none -p:DebugSymbols=false'
+$publishCommand = 'dotnet publish -o .\artifact -c Release -p:PublishProfile=win-x64 -p:DebugType=none -p:DebugSymbols=false'
 if ($?) 
 {
     $tag = git describe --tags --abbrev=0
